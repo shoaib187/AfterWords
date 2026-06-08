@@ -1,0 +1,37 @@
+{
+  "migIndex": 1,
+  "data": [
+    {
+      "path": "assets/fonts/TT Fors Trial Bold.ttf",
+      "sha1": "c628de937e7bcecbce58494673c3eb6d8dee1304"
+    },
+    {
+      "path": "assets/fonts/TT Fors Trial DemiBold.ttf",
+      "sha1": "6bb96bacbe5e6e27dccd545bf0568bcc121d08d7"
+    },
+    {
+      "path": "assets/fonts/TT Fors Trial ExtraLight.ttf",
+      "sha1": "44b712114f39200859cd580c05a965822df6ca42"
+    },
+    {
+      "path": "assets/fonts/TT Fors Trial Light Italic.ttf",
+      "sha1": "6b43909eb506733ffb9be3cd538fba453fe300d3"
+    },
+    {
+      "path": "assets/fonts/TT Fors Trial Light.ttf",
+      "sha1": "fb0a4ccb3948c35183fbe2bd765bbd8806f0de96"
+    },
+    {
+      "path": "assets/fonts/TT Fors Trial Medium.ttf",
+      "sha1": "7dfd9338b344140af53641c87d6d6e6069fe689c"
+    },
+    {
+      "path": "assets/fonts/TT Fors Trial Regular.ttf",
+      "sha1": "6a71314975447e96325873caf87d0809930f8c31"
+    },
+    {
+      "path": "assets/fonts/TT Fors Trial Variable.ttf",
+      "sha1": "5aa5d23035be8cc688b24bf3476c0cd323b1a36e"
+    }
+  ]
+}

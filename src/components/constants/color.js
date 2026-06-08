@@ -1,0 +1,10 @@
+export const COLORS = {
+  RED: '#F75464',
+  WHITE: '#FFFFFF',
+  GRAY: '#A8AAAD',
+  BORDER: '#717378',
+  BLACK: '#000000',
+  DARK_GRAY: '#3F3F3F',
+  MEDIUM_GRAY: '#454545',
+  GOLD: '#BE8C35',
+};
