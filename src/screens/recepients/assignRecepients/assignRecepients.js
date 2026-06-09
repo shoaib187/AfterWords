@@ -5,7 +5,6 @@ import {
   TouchableOpacity,
   TextInput,
   ScrollView,
-  StatusBar,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Ionicons from 'react-native-vector-icons/Ionicons';
@@ -22,6 +21,7 @@ import { COLORS } from '../../../components/constants/color';
 import { FONT } from '../../../components/constants/font';
 import HeaderBack from '../../../components/common/headerBack/headerBack';
 import { Button } from '../../../components/common/button/button';
+import Title from '../../../components/typography/title/title';
 
 const INITIAL_RECIPIENTS = [
   {
@@ -110,7 +110,11 @@ export default function AssignRecipients({ navigation }) {
         {/* ── Action: Add New Recipient Trigger Button ── */}
         <TouchableOpacity style={styles.addNewRecipientRow} activeOpacity={0.8}>
           <View style={styles.addIconCircle}>
-            <Ionicons name="person-add-outline" size={16} color="#C59353" />
+            <Ionicons
+              name="person-add-outline"
+              size={Responsive.width(16)}
+              color="#C59353"
+            />
           </View>
           <AppText
             text="Add new recipient"
@@ -150,9 +154,9 @@ export default function AssignRecipients({ navigation }) {
                           },
                         ]}
                       >
-                        <AppText
+                        <Title
                           text={recipient.initial}
-                          style={[styles.avatarText, { color: '#443322' }]}
+                          color={recipient.color}
                         />
                       </View>
 
@@ -166,10 +170,8 @@ export default function AssignRecipients({ navigation }) {
                         />
                         <AppText
                           text={recipient.relation}
-                          style={[
-                            styles.recipientRelationText,
-                            { color: '#554433' },
-                          ]}
+                          size="tiny"
+                          color={COLORS.DARK_GRAY}
                         />
                       </View>
 
@@ -179,7 +181,11 @@ export default function AssignRecipients({ navigation }) {
                           styles.checkboxContainerChecked,
                         ]}
                       >
-                        <Ionicons name="checkmark" size={14} color="#C59353" />
+                        <Ionicons
+                          name="checkmark"
+                          size={Responsive.width(14)}
+                          color="#C59353"
+                        />
                       </View>
                     </View>
                   </LinearGradient>
@@ -284,10 +290,7 @@ const styles = StyleSheet.create({
     padding: 0,
   },
   sectionHeaderTitle: {
-    color: '#FFFFFF',
     fontSize: FontSize.small || 12,
-    fontFamily: FONT.TTForseBold,
-    fontWeight: '700',
     letterSpacing: 1.2,
     marginBottom: Spacing.medium || 14,
   },

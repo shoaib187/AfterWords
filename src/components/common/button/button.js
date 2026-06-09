@@ -41,7 +41,12 @@ const Button = React.memo(
         disabled={disabled || loading}
         style={[
           styles.btn,
-          { backgroundColor, opacity: loading || disabled ? 0.6 : 1 },
+          {
+            backgroundColor,
+            opacity: loading || disabled ? 0.6 : 1,
+            borderWidth: isPrimary ? 0 : 1,
+            borderColor: '#BE8C35',
+          },
           style,
         ]}
       >
@@ -60,7 +65,7 @@ const Button = React.memo(
 
             <AppText
               text={title}
-              color={textColor}
+              color={isPrimary ? textColor : COLORS.GOLD}
               style={textStyle}
               size="medium"
             />
