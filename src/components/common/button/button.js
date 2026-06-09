@@ -91,7 +91,6 @@ const styles = StyleSheet.create({
     borderRadius: Radius.full * 4,
     alignItems: 'center',
     justifyContent: 'center',
-    width: '100%',
     height: Responsive.height(45),
   },
 

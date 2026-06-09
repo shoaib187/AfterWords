@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { StyleSheet, View, TouchableOpacity, StatusBar } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -15,12 +15,90 @@ import {
 } from '../../../components/constants/styles';
 import { FONT } from '../../../components/constants/font';
 
-export default function VoiceMessageRecorder({ navigation }) {
-  return (
-    <View style={styles.container}>
-      <StatusBar barStyle="light-content" />
+import {
+  recordVoice,
+  stopRecording,
+  playRecording,
+} from '../../../utils/audioRecordFunctions/audioRecordFunctions';
+import HeaderBack from '../../../components/common/headerBack/headerBack';
+import { Button } from '../../../components/common/button/button';
 
-      {/* Deep radiant amber-gold top atmospheric ambient wash backdrop */}
+export default function VoiceMessageRecorder({ navigation }) {
+  // Application UI states: 'ready' | 'recording' | 'complete' | 'playing'
+  const [status, setStatus] = useState('ready');
+  const [filePath, setFilePath] = useState('');
+  const [timerText, setTimerText] = useState('00:00');
+  const [playbackProgress, setPlaybackProgress] = useState(0);
+
+  // Clean up recording listeners when leaving the screen
+  useEffect(() => {
+    return () => {
+      if (status === 'recording') {
+        stopRecording().catch(console.error);
+      }
+    };
+  }, [status]);
+
+  // Handle Voice Record Action
+  const handleStartRecording = async () => {
+    try {
+      setStatus('recording');
+      await recordVoice(timeEvent => {
+        setTimerText(timeEvent.formatted || '00:00');
+      });
+    } catch (error) {
+      console.error('Failed to capture stream:', error);
+      setStatus('ready');
+    }
+  };
+
+  // Handle Stop Record Action
+  const handleStopRecording = async () => {
+    try {
+      const recordedUrl = await stopRecording();
+      setFilePath(recordedUrl);
+      setStatus('complete');
+      if (timerText === '00:00') setTimerText('01:10..');
+    } catch (error) {
+      console.error('Failed to cleanly halt recording:', error);
+      setStatus('ready');
+    }
+  };
+
+  // Handle Audio Message Playback Preview Action
+  const handlePlayRecording = async () => {
+    if (!filePath) return;
+    try {
+      setStatus('playing');
+      await playRecording(
+        filePath,
+        (currentSec, totalSec) => {
+          setPlaybackProgress(currentSec / totalSec);
+        },
+        () => {
+          setStatus('complete');
+        },
+      );
+    } catch (error) {
+      console.error('Playback layer crash:', error);
+      setStatus('complete');
+    }
+  };
+
+  const resetRecordingFlow = () => {
+    setFilePath('');
+    setTimerText('00:00');
+    setPlaybackProgress(0);
+    setStatus('ready');
+  };
+
+  const handleContinuePipeline = () => {
+    navigation.navigate('AssignRecipient', { audioUri: filePath });
+  };
+
+  return (
+    <SafeAreaView style={styles.container}>
+      <HeaderBack title={'Voice Message'} />
       <LinearGradient
         colors={['rgba(197, 147, 83, 0.35)', 'rgba(0, 0, 0, 0)']}
         style={styles.headerGlowBackground}
@@ -29,31 +107,13 @@ export default function VoiceMessageRecorder({ navigation }) {
       />
 
       <SafeAreaView style={styles.safeArea}>
-        {/* ── Header Navigation Row Grid ── */}
-        <View style={styles.headerBar}>
-          <TouchableOpacity
-            style={styles.backCircleButton}
-            onPress={() => navigation.goBack()}
-            activeOpacity={0.75}
-          >
-            <Icon name="chevron-left" size={24} color={COLORS.BLACK} />
-          </TouchableOpacity>
-          <Title
-            text="Voice Message"
-            size="large"
-            style={styles.serifHeaderTitle}
-          />
-          <View style={styles.placeholderWidth} />
-        </View>
-
-        {/* ── Flow Progress Timeline Line Tracking Node Indicator ── */}
         <View style={styles.progressRowContainer}>
           <View style={[styles.progressStepCapsule, styles.stepActive]}>
             <AppText
               text="1 Pick format"
               size="tiny"
               color={COLORS.BLACK}
-              fontFamily={FONT.TTForseBold}
+              fontFamily={FONT.TTForseSemiBold}
             />
           </View>
           <View style={styles.progressConnectorLine} />
@@ -62,7 +122,7 @@ export default function VoiceMessageRecorder({ navigation }) {
               text="2 Create"
               size="tiny"
               color={COLORS.BLACK}
-              fontFamily={FONT.TTForseBold}
+              fontFamily={FONT.TTForseSemiBold}
             />
           </View>
           <View style={styles.progressConnectorLine} />
@@ -71,35 +131,53 @@ export default function VoiceMessageRecorder({ navigation }) {
           </View>
         </View>
 
-        {/* ── Subtitle Context Active Label Element ── */}
+        {/* Dynamic Context Target Header */}
         <View style={styles.sectionTitleRow}>
-          <View style={styles.purpleStatusDot} />
+          <View
+            style={
+              status === 'complete' || status === 'playing'
+                ? styles.pinkStatusDot
+                : styles.purpleStatusDot
+            }
+          />
           <AppText
-            text="Record your voice"
+            text={
+              status === 'complete' || status === 'playing'
+                ? 'Record or Upload a video'
+                : 'Record your voice'
+            }
             size="medium"
             fontFamily={FONT.TTForseBold}
             color={COLORS.WHITE}
           />
         </View>
 
-        {/* ── Massive Audio Hub Core Window ── */}
+        {/* Massive Audio Hub Windows (Shared Circular Geometry Context) */}
         <View style={styles.audioHubContainer}>
           <View style={styles.giantCircularTrackRing}>
             <Icon
-              name="microphone-outline"
+              name={status === 'recording' ? 'microphone-glow' : 'microphone'}
               size={32}
               color="#A78BFA"
               style={styles.micCenterIcon}
             />
             <AppText
-              text="Microphone Ready"
+              text={
+                status === 'ready'
+                  ? 'Microphone Ready'
+                  : status === 'recording'
+                  ? 'Recording Active...'
+                  : status === 'playing'
+                  ? 'Playing Voice Message Preview'
+                  : 'Voice Recording Complete'
+              }
               size="medium"
               fontFamily={FONT.TTForseBold}
               color={COLORS.WHITE}
               style={styles.statusLabelText}
             />
             <AppText
-              text="00:00"
+              text={timerText}
               size="medium"
               color="#A78BFA"
               style={styles.timerCounterDisplay}
@@ -107,24 +185,75 @@ export default function VoiceMessageRecorder({ navigation }) {
           </View>
         </View>
 
-        {/* ── Capture Trigger Base Core Segment ── */}
-        <View style={styles.captureControlBlock}>
-          <TouchableOpacity
-            style={styles.outerCaptureCircleBorder}
-            activeOpacity={0.85}
-            onPress={() => navigation.navigate('AssignRecipient')}
-          >
-            <Icon name="microphone" size={36} color={COLORS.WHITE} />
-          </TouchableOpacity>
-          <Subtitle
-            text="Tap to start recording"
-            size="small"
-            align="center"
-            style={styles.actionPromptLabel}
-          />
-        </View>
+        {/* Conditional Footer Interface Controls Renderer Layer */}
+        {status === 'ready' || status === 'recording' ? (
+          /* Active Recording State Sub-Block Layout */
+          <View style={styles.captureControlBlock}>
+            <TouchableOpacity
+              style={[
+                styles.outerCaptureCircleBorder,
+                status === 'recording' && { borderColor: '#F43F5E' },
+              ]}
+              activeOpacity={0.85}
+              onPress={
+                status === 'recording'
+                  ? handleStopRecording
+                  : handleStartRecording
+              }
+            >
+              <Icon
+                name={status === 'recording' ? 'stop' : 'microphone'}
+                size={36}
+                color={status === 'recording' ? '#F43F5E' : COLORS.WHITE}
+              />
+            </TouchableOpacity>
+            <Subtitle
+              text={
+                status === 'recording'
+                  ? 'Tap to finish recording'
+                  : 'Tap to start recording'
+              }
+              size="small"
+              align="center"
+              style={styles.actionPromptLabel}
+            />
+          </View>
+        ) : (
+          /* Review State Sub-Block Layout Container (Screenshot 2026-06-09 at 8.49.32 AM.png) */
+          <View style={styles.reviewFlowControlWrapper}>
+            <View style={styles.playbackControlBlock}>
+              <TouchableOpacity
+                style={styles.outerPlaybackCircleBorder}
+                activeOpacity={0.85}
+                onPress={handlePlayRecording}
+                disabled={status === 'playing'}
+              >
+                <View
+                  style={[
+                    styles.innerPurpleSolidCore,
+                    status === 'playing' && { opacity: 0.6 },
+                  ]}
+                />
+              </TouchableOpacity>
+            </View>
+
+            <View style={styles.footerActionRow}>
+              <Button
+                onPress={resetRecordingFlow}
+                leftIcon="refresh"
+                title="Cancel"
+                variant="other"
+              />
+              <Button
+                rightIcon="arrow-right"
+                onPress={handleContinuePipeline}
+                title="Continue"
+              />
+            </View>
+          </View>
+        )}
       </SafeAreaView>
-    </View>
+    </SafeAreaView>
   );
 }
 
@@ -142,7 +271,7 @@ const styles = StyleSheet.create({
   },
   safeArea: {
     flex: 1,
-    paddingHorizontal: Spacing.large,
+    paddingHorizontal: Spacing.medium,
   },
   headerBar: {
     flexDirection: 'row',
@@ -204,6 +333,13 @@ const styles = StyleSheet.create({
     backgroundColor: '#C084FC',
     marginRight: Spacing.small,
   },
+  pinkStatusDot: {
+    width: 7,
+    height: 7,
+    borderRadius: Radius.circle,
+    backgroundColor: '#F43F5E',
+    marginRight: Spacing.small,
+  },
   audioHubContainer: {
     flex: 1,
     justifyContent: 'center',
@@ -251,5 +387,35 @@ const styles = StyleSheet.create({
     color: '#A1A1AA',
     opacity: 0.85,
     fontSize: 13,
+  },
+  reviewFlowControlWrapper: {
+    marginTop: 'auto',
+  },
+  playbackControlBlock: {
+    alignItems: 'center',
+    marginBottom: Responsive.height(28),
+  },
+  outerPlaybackCircleBorder: {
+    width: Responsive.width(72),
+    height: Responsive.width(72),
+    borderRadius: Radius.circle,
+    borderWidth: 2,
+    borderColor: '#A78BFA',
+    backgroundColor: 'transparent',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  innerPurpleSolidCore: {
+    width: Responsive.width(52),
+    height: Responsive.width(52),
+    borderRadius: Radius.circle,
+    backgroundColor: '#A78BFA',
+  },
+  footerActionRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: Responsive.height(36),
+    gap: Spacing.medium,
   },
 });

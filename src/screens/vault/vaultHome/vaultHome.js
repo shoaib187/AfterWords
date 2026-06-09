@@ -14,13 +14,13 @@ import {
   Radius,
   Responsive,
   Spacing,
-} from '../../components/constants/styles';
-import Title from '../../components/typography/title/title';
-import AppText from '../../components/typography/appText/appText';
-import { WelcomCard } from '../../components/home/welcomCard/welcomCard';
-import { COLORS } from '../../components/constants/color';
+} from '../../../components/constants/styles';
+import Title from '../../../components/typography/title/title';
+import AppText from '../../../components/typography/appText/appText';
+import { WelcomCard } from '../../../components/home/welcomCard/welcomCard';
+import { COLORS } from '../../../components/constants/color';
 
-export default function Vault({ navigation }) {
+export default function VaultHome({ navigation }) {
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView
