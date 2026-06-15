@@ -10,15 +10,13 @@ const AuthStack = () => {
       screenOptions={{
         headerShown: false,
         animation: 'slide_from_right',
-        cardStyle: { backgroundColor: '#fff' },
       }}
     >
       <Stack.Screen name="GettingStarted" component={screens.GettingStarted} />
+      <Stack.Screen name="Onboarding" component={screens.OnboardingScreen} />
+      <Stack.Screen name="Register" component={screens.Register} />
+      <Stack.Screen name="Secure" component={screens.SecureVault} />
       <Stack.Screen name="MPin" component={screens.MPin} />
-      <Stack.Screen name="Organization" component={screens.Organization} />
-      <Stack.Screen name="Location" component={screens.Location} />
-      <Stack.Screen name="Login" component={screens.Login} />
-      <Stack.Screen name="EventTypes" component={screens.EventTypes} />
     </Stack.Navigator>
   );
 };

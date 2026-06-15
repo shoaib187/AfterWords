@@ -13,10 +13,8 @@ import { Button } from '../../../components/common/button/button';
 import InputField from '../../../components/common/inputField/inputField';
 import HeaderBack from '../../../components/common/headerBack/headerBack';
 import AppText from '../../../components/typography/appText/appText';
-import GradientBackground from '../../../components/common/gradientBackground/gradientBackground';
 import {
   FontSize,
-  Radius,
   Responsive,
   Spacing,
 } from '../../../components/constants/styles';
@@ -41,10 +39,7 @@ export default function Register({ navigation }) {
     try {
       setLoading(true);
       const payload = { fullName, email, password };
-      console.log('REGISTER PAYLOAD:', payload);
-
-      Alert.alert('Account created successfully');
-      navigation.replace('Login');
+      navigation.replace('Secure');
     } catch (error) {
       Alert.alert('Registration failed');
     } finally {

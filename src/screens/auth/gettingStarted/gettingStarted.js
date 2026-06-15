@@ -1,15 +1,8 @@
 import React from 'react';
-import {
-  StyleSheet,
-  Text,
-  View,
-  TouchableOpacity,
-  StatusBar,
-} from 'react-native';
+import { StyleSheet, View, StatusBar } from 'react-native';
 
 import { SafeAreaView } from 'react-native-safe-area-context';
 import AppText from '../../../components/typography/appText/appText';
-import Title from '../../../components/typography/title/title';
 import {
   FontSize,
   Radius,
@@ -19,7 +12,7 @@ import {
 import { COLORS } from '../../../components/constants/color';
 import { Button } from '../../../components/common/button/button';
 
-export default function GettingStarted() {
+export default function GettingStarted({ navigation }) {
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="light-content" />
@@ -41,8 +34,11 @@ export default function GettingStarted() {
             }
             style={styles.description}
           />
-
-          <Button title="Begin Your Journey" />
+          <Button
+            onPress={() => navigation.navigate('Onboarding')}
+            style={{ width: '100%' }}
+            title="Begin Your Journey"
+          />
         </View>
       </View>
     </SafeAreaView>

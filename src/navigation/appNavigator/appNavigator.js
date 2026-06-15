@@ -1,15 +1,14 @@
 import React from 'react';
-import { StatusBar } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { AuthStack } from '../authStack/authStack';
-
-import { COLORS } from '../../components/constants/color';
+import { useAuth } from '../../configs/authContext/authContext';
+import { TabNavigator } from '../tabNavigator/tabNavigator';
 
 const AppNavigator = () => {
+  const { isAuthenticated } = useAuth();
   return (
     <NavigationContainer>
-      <StatusBar backgroundColor={COLORS.WHITE} barStyle={'dark-content'} />
-      <AuthStack />
+      {!isAuthenticated ? <AuthStack /> : <TabNavigator />}
     </NavigationContainer>
   );
 };

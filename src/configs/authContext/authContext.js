@@ -8,13 +8,10 @@ import React, {
 } from 'react';
 
 import * as Keychain from 'react-native-keychain';
-import { useQueryClient } from '@tanstack/react-query';
 
 const AuthContext = createContext(null);
 
 export const AuthProvider = ({ children }) => {
-  const queryClient = useQueryClient();
-
   const [token, setToken] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -61,14 +58,11 @@ export const AuthProvider = ({ children }) => {
       await Keychain.resetGenericPassword({
         service: 'auth_token',
       });
-
-      queryClient.clear();
-
       setToken(null);
     } catch (error) {
       console.error('Logout Error:', error);
     }
-  }, [queryClient]);
+  }, []);
 
   const value = useMemo(
     () => ({

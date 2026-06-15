@@ -9,7 +9,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import LinearGradient from 'react-native-linear-gradient';
-import DocumentPicker from 'react-native-document-picker';
+import { pick } from '@react-native-documents/picker';
 
 import Title from '../../../components/typography/title/title';
 import AppText from '../../../components/typography/appText/appText';
@@ -29,20 +29,19 @@ export default function DocumentMessage({ navigation }) {
 
   const handlePickDocument = async () => {
     try {
-      const response = await DocumentPicker.pickSingle({
+      const result = await pick({
+        allowMultiSelection: false,
         type: [
-          DocumentPicker.types.pdf,
-          DocumentPicker.types.images,
-          DocumentPicker.types.docx,
+          'application/pdf',
+          'image/*',
+          'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
         ],
       });
-      setSelectedFile(response);
-    } catch (err) {
-      if (DocumentPicker.isCancel(err)) {
-        console.log('User cancelled the file picker');
-      } else {
-        console.error('DocumentPicker Error: ', err);
-      }
+
+      console.log(result);
+      setSelectedFile(result[0]);
+    } catch (error) {
+      console.log(error);
     }
   };
 

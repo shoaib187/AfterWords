@@ -45,7 +45,7 @@ export const onboardingData = [
   },
 ];
 
-export default function OnboardingScreen() {
+export default function OnboardingScreen({ navigation }) {
   const scrollX = useRef(new Animated.Value(0)).current;
   const flatListRef = useRef(null);
   const [index, setIndex] = useState(0);
@@ -59,7 +59,7 @@ export default function OnboardingScreen() {
     if (index < onboardingData.length - 1) {
       flatListRef.current.scrollToIndex({ index: index + 1 });
     } else {
-      console.log('Navigate to App / Auth');
+      navigation.navigate('Register');
     }
   };
 

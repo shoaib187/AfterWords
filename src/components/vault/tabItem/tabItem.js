@@ -4,9 +4,16 @@ import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import LinearGradient from 'react-native-linear-gradient';
 import { COLORS } from '../../constants/color';
 import AppText from '../../typography/appText/appText';
-import { FontSize, Responsive } from '../../constants/styles';
+import { FontSize, Responsive, Spacing } from '../../constants/styles';
 
-export default function TabItem({ filterTabs, selectedTab, setSelectedTab }) {
+const filterTabs = [
+  { id: 'videos', label: 'Videos', icon: 'video-outline' },
+  { id: 'voice', label: 'Voice', icon: 'microphone-outline' },
+  { id: 'photos', label: 'Photos', icon: 'image-outline' },
+  { id: 'documents', label: 'Documents', icon: 'file-document-outline' },
+];
+
+export default function TabItem({ selectedTab, setSelectedTab }) {
   return (
     <View style={styles.tabsHorizontalContainer}>
       {filterTabs.map(tab => {
@@ -53,7 +60,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     width: '100%',
-    marginBottom: Responsive.height(40),
+    marginBottom: Spacing.medium,
   },
   tabItemButton: {
     alignItems: 'center',

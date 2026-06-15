@@ -12,40 +12,30 @@ import { FONT } from '../../../components/constants/font';
 import HeaderBack from '../../../components/common/headerBack/headerBack';
 import SearchBar from '../../../components/common/searchBar/searchBar';
 import TabItem from '../../../components/vault/tabItem/tabItem';
-import VaultItem from '../../../components/vault/vaultItem/vaultItem';
+import StorageCard from '../../../components/vault/storageCard/storageCard';
+import VideosList from '../../../components/vault/videosList/videosList';
+import VoiceList from '../../../components/vault/voiceList/voiceList';
+import PhotosList from '../../../components/vault/photosList/photosList';
+import DocumentList from '../../../components/vault/documentList/documentList';
 
 export default function MyVault({ navigation }) {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedTab, setSelectedTab] = useState('videos');
-  const filterTabs = [
-    { id: 'videos', label: 'Videos', icon: 'video-outline' },
-    { id: 'voice', label: 'Voice', icon: 'microphone-outline' },
-    { id: 'photos', label: 'Photos', icon: 'image-outline' },
-    { id: 'documents', label: 'Documents', icon: 'file-document-outline' },
-  ];
 
-  // Vault Feed Content mocking data layout from Screenshot 2026-06-09 at 10.14.38 AM.png
-  const vaultItems = [
-    {
-      id: '1',
-      title: 'Words for Sofia on her wedding day',
-      recipient: 'Sofia Chen',
-      status: 'Scheduled',
-      date: 'Dec 25, 2026',
-      type: 'videos',
-    },
-    {
-      id: '2',
-      title: 'Christmas message 2026',
-      recipient: 'All recipients',
-      status: 'Scheduled',
-      date: 'Dec 24, 2026',
-      type: 'videos',
-    },
-  ];
+  const renderItem = () => {
+    switch (selectedTab) {
+      case 'videos':
+        return <VideosList />;
+      case 'voice':
+        return <VoiceList />;
+      case 'photos':
+        return <PhotosList />;
+      case 'documents':
+        return <DocumentList />;
 
-  const renderVaultItem = ({ item }) => {
-    return <VaultItem item={item} />;
+      default:
+        break;
+    }
   };
 
   return (
@@ -61,19 +51,9 @@ export default function MyVault({ navigation }) {
 
       <View style={styles.safeAreaContainer}>
         <SearchBar value={searchQuery} onChangeText={searchQuery} />
-        <TabItem
-          filterTabs={filterTabs}
-          selectedTab={selectedTab}
-          setSelectedTab={setSelectedTab}
-        />
-        <FlatList
-          data={vaultItems}
-          keyExtractor={item => item.id}
-          renderItem={renderVaultItem}
-          contentContainerStyle={styles.listContainer}
-          ItemSeparatorComponent={() => <View style={styles.listSeparator} />}
-          showsVerticalScrollIndicator={false}
-        />
+        <TabItem selectedTab={selectedTab} setSelectedTab={setSelectedTab} />
+        <StorageCard />
+        {renderItem()}
       </View>
     </SafeAreaView>
   );

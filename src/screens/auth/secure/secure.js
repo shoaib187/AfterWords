@@ -14,9 +14,11 @@ import AppText from '../../../components/typography/appText/appText';
 import { COLORS } from '../../../components/constants/color';
 import Title from '../../../components/typography/title/title';
 import Subtitle from '../../../components/typography/subtitle/subtitle';
+import { useAuth } from '../../../configs/authContext/authContext';
 
 export default function SecureVault({ navigation }) {
   const [isBiometricEnabled, setIsBiometricEnabled] = useState(true);
+  const { saveToken } = useAuth();
 
   return (
     <View style={styles.container}>
@@ -71,7 +73,10 @@ export default function SecureVault({ navigation }) {
         </View>
 
         <View style={styles.bottomWrapper}>
-          <Button title="Enable Face ID" />
+          <Button
+            onPress={() => saveToken('MY_NAME_IS_SHOAIB')}
+            title="Enable Face ID"
+          />
         </View>
       </SafeAreaView>
     </View>

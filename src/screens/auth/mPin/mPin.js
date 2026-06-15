@@ -7,12 +7,11 @@ import {
   Platform,
   TouchableOpacity,
   Animated,
-  Text,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
-import AppGradient from '../../../components/gradientBackground/gradientBackground';
+import AppGradient from '../../../components/common/gradientBackground/gradientBackground';
 import HeaderBack from '../../../components/common/headerBack/headerBack';
 import InputField from '../../../components/common/inputField/inputField';
 import { COLORS } from '../../../components/constants/color';
