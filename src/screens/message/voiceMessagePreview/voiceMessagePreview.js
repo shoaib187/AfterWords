@@ -89,8 +89,19 @@ export default function VoiceMessagePreview({ navigation, route }) {
 
         {/* ── Persistent Multi-Step Footer Control Actions ── */}
         <View style={styles.footerActionRow}>
-          <Button title="Redo" leftIcon="refresh" variant={'other'} />
-          <Button title="Next" rightIcon="arrow-right" />
+          <Button
+            style={{ flex: 1 }}
+            title="Redo"
+            leftIcon="refresh"
+            variant={'other'}
+            onPress={() => navigation.navigate('AssignRecipients')}
+          />
+          <Button
+            onPress={() => navigation.navigate('AssignRecipients')}
+            style={{ flex: 1 }}
+            title="Next"
+            rightIcon="arrow-right"
+          />
         </View>
       </SafeAreaView>
     </SafeAreaView>

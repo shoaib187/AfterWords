@@ -99,7 +99,10 @@ export default function ReviewSummary({ navigation, route }) {
         </View>
       </LinearGradient>
       <View style={{ padding: Spacing.medium }}>
-        <Button title="Lock Secure & Save Message" />
+        <Button
+          onPress={() => navigation.navigate('MemorySealedSuccess')}
+          title="Lock Secure & Save Message"
+        />
       </View>
     </SafeAreaView>
   );

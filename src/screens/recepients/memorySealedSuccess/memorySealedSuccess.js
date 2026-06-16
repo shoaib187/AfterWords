@@ -1,19 +1,17 @@
 import React from 'react';
-import { StyleSheet, View, TouchableOpacity, StatusBar } from 'react-native';
+import { StyleSheet, View, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import LinearGradient from 'react-native-linear-gradient';
 
 import Title from '../../../components/typography/title/title';
 import Subtitle from '../../../components/typography/subtitle/subtitle';
-import AppText from '../../../components/typography/appText/appText';
 import { COLORS } from '../../../components/constants/color';
 import {
   Radius,
   Responsive,
   Spacing,
 } from '../../../components/constants/styles';
-import { FONT } from '../../../components/constants/font';
 import { Button } from '../../../components/common/button/button';
 
 export default function MemorySealedSuccess({ navigation }) {
@@ -26,7 +24,7 @@ export default function MemorySealedSuccess({ navigation }) {
         end={{ x: 0.5, y: 0.55 }}
       />
 
-      <SafeAreaView style={styles.safeArea}>
+      <View style={styles.safeArea}>
         <View style={styles.centerContent}>
           <View style={styles.goldSealBadge}>
             <Ionicons
@@ -46,10 +44,18 @@ export default function MemorySealedSuccess({ navigation }) {
         </View>
 
         <View style={styles.footerActionGroup}>
-          <Button title="Continue Another" rightIcon="arrow-right" />
-          <Button title="Go to My Vault" variant="other" />
+          <Button
+            onPress={() => navigation.navigate('Home')}
+            title="Continue Another"
+            rightIcon="arrow-right"
+          />
+          <Button
+            onPress={() => navigation.navigate('Home')}
+            title="Go to My Vault"
+            variant="other"
+          />
         </View>
-      </SafeAreaView>
+      </View>
     </SafeAreaView>
   );
 }
@@ -69,7 +75,6 @@ const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
     paddingHorizontal: Spacing.large,
-    justifyContent: 'space-between',
   },
   centerContent: {
     flex: 1,

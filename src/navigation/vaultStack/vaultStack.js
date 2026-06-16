@@ -12,7 +12,11 @@ const VaultStack = () => {
         animation: 'slide_from_right',
       }}
     >
-      <Stack.Screen name="VaultHome" component={screens.VaultHome} />
+      <Stack.Screen name="VaultHome" component={screens.MyVault} />
+      <Stack.Screen
+        name="VaultItemDetail"
+        component={screens.VaultItemDetail}
+      />
     </Stack.Navigator>
   );
 };

@@ -4,6 +4,7 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import { COLORS } from '../../constants/color';
 import { FontSize, Radius, Responsive, Spacing } from '../../constants/styles';
 import Title from '../../typography/title/title';
+import { useNavigation } from '@react-navigation/native';
 
 export default function HeaderBack({
   title,
@@ -11,10 +12,15 @@ export default function HeaderBack({
   showBack = true,
   showUsers = false,
 }) {
+  const navigation = useNavigation();
   return (
     <View style={styles.container}>
       {showBack && (
-        <TouchableOpacity style={styles.backArrow} activeOpacity={0.7}>
+        <TouchableOpacity
+          onPress={() => navigation.goBack()}
+          style={styles.backArrow}
+          activeOpacity={0.7}
+        >
           <Ionicons
             name="chevron-back"
             size={FontSize.large + 2}

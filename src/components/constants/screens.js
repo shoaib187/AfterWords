@@ -35,6 +35,9 @@ import SecurityAndPrivacy from '../../screens/profile/securityAndPrivacy/securit
 import Subscription from '../../screens/profile/subscription/subscription';
 import TrustedDelegates from '../../screens/profile/trustedDelegates/trustedDelegates';
 import VaultHome from '../../screens/vault/vaultHome/vaultHome';
+import GiftsScreen from '../../screens/inbox/giftsScreen/giftsScreen';
+import MessageDetails from '../../screens/inbox/messageDetails/messageDetails';
+import RecipientDirectory from '../../screens/profile/recipientDirectory/recipientDirectory';
 
 export const screens = {
   // Auth
@@ -74,6 +77,9 @@ export const screens = {
   // Inbox
   LegacyInbox,
   SecureAccess,
+  GiftsScreen,
+  MessageDetails,
+  RecipientDirectory,
 
   // Profile
   AccountRecovery,

@@ -36,7 +36,7 @@ export default function PhotoMessagePreview({ navigation, route }) {
   const photoUri = route?.params?.photoUri || null;
 
   const handleContinue = () => {
-    navigation.navigate('AssignRecipient', {
+    navigation.navigate('AssignRecipients', {
       photoUri,
       metaData: { people, date, location, story },
     });

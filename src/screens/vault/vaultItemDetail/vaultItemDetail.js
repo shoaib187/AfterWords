@@ -1,5 +1,11 @@
 import React from 'react';
-import { StyleSheet, View, TouchableOpacity, ScrollView } from 'react-native';
+import {
+  StyleSheet,
+  View,
+  TouchableOpacity,
+  ScrollView,
+  Alert,
+} from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import LinearGradient from 'react-native-linear-gradient';
@@ -15,11 +21,21 @@ import {
 } from '../../../components/constants/styles';
 import { FONT } from '../../../components/constants/font';
 import HeaderBack from '../../../components/common/headerBack/headerBack';
+import MemoryEditModal from '../../../components/vault/memoryEditModal/memoryEditModal';
+import DeleteConfirmationModal from '../../../components/common/deleteModal/deleteModal';
 
 export default function VaultItemDetail({ navigation, route }) {
-  const handleEdit = () => console.log('Edit pressed');
+  const [visible, setVisible] = React.useState(false);
+  const [showDelete, setShowDelete] = React.useState(false);
+  const handleEdit = () => {
+    console.log('Edit pressed');
+    setVisible(true);
+  };
   const handleReassign = () => console.log('Re-assign pressed');
-  const handleDelete = () => console.log('Delete pressed');
+  const handleDelete = () => {
+    console.log('Delete pressed');
+    setShowDelete(true);
+  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -225,6 +241,16 @@ export default function VaultItemDetail({ navigation, route }) {
           />
         </TouchableOpacity>
       </SafeAreaView>
+
+      <MemoryEditModal visible={visible} onClose={() => setVisible(!visible)} />
+      <DeleteConfirmationModal
+        visible={showDelete}
+        onClose={() => setShowDelete(false)}
+        itemName="Selected Item Name"
+        onDelete={() => {
+          Alert.alert('Delete', 'Item Deleted successfully');
+        }}
+      />
     </SafeAreaView>
   );
 }

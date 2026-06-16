@@ -1,50 +1,26 @@
 import React from 'react';
-import { View, StyleSheet, Platform } from 'react-native';
-import { BlurView } from '@react-native-community/blur';
+import { StyleSheet } from 'react-native';
+import LinearGradient from 'react-native-linear-gradient';
+import { Responsive } from '../../constants/styles';
 
-export default function GradientBackground({
-  size = 200,
-  color = '#DCA257',
-  opacity = 0.6,
-  style,
-}) {
-  const containerSize = size * 4;
-
+export default function GradientBackground({}) {
   return (
-    <View
-      pointerEvents="none"
-      style={[
-        styles.container,
-        {
-          width: containerSize,
-          height: containerSize,
-        },
-        style,
-      ]}
-    >
-      <View
-        style={{
-          width: size,
-          height: size,
-          borderRadius: size / 2,
-          backgroundColor: color,
-        }}
-      />
-
-      <BlurView
-        style={[StyleSheet.absoluteFill, {}]}
-        blurType="dark"
-        blurAmount={Platform.OS === 'ios' ? 30 : 40}
-      />
-    </View>
+    <LinearGradient
+      colors={['rgba(197, 147, 83, 0.35)', 'rgba(0, 0, 0, 0)']}
+      style={styles.headerGlowBackground}
+      start={{ x: 0.5, y: 0 }}
+      end={{ x: 0.5, y: 1 }}
+    />
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
+  headerGlowBackground: {
     position: 'absolute',
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: 'black',
+    top: 0,
+    left: 0,
+    right: 0,
+    height: Responsive.height(260),
+    zIndex: 0,
   },
 });

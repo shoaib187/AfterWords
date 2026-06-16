@@ -49,7 +49,7 @@ export default function PhotoMessage({ navigation }) {
       console.log('Please select a photo before continuing');
       return;
     }
-    navigation.navigate('AssignRecipient', { photoUri });
+    navigation.navigate('PhotoMessagePreview', { photoUri });
   };
 
   return (

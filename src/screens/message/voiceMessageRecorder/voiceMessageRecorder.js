@@ -93,7 +93,7 @@ export default function VoiceMessageRecorder({ navigation }) {
   };
 
   const handleContinuePipeline = () => {
-    navigation.navigate('AssignRecipient', { audioUri: filePath });
+    navigation.navigate('VoiceMessagePreview');
   };
 
   return (
@@ -243,11 +243,13 @@ export default function VoiceMessageRecorder({ navigation }) {
                 leftIcon="refresh"
                 title="Cancel"
                 variant="other"
+                style={{ flex: 1 }}
               />
               <Button
                 rightIcon="arrow-right"
                 onPress={handleContinuePipeline}
                 title="Continue"
+                style={{ flex: 1 }}
               />
             </View>
           </View>

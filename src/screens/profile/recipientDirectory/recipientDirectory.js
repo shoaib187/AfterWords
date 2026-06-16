@@ -22,6 +22,7 @@ import { FONT } from '../../../components/constants/font';
 import HeaderBack from '../../../components/common/headerBack/headerBack';
 import { Button } from '../../../components/common/button/button';
 import Title from '../../../components/typography/title/title';
+import SearchBar from '../../../components/common/searchBar/searchBar';
 
 const INITIAL_RECIPIENTS = [
   {
@@ -61,7 +62,7 @@ const INITIAL_RECIPIENTS = [
   },
 ];
 
-export default function AssignRecipients({ navigation }) {
+export default function RecipientDirectory({ navigation }) {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedIds, setSelectedIds] = useState(['1', '2']);
 
@@ -82,34 +83,16 @@ export default function AssignRecipients({ navigation }) {
         end={{ x: 0.5, y: 1 }}
       />
 
-      <HeaderBack title={'Assign to'} />
+      <HeaderBack title={'Recipient Directory'} />
       <ScrollView
         contentContainerStyle={styles.scrollContainer}
         showsVerticalScrollIndicator={false}
       >
-        <View style={styles.searchBarContainer}>
-          <Ionicons
-            name="search-outline"
-            size={Responsive.width(18)}
-            color="rgba(255, 255, 255, 0.4)"
-            style={styles.searchIcon}
-          />
-          <TextInput
-            style={styles.searchInputField}
-            placeholder="Search your Contents..."
-            placeholderTextColor="rgba(255, 255, 255, 0.4)"
-            value={searchQuery}
-            onChangeText={setSearchQuery}
-            keyboardAppearance="dark"
-          />
-        </View>
+        <SearchBar />
 
-        {/* ── Section Title Label ── */}
         <AppText text="SAVED RECIPIENTS" style={styles.sectionHeaderTitle} />
-
-        {/* ── Action: Add New Recipient Trigger Button ── */}
         <TouchableOpacity
-          onPress={() => navigation.navigate('NewRecepient')}
+          onPress={() => navigation.navigate('NewRecipient')}
           style={styles.addNewRecipientRow}
           activeOpacity={0.8}
         >
@@ -126,13 +109,10 @@ export default function AssignRecipients({ navigation }) {
           />
         </TouchableOpacity>
 
-        {/* ── Dynamic Recipients Card List Loop ── */}
         <View style={styles.recipientsListWrapper}>
           {INITIAL_RECIPIENTS.filter(r =>
             r.name.toLowerCase().includes(searchQuery.toLowerCase()),
           ).map(recipient => {
-            const isChecked = selectedIds.includes(recipient.id);
-
             return (
               <TouchableOpacity
                 key={recipient.id}
@@ -140,108 +120,44 @@ export default function AssignRecipients({ navigation }) {
                 onPress={() => toggleRecipient(recipient.id)}
                 style={styles.cardTouchWrapper}
               >
-                {/* Selected items get a warm gradient fill container, unselected remain dark outline */}
-                {isChecked ? (
-                  <LinearGradient
-                    colors={['#F5EAD9', '#D5A760']}
-                    start={{ x: 0, y: 0 }}
-                    end={{ x: 1, y: 1 }}
-                    style={styles.recipientCardContainer}
-                  >
-                    <View style={styles.cardInnerFlexRow}>
-                      <View
-                        style={[
-                          styles.avatarCircle,
-                          {
-                            borderColor: 'rgba(0,0,0,0.1)',
-                            backgroundColor: 'rgba(255,255,255,0.4)',
-                          },
-                        ]}
-                      >
-                        <Title
-                          text={recipient.initial}
-                          color={recipient.color}
-                        />
-                      </View>
-
-                      <View style={styles.recipientInfoTextContainer}>
-                        <AppText
-                          text={recipient.name}
-                          style={[
-                            styles.recipientNameText,
-                            { color: '#1A1105' },
-                          ]}
-                        />
-                        <AppText
-                          text={recipient.relation}
-                          size="tiny"
-                          color={COLORS.DARK_GRAY}
-                        />
-                      </View>
-
-                      <View
-                        style={[
-                          styles.checkboxContainer,
-                          styles.checkboxContainerChecked,
-                        ]}
-                      >
-                        <Ionicons
-                          name="checkmark"
-                          size={Responsive.width(14)}
-                          color="#C59353"
-                        />
-                      </View>
+                <LinearGradient
+                  colors={['#F5EAD9', '#D5A760']}
+                  start={{ x: 0, y: 0 }}
+                  end={{ x: 1, y: 1 }}
+                  style={styles.recipientCardContainer}
+                >
+                  <View style={styles.cardInnerFlexRow}>
+                    <View
+                      style={[
+                        styles.avatarCircle,
+                        {
+                          borderColor: 'rgba(0,0,0,0.1)',
+                          backgroundColor: 'rgba(255,255,255,0.4)',
+                        },
+                      ]}
+                    >
+                      <Title text={recipient.initial} color={recipient.color} />
                     </View>
-                  </LinearGradient>
-                ) : (
-                  <View
-                    style={[
-                      styles.recipientCardContainer,
-                      styles.recipientCardUnselected,
-                    ]}
-                  >
-                    <View style={styles.cardInnerFlexRow}>
-                      <View
-                        style={[
-                          styles.avatarCircle,
-                          { borderColor: recipient.color + '40' },
-                        ]}
-                      >
-                        <AppText
-                          text={recipient.initial}
-                          style={[
-                            styles.avatarText,
-                            { color: recipient.color },
-                          ]}
-                        />
-                      </View>
 
-                      <View style={styles.recipientInfoTextContainer}>
-                        <AppText
-                          text={recipient.name}
-                          style={[
-                            styles.recipientNameText,
-                            { color: '#FFFFFF' },
-                          ]}
-                        />
-                        <AppText
-                          text={recipient.relation}
-                          style={[
-                            styles.recipientRelationText,
-                            { color: '#888888' },
-                          ]}
-                        />
-                      </View>
-
-                      <View
-                        style={[
-                          styles.checkboxContainer,
-                          styles.checkboxContainerUnselected,
-                        ]}
+                    <View style={styles.recipientInfoTextContainer}>
+                      <AppText
+                        text={recipient.name}
+                        style={[styles.recipientNameText, { color: '#1A1105' }]}
+                      />
+                      <AppText
+                        text={recipient.relation}
+                        size="tiny"
+                        color={COLORS.DARK_GRAY}
                       />
                     </View>
+
+                    <Ionicons
+                      name="edit"
+                      size={Responsive.width(14)}
+                      color="#C59353"
+                    />
                   </View>
-                )}
+                </LinearGradient>
               </TouchableOpacity>
             );
           })}
@@ -371,8 +287,7 @@ const styles = StyleSheet.create({
   },
   recipientNameText: {
     fontSize: FontSize.medium || 15,
-    fontFamily: FONT.TTForseBold,
-    fontWeight: '700',
+    fontFamily: FONT.TTForseSemiBold,
     marginBottom: 2,
   },
   recipientRelationText: {

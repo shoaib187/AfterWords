@@ -52,7 +52,7 @@ export default function FileDetails({ navigation, route }) {
   };
 
   const handleContinue = () => {
-    navigation.navigate('AssignRecipient', {
+    navigation.navigate('AssignRecipients', {
       file: incomingFile,
       metadata: {
         customName: documentName,

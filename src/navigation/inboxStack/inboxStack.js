@@ -13,6 +13,8 @@ const InboxStack = () => {
       }}
     >
       <Stack.Screen name="LegacyInbox" component={screens.LegacyInbox} />
+      <Stack.Screen name="GiftsScreen" component={screens.GiftsScreen} />
+      <Stack.Screen name="MessageDetails" component={screens.MessageDetails} />
     </Stack.Navigator>
   );
 };

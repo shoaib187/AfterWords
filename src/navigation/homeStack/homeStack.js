@@ -12,7 +12,7 @@ const HomeStack = () => {
         animation: 'slide_from_right',
       }}
     >
-      <Stack.Screen name="HomeScreen" component={screens.Home} />
+      <Stack.Screen name="HomeScreen" component={screens.VaultHome} />
     </Stack.Navigator>
   );
 };

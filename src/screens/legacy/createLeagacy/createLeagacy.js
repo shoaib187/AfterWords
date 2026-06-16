@@ -23,6 +23,7 @@ const PRESERVE_OPTIONS = [
     iconName: 'videocam',
     iconColor: '#FF6B6B',
     bgColor: 'rgba(255, 107, 107, 0.08)',
+    route: 'VideoMessageRecorder',
   },
   {
     id: 'voice',
@@ -31,6 +32,7 @@ const PRESERVE_OPTIONS = [
     iconName: 'mic',
     iconColor: '#A55EEA',
     bgColor: 'rgba(165, 94, 234, 0.08)',
+    route: 'VoiceMessageRecorder',
   },
   {
     id: 'photo',
@@ -39,6 +41,7 @@ const PRESERVE_OPTIONS = [
     iconName: 'images',
     iconColor: '#26DE81',
     bgColor: 'rgba(38, 222, 129, 0.08)',
+    route: 'PhotoMessage',
   },
   {
     id: 'document',
@@ -47,6 +50,7 @@ const PRESERVE_OPTIONS = [
     iconName: 'document-text',
     iconColor: '#FED330',
     bgColor: 'rgba(254, 211, 48, 0.08)',
+    route: 'DocumentMessage',
   },
 ];
 
@@ -76,7 +80,9 @@ export default function CreateLegacy({ navigation }) {
               key={option.id}
               activeOpacity={0.8}
               style={styles.gridCard}
-              onPress={() => console.log(`${option.title} selected`)}
+              onPress={() => {
+                navigation.navigate(option?.route);
+              }}
             >
               {/* Specific unique colored asset bounding boxes */}
               <View

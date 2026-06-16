@@ -1,30 +1,19 @@
 import React from 'react';
-import {
-  Modal,
-  View,
-  Text,
-  StyleSheet,
-  ActivityIndicator,
-  TouchableOpacity,
-  StatusBar,
-} from 'react-native';
-import Ionicons from 'react-native-vector-icons/Ionicons';
+import { StyleSheet, View, TouchableOpacity, Modal } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
-
-import { COLORS } from '../../constants/color';
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import Title from '../../typography/title/title';
 import { FONT } from '../../constants/font';
-import { FontSize, Radius, Responsive, Spacing } from '../../constants/styles';
+import AppText from '../../typography/appText/appText';
+import { Radius, Responsive, Spacing } from '../../constants/styles';
+import { COLORS } from '../../constants/color';
 
-const ConfirmModal = ({
+export default function DeleteConfirmationModal({
   visible,
   onClose,
-  title = 'Delete Account?',
-  description = 'This action is permanent and cannot be undone.',
-  buttonText = 'Delete',
-  accentColor = '#FF3B30',
-  loading = false,
-  onConfirm,
-}) => {
+  onDelete,
+  itemName = 'Words for Sofia on her wedding day',
+}) {
   return (
     <Modal
       visible={visible}
@@ -32,138 +21,133 @@ const ConfirmModal = ({
       animationType="fade"
       onRequestClose={onClose}
     >
-      <View style={styles.overlay}>
-        <StatusBar backgroundColor="rgba(0,0,0,0.7)" />
+      <View style={styles.modalOverlayBackdrop}>
+        {/* Tap background to cancel safely */}
+        <TouchableOpacity
+          style={styles.dismissOverlayTouch}
+          activeOpacity={1}
+          onPress={onClose}
+        />
 
-        {/* Main Card with Gradient Border/Background */}
+        {/* Premium Gold Substrate Alert Panel Wrapper */}
         <LinearGradient
-          colors={['#1E1E1E', '#000000']}
-          style={styles.modalContainer}
+          colors={['#F2E9D2', '#C09043']}
+          style={styles.alertCardContainer}
+          start={{ x: 0.1, y: 0 }}
+          end={{ x: 0.9, y: 1 }}
         >
-          {/* Subtle decorative gold accent top border */}
-          <LinearGradient
-            colors={['#EEDBB2', '#C59353']}
-            style={styles.topAccentBar}
+          {/* Warning Icon Badge Container */}
+          <View style={styles.warningBadgeCircle}>
+            <Icon name="alert-outline" size={24} color="#DC2626" />
+          </View>
+
+          {/* Heading Confirmation Query */}
+          <Title
+            text="Delete this item?"
+            size="large"
+            color={COLORS.WHITE}
+            align="center"
+            style={styles.headingTitleOffset}
           />
 
-          <View style={styles.content}>
-            <View
-              style={[
-                styles.iconWrapper,
-                { backgroundColor: `${accentColor}15` },
-              ]}
+          {/* Descriptive Warn text utilizing verbatim layout constraints */}
+          <View style={styles.descriptionTextStack}>
+            <AppText
+              text={` "Selected Item" will be permanently removed from your vault. This cannot be undone.`}
+              size="medium"
+              fontFamily={FONT.TTForseRegular}
+              align="center"
+              color={COLORS.DARK_GRAY}
+            />
+          </View>
+
+          {/* Side-by-Side Action Interactive Buttons Row */}
+          <View style={styles.actionButtonsInlineRow}>
+            <TouchableOpacity
+              style={styles.cancelWhiteButton}
+              activeOpacity={0.85}
+              onPress={onClose}
             >
-              <Ionicons
-                name="trash"
-                size={Responsive.width(30)}
-                color={accentColor}
-              />
-            </View>
+              <AppText text="Cancel" size="medium" color="#71717A" />
+            </TouchableOpacity>
 
-            <Text style={[styles.title, { color: COLORS.WHITE }]}>{title}</Text>
-            <Text style={styles.description}>{description}</Text>
-
-            <View style={styles.buttonRow}>
-              <TouchableOpacity style={styles.cancelButton} onPress={onClose}>
-                <Text style={styles.cancelText}>Cancel</Text>
-              </TouchableOpacity>
-
-              <TouchableOpacity
-                style={[styles.confirmButton, { backgroundColor: accentColor }]}
-                onPress={onConfirm}
-              >
-                {loading ? (
-                  <ActivityIndicator color="#FFF" />
-                ) : (
-                  <Text style={styles.confirmText}>{buttonText}</Text>
-                )}
-              </TouchableOpacity>
-            </View>
+            <TouchableOpacity
+              style={styles.destructiveDeleteButton}
+              activeOpacity={0.85}
+              onPress={onDelete}
+            >
+              <AppText text="Delete" size="medium" color="#991B1B" />
+            </TouchableOpacity>
           </View>
         </LinearGradient>
       </View>
     </Modal>
   );
-};
+}
 
 const styles = StyleSheet.create({
-  overlay: {
+  modalOverlayBackdrop: {
     flex: 1,
     backgroundColor: 'rgba(0, 0, 0, 0.7)',
     justifyContent: 'center',
     alignItems: 'center',
-    padding: Spacing.medium,
+    paddingHorizontal: Spacing.large,
   },
-  modalContainer: {
+  dismissOverlayTouch: {
+    position: 'absolute',
+    top: 0,
+    bottom: 0,
+    left: 0,
+    right: 0,
+  },
+  alertCardContainer: {
     width: '100%',
-    borderRadius: 32,
-    padding: 1, // Width of the gradient border
-  },
-  topAccentBar: {
-    height: 3,
-    width: '40%',
-    alignSelf: 'center',
-    borderRadius: 2,
-    marginTop: 10,
-  },
-  content: {
-    backgroundColor: '#0A0A0A',
-    borderRadius: 31,
-    padding: Spacing.large,
+    borderRadius: 36,
+    paddingHorizontal: Spacing.large + 4,
+    paddingTop: Spacing.xLarge + 12,
+    paddingBottom: Spacing.large + 6,
     alignItems: 'center',
-    gap: Spacing.medium,
   },
-  iconWrapper: {
-    width: 72,
-    height: 72,
-    borderRadius: 999,
+  warningBadgeCircle: {
+    width: Responsive.width(54),
+    height: Responsive.width(54),
+    borderRadius: Radius.circle,
+    backgroundColor: 'rgba(220, 38, 38, 0.08)',
     justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: Spacing.small,
+    marginBottom: Spacing.medium,
   },
-  title: {
-    fontSize: FontSize.xlarge,
-    fontFamily: FONT.SpaceGroteskBold,
-    textAlign: 'center',
+  headingTitleOffset: {
+    marginBottom: Spacing.medium - 4,
   },
-  description: {
-    textAlign: 'center',
-    lineHeight: 22,
-    color: '#A1A1AA',
-    fontSize: FontSize.medium,
-    fontFamily: FONT.SpaceGroteskRegular,
-    marginBottom: Spacing.small,
+  descriptionTextStack: {
+    paddingHorizontal: Spacing.small,
+    marginBottom: Spacing.xLarge + 4,
+    lineHeight: 20,
   },
-  buttonRow: {
+  actionButtonsInlineRow: {
     flexDirection: 'row',
-    gap: Spacing.medium,
+    justifyContent: 'space-between',
     width: '100%',
   },
-  cancelButton: {
+  cancelWhiteButton: {
     flex: 1,
-    height: Responsive.height(50),
-    borderRadius: Radius.circle,
+    backgroundColor: '#FFFFFF',
+    height: Responsive.height(46),
+    borderRadius: Radius.large,
     justifyContent: 'center',
     alignItems: 'center',
+    marginRight: Spacing.small + 2,
+  },
+  destructiveDeleteButton: {
+    flex: 1,
+    backgroundColor: 'rgba(219, 107, 72, 0.55)', // Custom styled translucent coral tone
+    height: Responsive.height(46),
+    borderRadius: Radius.large,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginLeft: Spacing.small + 2,
     borderWidth: 1,
-    borderColor: '#3F3F46',
-  },
-  cancelText: {
-    color: '#FFF',
-    fontFamily: FONT.SpaceGroteskMedium,
-  },
-  confirmButton: {
-    flex: 1,
-    height: Responsive.height(50),
-    borderRadius: Radius.circle,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  confirmText: {
-    color: '#FFF',
-    fontSize: FontSize.medium,
-    fontFamily: FONT.SpaceGroteskBold,
+    borderColor: 'rgba(153, 27, 27, 0.15)',
   },
 });
-
-export default ConfirmModal;

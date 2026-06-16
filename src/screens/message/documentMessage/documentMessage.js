@@ -5,6 +5,7 @@ import {
   TouchableOpacity,
   StatusBar,
   ScrollView,
+  Alert,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -47,10 +48,10 @@ export default function DocumentMessage({ navigation }) {
 
   const handleContinue = () => {
     if (!selectedFile) {
-      console.log('Please choose a file before continuing');
+      Alert.alert('Please choose a file before continuing');
       return;
     }
-    navigation.navigate('AssignRecipient', { documentFile: selectedFile });
+    navigation.navigate('FileDetails', { documentFile: selectedFile });
   };
 
   return (

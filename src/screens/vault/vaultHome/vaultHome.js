@@ -19,6 +19,7 @@ import Title from '../../../components/typography/title/title';
 import AppText from '../../../components/typography/appText/appText';
 import { WelcomCard } from '../../../components/home/welcomCard/welcomCard';
 import { COLORS } from '../../../components/constants/color';
+import GradientBackground from '../../../components/common/gradientBackground/gradientBackground';
 
 export default function VaultHome({ navigation }) {
   return (
@@ -27,6 +28,7 @@ export default function VaultHome({ navigation }) {
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
       >
+        <GradientBackground />
         <WelcomCard />
 
         <View style={styles.emptyStateContainer}>

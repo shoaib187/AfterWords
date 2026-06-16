@@ -63,6 +63,7 @@ export default function Home({ navigation }) {
         tension: 50,
       }),
     ]).start();
+    navigation.navigate('CreateLegacy');
   };
 
   return (

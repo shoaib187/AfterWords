@@ -5,9 +5,10 @@ import AppText from '../../typography/appText/appText';
 import { COLORS } from '../../constants/color';
 import { FontSize, Responsive, Spacing } from '../../constants/styles';
 import { FONT } from '../../constants/font';
+import { useNavigation } from '@react-navigation/native';
 
 export default function VaultItem({ item, type = 'video' }) {
-  // Dynamic Type Configuration Matrix
+  const navigation = useNavigation();
   const typeConfig = (() => {
     switch (type) {
       case 'voice':
@@ -38,7 +39,11 @@ export default function VaultItem({ item, type = 'video' }) {
   })();
 
   return (
-    <TouchableOpacity style={styles.vaultItemRow} activeOpacity={0.75}>
+    <TouchableOpacity
+      onPress={() => navigation.navigate('VaultItemDetail')}
+      style={styles.vaultItemRow}
+      activeOpacity={0.75}
+    >
       {/* Container badge dynamically colored based on asset type */}
       <View
         style={[
