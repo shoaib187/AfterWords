@@ -37,9 +37,10 @@ export default function PhotoMessagePreview({ navigation, route }) {
   const photoUri = route?.params?.photoUri || null;
 
   const handleContinue = () => {
-    navigation.navigate('AssignRecipients', {
+    navigation.navigate('AddMessageDetails', {
       photoUri,
       metaData: { people, date, location, story },
+      messageType: 'photo',
     });
   };
 
@@ -49,14 +50,10 @@ export default function PhotoMessagePreview({ navigation, route }) {
       <HeaderBack title={'New Photo Memory'} />
 
       <View style={styles.safeAreaContainer}>
-        {/* ScrollView handles device context comfortably when keyboard pops up */}
         <ScrollView
           showsVerticalScrollIndicator={false}
           contentContainerStyle={styles.scrollContent}
         >
-          <Stepper />
-
-          {/* Action/Format Context Label */}
           <View style={styles.sectionTitleRow}>
             <View style={styles.purpleStatusDot} />
             <AppText
@@ -79,87 +76,6 @@ export default function PhotoMessagePreview({ navigation, route }) {
                 style={styles.previewImage}
               />
             )}
-          </View>
-
-          <Title
-            text="The Details"
-            size="large"
-            style={styles.detailsHeading}
-          />
-
-          {/* Field: Who is in this memory */}
-          <View style={styles.inputFieldBlock}>
-            <AppText
-              text="Who is in this memory?"
-              size="small"
-              color={COLORS.WHITE}
-              style={styles.fieldLabel}
-            />
-            <TextInput
-              style={styles.singleLineInput}
-              placeholder="Type name and press enter...."
-              placeholderTextColor="rgba(255, 255, 255, 0.4)"
-              value={people}
-              onChangeText={setPeople}
-              keyboardAppearance="dark"
-            />
-          </View>
-
-          {/* Row layout combining Date and Location fields */}
-          <View style={styles.splitRowInputs}>
-            <View style={styles.halfWidthBlock}>
-              <AppText
-                text="When was this?"
-                size="small"
-                color={COLORS.WHITE}
-                style={styles.fieldLabel}
-              />
-              <TextInput
-                style={styles.singleLineInput}
-                placeholder="m\d\y"
-                placeholderTextColor="rgba(255, 255, 255, 0.4)"
-                value={date}
-                onChangeText={setDate}
-                keyboardAppearance="dark"
-              />
-            </View>
-
-            <View style={styles.halfWidthBlock}>
-              <AppText
-                text="Where was this taken?"
-                size="small"
-                color={COLORS.WHITE}
-                style={styles.fieldLabel}
-              />
-              <TextInput
-                style={styles.singleLineInput}
-                placeholder="e.g with my spouse"
-                placeholderTextColor="rgba(255, 255, 255, 0.4)"
-                value={location}
-                onChangeText={setLocation}
-                keyboardAppearance="dark"
-              />
-            </View>
-          </View>
-
-          {/* Field: The Story Description Area */}
-          <View style={styles.inputFieldBlock}>
-            <AppText
-              text="The Story"
-              size="small"
-              color={COLORS.WHITE}
-              style={styles.fieldLabel}
-            />
-            <TextInput
-              style={styles.multilineStoryInput}
-              placeholder="What is the story behind the moment............"
-              placeholderTextColor="rgba(255, 255, 255, 0.4)"
-              multiline
-              textAlignVertical="top"
-              value={story}
-              onChangeText={setStory}
-              keyboardAppearance="dark"
-            />
           </View>
         </ScrollView>
       </View>

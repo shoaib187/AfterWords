@@ -60,7 +60,7 @@ export default function VideoMessageRecorder({ navigation }) {
   };
 
   const handleNext = () => {
-    navigation.navigate('AssignRecipients');
+    navigation.navigate('AddMessageDetails');
   };
 
   return (

@@ -1,18 +1,32 @@
 import React from 'react';
 import { View, Text, TextInput, StyleSheet } from 'react-native';
-import { Responsive, Spacing, FontSize, Radius } from '../../../components/constants/styles';
+import {
+  Responsive,
+  Spacing,
+  FontSize,
+  Radius,
+} from '../../../components/constants/styles';
 import { COLORS } from '../../../components/constants/color';
 import { FONT } from '../../../components/constants/font';
+import AppText from '../../typography/appText/appText';
 
-const Description = ({ value, onChangeText, placeholder, label, maxLength = 500 }) => {
+const Description = ({
+  value,
+  onChangeText,
+  placeholder,
+  label,
+  maxLength = 500,
+}) => {
   return (
     <View style={styles.container}>
       <View style={styles.labelRow}>
-        <Text style={styles.label}>{label}</Text>
-        <Text style={[
-          styles.counter,
-          value?.length >= maxLength ? { color: COLORS.ERROR } : null
-        ]}>
+        <AppText text={label} />
+        <Text
+          style={[
+            styles.counter,
+            value?.length >= maxLength ? { color: COLORS.ERROR } : null,
+          ]}
+        >
           {value?.length || 0}/{maxLength}
         </Text>
       </View>
@@ -21,7 +35,7 @@ const Description = ({ value, onChangeText, placeholder, label, maxLength = 500 
         <TextInput
           style={styles.input}
           placeholder={placeholder}
-          placeholderTextColor={COLORS.TEXT_LIGHT}
+          placeholderTextColor={COLORS.GRAY}
           multiline
           numberOfLines={5}
           maxLength={maxLength}
@@ -47,18 +61,18 @@ const styles = StyleSheet.create({
   },
   label: {
     fontSize: FontSize.medium,
-    fontFamily: FONT.SpaceGroteskMedium,
+    fontFamily: FONT.TTForseMedium,
     color: COLORS.TEXT_PRIMARY,
   },
   counter: {
     fontSize: FontSize.small,
-    fontFamily: FONT.SpaceGroteskRegular,
+    fontFamily: FONT.TTForseMedium,
     color: COLORS.TEXT_LIGHT,
   },
   inputWrapper: {
     borderRadius: Radius.large,
     borderWidth: 1,
-    borderColor: COLORS.BORDER,
+    borderColor: COLORS.GOLD,
     backgroundColor: COLORS.BACKGROUND_LIGHT,
     paddingHorizontal: Spacing.small,
     paddingVertical: Spacing.small,
@@ -67,8 +81,8 @@ const styles = StyleSheet.create({
   input: {
     flex: 1,
     fontSize: FontSize.medium,
-    fontFamily: FONT.SpaceGroteskRegular,
-    color: COLORS.TEXT_PRIMARY,
+    fontFamily: FONT.TTForseMedium,
+    color: COLORS.WHITE,
     paddingTop: 0, // Fixes Android padding issue
   },
 });

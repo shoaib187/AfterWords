@@ -3,82 +3,88 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 
 import { COLORS } from '../../constants/color';
 import { Radius, Responsive, Spacing } from '../../constants/styles';
-import Title from '../../typography/title/title';
+
 import AppText from '../../typography/appText/appText';
 
 export const HomeHeader = () => {
   return (
-    <View style={styles.topBar}>
-      <View style={styles.avatarBtn}>
-        <Title text={'B'} style={styles.avatarText} />
+    <View style={styles.topHeaderNav}>
+      <View style={styles.userInfoRow}>
+        <View style={styles.profileAvatarCircle}>
+          <AppText text={'E'} size="medium" weight="bold" color="#1C1917" />
+        </View>
+        <View style={styles.greetingTextColumn}>
+          <AppText text="Good Morning" size="small" color="#999" />
+          <AppText
+            text={'Eleanor'}
+            size="large"
+            weight="bold"
+            color={COLORS.WHITE}
+          />
+        </View>
       </View>
-
-      <TouchableOpacity style={styles.searchBar} activeOpacity={0.8}>
-        <Ionicons
-          name="search-outline"
-          size={Responsive.width(16)}
-          color={COLORS.GRAY}
-        />
-        <AppText text="Search" style={styles.searchPlaceholder} />
-      </TouchableOpacity>
-
-      <TouchableOpacity style={styles.iconBtn} activeOpacity={0.8}>
+      <TouchableOpacity
+        style={styles.notificationBellButton}
+        activeOpacity={0.7}
+      >
         <Ionicons
           name="notifications-outline"
           size={Responsive.width(20)}
           color={COLORS.WHITE}
         />
+        <View style={styles.activeNotificationDot} />
       </TouchableOpacity>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
-  topBar: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: Spacing.medium,
-    paddingTop: Spacing.small,
-    paddingBottom: Spacing.tiny,
-    gap: Spacing.tiny,
-    zIndex: 20,
-  },
-  avatarBtn: {
-    width: Responsive.width(40),
-    height: Responsive.width(40),
-    borderRadius: Radius.full * 5,
-    backgroundColor: COLORS.CARD2,
-    borderWidth: 2,
-    borderColor: COLORS.PRIMARY,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  avatarText: {
-    color: COLORS.WHITE,
-    fontWeight: '700',
-    fontSize: 15,
-  },
-  searchBar: {
+  masterContainer: {
     flex: 1,
+    backgroundColor: COLORS.BLACK,
+  },
+  topHeaderNav: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: Spacing.large,
+    paddingTop: Responsive.isIOS
+      ? Responsive.height(50)
+      : Responsive.height(18),
+    paddingBottom: Spacing.medium,
+    backgroundColor: COLORS.BLACK,
+  },
+  userInfoRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: 'rgba(20,20,32,0.88)',
-    borderWidth: 1,
-    borderColor: COLORS.BORDER + '20',
-    borderRadius: Radius.full,
-    height: Responsive.height(34),
-    paddingHorizontal: Spacing.medium,
-    gap: Spacing.tiny,
   },
-  searchPlaceholder: {
-    color: COLORS.GRAY,
-    fontSize: 14,
-  },
-  iconBtn: {
-    width: Responsive.width(38),
-    height: Responsive.width(38),
-    borderRadius: Radius.full * 5,
-    alignItems: 'center',
+  profileAvatarCircle: {
+    width: Responsive.width(42),
+    height: Responsive.width(42),
+    borderRadius: Radius.circle || 21,
+    backgroundColor: '#C59353',
     justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: Spacing.medium,
+  },
+  greetingTextColumn: {
+    justifyContent: 'center',
+  },
+  nameHeaderText: {
+    marginTop: -2,
+    fontFamily: 'System',
+  },
+  notificationBellButton: {
+    padding: Spacing.tiny,
+    position: 'relative',
+  },
+  activeNotificationDot: {
+    position: 'absolute',
+    top: Spacing.tiny,
+    right: Spacing.tiny,
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    backgroundColor: '#EF4444',
   },
 });

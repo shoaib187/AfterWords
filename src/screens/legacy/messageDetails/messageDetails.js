@@ -21,10 +21,7 @@ import GradientBackground from '../../../components/common/gradientBackground/gr
 
 export default function MessageDetails({ navigation, route }) {
   const { type } = route?.params;
-  console.log('type', type);
-
   const handlePlayVideo = () => {};
-
   return (
     <SafeAreaView style={styles.container}>
       <GradientBackground />
@@ -45,7 +42,6 @@ export default function MessageDetails({ navigation, route }) {
               style={styles.videoPreviewImage}
               imageStyle={styles.imageRadius}
             >
-              {/* Centered Play Button Hub */}
               <TouchableOpacity
                 style={styles.playButtonCircle}
                 onPress={handlePlayVideo}

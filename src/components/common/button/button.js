@@ -74,7 +74,7 @@ const Button = React.memo(
               <Icon
                 name={rightIcon}
                 size={iconSize}
-                color={finalIconColor}
+                color={isPrimary ? finalIconColor : COLORS.GOLD}
                 style={styles.icon}
               />
             )}
@@ -92,6 +92,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     height: Responsive.height(45),
+    width: '100%',
   },
 
   content: {

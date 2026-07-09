@@ -93,7 +93,11 @@ export default function VoiceMessagePreview({ navigation, route }) {
             onPress={() => navigation.navigate('AssignRecipients')}
           />
           <Button
-            onPress={() => navigation.navigate('AssignRecipients')}
+            onPress={() => {
+              navigation.navigate('AddMessageDetails', {
+                messageType: 'voice',
+              });
+            }}
             style={{ flex: 1 }}
             title="Next"
             rightIcon="arrow-right"

@@ -17,9 +17,9 @@ import { Responsive, Radius, Spacing } from '../../components/constants/styles';
 import { COLORS } from '../../components/constants/color';
 import { HomeStack } from '../homeStack/homeStack';
 import { VaultStack } from '../vaultStack/vaultStack';
-import { InboxStack } from '../inboxStack/inboxStack';
+import { LegacyStack } from '../legacyStack/legacyStack';
 import { ProfileStack } from '../profileStack/profileStack';
-import { LeagcyStack } from '../legacyStack/legacyStack';
+import { TreasureStack } from '../treasureStack/treasureStack';
 
 const Tab = createBottomTabNavigator();
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
@@ -112,7 +112,7 @@ const CustomTabBar = ({ state, descriptors, navigation }) => {
         };
 
         // Center Action button: Floating "Plus"
-        if (route.name === 'Legacy') {
+        if (route.name === 'Treasure') {
           return (
             <View key={route.key} style={styles.tabItemContainer}>
               <TouchableOpacity
@@ -168,7 +168,7 @@ const TabNavigator = () => {
       <StatusBar barStyle={'light-content'} backgroundColor={COLORS.BLACK} />
 
       <Tab.Navigator
-        initialRouteName="Legacy"
+        initialRouteName="Treasure"
         tabBar={props => <CustomTabBar {...props} />}
         screenOptions={{
           headerShown: false,
@@ -176,8 +176,8 @@ const TabNavigator = () => {
       >
         <Tab.Screen name="Home" component={HomeStack} />
         <Tab.Screen name="Vault" component={VaultStack} />
-        <Tab.Screen name="Legacy" component={LeagcyStack} />
-        <Tab.Screen name="Inbox" component={InboxStack} />
+        <Tab.Screen name="Treasure" component={TreasureStack} />
+        <Tab.Screen name="Legacy" component={LegacyStack} />
         <Tab.Screen name="Profile" component={ProfileStack} />
       </Tab.Navigator>
     </SafeAreaView>
@@ -190,7 +190,7 @@ const getIconName = routeName => {
       return 'home';
     case 'Vault':
       return 'archive';
-    case 'Inbox':
+    case 'Legacy':
       return 'inbox';
     case 'Profile':
       return 'person';
@@ -203,7 +203,7 @@ const getTabBarVisibility = route => {
   const routeName = getFocusedRouteNameFromRoute(route);
 
   const hiddenScreens = [
-    'CreateLegacy',
+    'CreateTreasure',
     'VideoMessageRecorder',
     'VoiceMessageRecorder',
     'PhotoMessage',
@@ -212,7 +212,6 @@ const getTabBarVisibility = route => {
     'NewRecipient',
     'ReviewSummary',
     'VaultItemDetail',
-    'MemorySealedSuccess',
     'Review',
     'VoiceMessagePreview',
     'PhotoMessagePreview',
@@ -226,6 +225,8 @@ const getTabBarVisibility = route => {
     'SecurityAndPrivacy',
     'Subscription',
     'TrustedDelegates',
+    'AddMessageDetails',
+    'TreasureSaved',
   ];
 
   if (hiddenScreens.includes(routeName)) {
@@ -300,157 +301,3 @@ const styles = StyleSheet.create({
     borderRadius: Radius.full,
   },
 });
-
-// import React from 'react';
-// import { View, TouchableOpacity, StyleSheet, StatusBar } from 'react-native';
-// import { SafeAreaView } from 'react-native-safe-area-context';
-// import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-// import Octicons from 'react-native-vector-icons/Octicons';
-// import { getFocusedRouteNameFromRoute } from '@react-navigation/native';
-
-// import { Responsive, Radius, Spacing } from '../../components/constants/styles';
-// import { COLORS } from '../../components/constants/color';
-// import { HomeStack } from '../homeStack/homeStack';
-// import { VaultStack } from '../vaultStack/vaultStack';
-// import { InboxStack } from '../inboxStack/inboxStack';
-// import { ProfileStack } from '../profileStack/profileStack';
-// import { LeagcyStack } from '../legacyStack/legacyStack';
-
-// const Tab = createBottomTabNavigator();
-
-// const FloatingButton = ({ onPress }) => (
-//   <TouchableOpacity style={styles.floatingButton} onPress={onPress}>
-//     <Octicons name="plus" size={Responsive.width(30)} color={COLORS.WHITE} />
-//   </TouchableOpacity>
-// );
-
-// const TabNavigator = () => {
-//   return (
-//     <SafeAreaView style={{ flex: 1 }}>
-//       <StatusBar barStyle={'light-content'} backgroundColor={COLORS.BLACK} />
-//       <Tab.Navigator
-//         initialRouteName="Legacy"
-//         screenOptions={({ route }) => ({
-//           headerShown: false,
-//           tabBarShowLabel: true,
-//           tabBarHideOnKeyboard: true,
-//           tabBarActiveTintColor: COLORS.WHITE,
-//           tabBarInactiveTintColor: '#999',
-//           tabBarStyle: {
-//             backgroundColor: COLORS.BLACK,
-//             height: Responsive.height(60),
-//             position: 'absolute',
-//             bottom: Responsive.isIOS ? 20 : 10,
-//             marginHorizontal: Spacing.medium,
-//             borderRadius: Radius.large,
-//             display: getTabBarVisibility(route),
-//             borderWidth: 0.5,
-//             borderColor: COLORS.GOLD,
-//             paddingTop: Spacing.tiny + 1,
-//           },
-//           tabBarLabelStyle: {
-//             fontSize: 11,
-//             marginBottom: 8,
-//           },
-//           // eslint-disable-next-line react/no-unstable-nested-components
-//           tabBarIcon: ({ color, focused }) => (
-//             <Octicons
-//               name={getIconName(route.name)}
-//               size={Responsive.width(18)}
-//               color={color}
-//             />
-//           ),
-//         })}
-//       >
-//         <Tab.Screen name="Home" component={HomeStack} />
-//         <Tab.Screen name="Vault" component={VaultStack} />
-//         <Tab.Screen
-//           name="Legacy"
-//           component={LeagcyStack}
-//           options={{
-//             tabBarLabel: '',
-//             tabBarIcon: () => <View />,
-//             tabBarButton: props => (
-//               <FloatingButton {...props} onPress={props.onPress} />
-//             ),
-//           }}
-//         />
-
-//         <Tab.Screen name="Inbox" component={InboxStack} />
-//         <Tab.Screen name="Profile" component={ProfileStack} />
-//       </Tab.Navigator>
-//     </SafeAreaView>
-//   );
-// };
-
-// const getIconName = routeName => {
-//   switch (routeName) {
-//     case 'Home':
-//       return 'home';
-
-//     case 'Vault':
-//       return 'archive';
-
-//     case 'Inbox':
-//       return 'inbox';
-
-//     case 'Profile':
-//       return 'person';
-
-//     default:
-//       return 'home';
-//   }
-// };
-
-// const getTabBarVisibility = route => {
-//   const routeName = getFocusedRouteNameFromRoute(route);
-
-//   const hiddenScreens = [
-//     'CreateLegacy',
-//     'VideoMessageRecorder',
-//     'VoiceMessageRecorder',
-//     'PhotoMessage',
-//     'DocumentMessage',
-//     'AssignRecipients',
-//     'NewRecipient',
-//     'ReviewSummary',
-//     'VaultItemDetail',
-//     'MemorySealedSuccess',
-//     'Review',
-//     'VoiceMessagePreview',
-//     'PhotoMessagePreview',
-//     'FileDetails',
-//     'GiftsScreen',
-//     'MessageDetails',
-//     'RecipientDirectory',
-//     'FamilyTree',
-//     'AccountRecovery',
-//     'EstateExecutor',
-//     'SecurityAndPrivacy',
-//     'Subscription',
-//     'TrustedDelegates',
-//   ];
-
-//   if (hiddenScreens.includes(routeName)) {
-//     return 'none';
-//   }
-
-//   return 'flex';
-// };
-
-// export { TabNavigator };
-
-// const styles = StyleSheet.create({
-//   floatingButton: {
-//     width: Responsive.width(55),
-//     height: Responsive.width(55),
-//     borderRadius: Radius.circle,
-//     backgroundColor: COLORS.GOLD,
-//     justifyContent: 'center',
-//     alignItems: 'center',
-//     bottom: Spacing.large,
-//     alignSelf: 'center',
-//     borderWidth: 2,
-//     borderColor: COLORS.WHITE,
-//   },
-// });

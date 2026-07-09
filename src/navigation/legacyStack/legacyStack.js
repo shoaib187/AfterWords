@@ -3,7 +3,7 @@ import { screens } from '../../components/constants/screens';
 
 const Stack = createStackNavigator();
 
-const LeagcyStack = () => {
+const LegacyStack = () => {
   return (
     <Stack.Navigator
       initialRouteName="LegacyHome"
@@ -12,42 +12,12 @@ const LeagcyStack = () => {
         animation: 'slide_from_right',
       }}
     >
-      <Stack.Screen name="LegacyHome" component={screens.Home} />
-      <Stack.Screen name="CreateLegacy" component={screens.CreateLegacy} />
-      <Stack.Screen
-        name="VideoMessageRecorder"
-        component={screens.VideoMessageRecorder}
-      />
-      <Stack.Screen
-        name="VoiceMessageRecorder"
-        component={screens.VoiceMessageRecorder}
-      />
-      <Stack.Screen
-        name="VoiceMessagePreview"
-        component={screens.VoiceMessagePreview}
-      />
-      <Stack.Screen name="PhotoMessage" component={screens.PhotoMessage} />
-      <Stack.Screen
-        name="PhotoMessagePreview"
-        component={screens.PhotoMessagePreview}
-      />
-      <Stack.Screen
-        name="DocumentMessage"
-        component={screens.DocumentMessage}
-      />
-      <Stack.Screen name="FileDetails" component={screens.FileDetails} />
-      <Stack.Screen
-        name="AssignRecipients"
-        component={screens.AssignRecipients}
-      />
-      <Stack.Screen name="NewRecepient" component={screens.NewRecipient} />
-      <Stack.Screen name="Review" component={screens.ReviewSummary} />
-      <Stack.Screen
-        name="MemorySealedSuccess"
-        component={screens.MemorySealedSuccess}
-      />
+      <Stack.Screen name="LegacyHome" component={screens.MyLagacies} />
+      <Stack.Screen name="LegacyDetails" component={screens.LegacyDetails} />
+      <Stack.Screen name="GiftsScreen" component={screens.GiftsScreen} />
+      <Stack.Screen name="MessageDetails" component={screens.MessageDetails} />
     </Stack.Navigator>
   );
 };
 
-export { LeagcyStack };
+export { LegacyStack };

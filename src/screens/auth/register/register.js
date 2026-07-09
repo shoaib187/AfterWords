@@ -5,6 +5,7 @@ import {
   Alert,
   StyleSheet,
   TouchableOpacity,
+  Pressable,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Button } from '../../../components/common/button/button';
@@ -17,12 +18,15 @@ import {
   Spacing,
 } from '../../../components/constants/styles';
 import GradientBackground from '../../../components/common/gradientBackground/gradientBackground';
+import { COLORS } from '../../../components/constants/color';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
 export default function Register({ navigation }) {
   const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
+  const [phone, setPhone] = useState('');
 
   const handleRegister = async () => {
     if (!fullName || !email || !password) {
@@ -64,13 +68,22 @@ export default function Register({ navigation }) {
             />
           </View>
           <View style={styles.formContainer}>
-            <InputField
-              label="Full Name"
-              value={fullName}
-              placeholder="John Doe"
-              onChangeText={setFullName}
-              placeholderTextColor="#666"
-            />
+            <View style={{ flexDirection: 'row', gap: Spacing.small }}>
+              <InputField
+                label="First Name"
+                value={fullName}
+                placeholder="John Doe"
+                onChangeText={setFullName}
+                placeholderTextColor="#666"
+              />
+              <InputField
+                label="Last Name"
+                value={fullName}
+                placeholder="John Doe"
+                onChangeText={setFullName}
+                placeholderTextColor="#666"
+              />
+            </View>
 
             <InputField
               label="Email"
@@ -89,21 +102,59 @@ export default function Register({ navigation }) {
               onChangeText={setPassword}
               secureTextEntry
               placeholderTextColor="#666"
+              rightIcon={
+                <Pressable onPress={() => {}}>
+                  <MaterialCommunityIcons
+                    name="eye"
+                    color={COLORS.WHITE}
+                    size={Responsive.width(22)}
+                  />
+                </Pressable>
+              }
+            />
+            <InputField
+              label="Phone"
+              value={phone}
+              placeholder="+1 234 567 890"
+              onChangeText={setPhone}
+              secureTextEntry
+              placeholderTextColor="#666"
             />
 
             <Button
               onPress={handleRegister}
-              title="Sign Up"
+              title="Create Account"
               loading={loading}
               style={{ marginTop: Spacing.xLarge * 2 }}
             />
           </View>
 
           <View style={styles.footerContainer}>
-            <AppText
-              text={'By continuing you agree to our terms and conditions'}
-              style={styles.footerText}
-            />
+            <View
+              style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                flexWrap: 'wrap',
+                justifyContent: 'center',
+              }}
+            >
+              <AppText text={'By continuing you agree to our'} size="small" />
+              <Pressable>
+                <AppText
+                  color={COLORS.GOLD}
+                  text={' Terms of Service'}
+                  size="small"
+                />
+              </Pressable>
+              <AppText text={' and'} size="small" />
+              <Pressable>
+                <AppText
+                  color={COLORS.GOLD}
+                  text={' Privacy Policy'}
+                  size="small"
+                />
+              </Pressable>
+            </View>
 
             <View style={styles.loginRedirectRow}>
               <AppText

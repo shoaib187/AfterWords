@@ -25,6 +25,8 @@ import HeaderBack from '../../../components/common/headerBack/headerBack';
 import Stepper from '../../../components/messages/stepper/stepper';
 import { Button } from '../../../components/common/button/button';
 import GradientBackground from '../../../components/common/gradientBackground/gradientBackground';
+import InputField from '../../../components/common/inputField/inputField';
+import Description from '../../../components/common/description/description';
 
 export default function FileDetails({ navigation, route }) {
   const [documentName, setDocumentName] = useState('');
@@ -48,32 +50,23 @@ export default function FileDetails({ navigation, route }) {
   ];
 
   const handleClearFile = () => {
-    // Reverse pipeline navigation matrix back to dropzone step if user clears selection
     navigation.goBack();
   };
 
   const handleContinue = () => {
-    navigation.navigate('AssignRecipients', {
-      file: incomingFile,
-      metadata: {
-        customName: documentName,
-        category: selectedCategory,
-      },
-    });
+    navigation?.navigate('Review', { messageType: 'document' });
   };
 
   return (
     <SafeAreaView style={styles.container}>
       <GradientBackground />
 
-      <HeaderBack title={'File Details'} />
+      <HeaderBack title={'Document'} />
       <View style={styles.safeAreaContainer}>
         <ScrollView
           showsVerticalScrollIndicator={false}
           contentContainerStyle={styles.scrollContent}
         >
-          <Stepper />
-
           <View style={styles.sectionTitleRow}>
             <View style={styles.purpleStatusDot} />
             <AppText
@@ -124,14 +117,12 @@ export default function FileDetails({ navigation, route }) {
 
           {/* Input Block: Document Name */}
           <View style={styles.inputFieldBlock}>
-            <AppText text="Document Name" size="medium" color={COLORS.WHITE} />
-            <TextInput
-              style={styles.singleLineInput}
+            <InputField
+              label={'Title'}
               placeholder="e.g house deed, file insurance"
               placeholderTextColor="rgba(255, 255, 255, 0.4)"
               value={documentName}
               onChangeText={setDocumentName}
-              keyboardAppearance="dark"
             />
           </View>
 
@@ -181,13 +172,78 @@ export default function FileDetails({ navigation, route }) {
               })}
             </View>
           </View>
+          <View style={styles.categoryBlockWrapper}>
+            <AppText
+              text="Importance Level"
+              size="medium"
+              color={COLORS.WHITE}
+            />
+
+            <View style={styles.categoryGrid}>
+              {categories.map(item => {
+                const isSelected = selectedCategory === item.id;
+                return (
+                  <TouchableOpacity
+                    key={item.id}
+                    style={[
+                      styles.categoryGridCell,
+                      isSelected && styles.selectedCategoryCell,
+                    ]}
+                    activeOpacity={0.8}
+                    onPress={() => setSelectedCategory(item.id)}
+                  >
+                    <View
+                      style={[
+                        styles.cellIconFrame,
+                        isSelected
+                          ? styles.selectedIconFrame
+                          : styles.unselectedIconFrame,
+                      ]}
+                    >
+                      <Icon
+                        name={item.icon}
+                        size={Responsive.width(20)}
+                        color={isSelected ? COLORS.BLACK : '#D5A760'}
+                      />
+                    </View>
+                    <AppText
+                      text={item.label}
+                      size="small"
+                      color={COLORS.WHITE}
+                      fontFamily={FONT.TTForseMedium}
+                    />
+                  </TouchableOpacity>
+                );
+              })}
+            </View>
+          </View>
+          <InputField
+            label={'Label'}
+            placeholder="e.g house deed, file insurance"
+            placeholderTextColor="rgba(255, 255, 255, 0.4)"
+            value={documentName}
+            onChangeText={setDocumentName}
+          />
+          <Description
+            label={'Description (Optional)'}
+            placeholder="e.g house deed, file insurance"
+            placeholderTextColor="rgba(255, 255, 255, 0.4)"
+            value={documentName}
+            onChangeText={setDocumentName}
+          />
+          <Description
+            label={'Description (Optional)'}
+            placeholder="e.g house deed, file insurance"
+            placeholderTextColor="rgba(255, 255, 255, 0.4)"
+            value={documentName}
+            onChangeText={setDocumentName}
+          />
         </ScrollView>
       </View>
 
-      {/* Action Footer Button Container */}
-      <SafeAreaView style={styles.footerActionWrapper} edges={['bottom']}>
-        <Button title={'Assign Recipient'} onPress={handleContinue} />
-      </SafeAreaView>
+      <View style={styles.footerActionWrapper}>
+        <Button title={'Review document'} onPress={handleContinue} />
+      </View>
     </SafeAreaView>
   );
 }

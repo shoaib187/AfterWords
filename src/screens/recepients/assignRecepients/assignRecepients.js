@@ -243,8 +243,8 @@ export default function AssignRecipients({ navigation }) {
           })}
         </View>
         <Button
-          onPress={() => navigation.navigate('Review')}
-          title="Save & Seal"
+          onPress={() => navigation.navigate('ReleaseRules')}
+          title="Continue"
         />
       </ScrollView>
     </SafeAreaView>

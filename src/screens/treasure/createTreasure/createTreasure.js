@@ -1,8 +1,7 @@
-import React from 'react';
-import { StyleSheet, View, TouchableOpacity } from 'react-native';
+import React, { useRef } from 'react';
+import { StyleSheet, View, TouchableOpacity, Animated } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import LinearGradient from 'react-native-linear-gradient';
 import AppText from '../../../components/typography/appText/appText';
 import {
   FontSize,
@@ -14,6 +13,8 @@ import HeaderBack from '../../../components/common/headerBack/headerBack';
 import Title from '../../../components/typography/title/title';
 import Subtitle from '../../../components/typography/subtitle/subtitle';
 import GradientBackground from '../../../components/common/gradientBackground/gradientBackground';
+import LinearGradient from 'react-native-linear-gradient';
+import { COLORS } from '../../../components/constants/color';
 
 // Strict structural mapping of the choice matrices from Screenshot 2026-06-08 at 4.48.02 PM.png
 const PRESERVE_OPTIONS = [
@@ -55,10 +56,29 @@ const PRESERVE_OPTIONS = [
   },
 ];
 
-export default function CreateLegacy({ navigation }) {
+export default function CreateTreasure({ navigation }) {
+  const scaleAnim = useRef(new Animated.Value(1)).current;
+
+  const handlePreservePress = () => {
+    Animated.sequence([
+      Animated.spring(scaleAnim, {
+        toValue: 0.96,
+        useNativeDriver: true,
+        friction: 6,
+        tension: 50,
+      }),
+      Animated.spring(scaleAnim, {
+        toValue: 1,
+        useNativeDriver: true,
+        friction: 6,
+        tension: 50,
+      }),
+    ]).start();
+    navigation.navigate('CreateLegacy');
+  };
   return (
     <SafeAreaView style={styles.container}>
-      <HeaderBack title={'Create Legacy'} />
+      <HeaderBack title={'Create Treasure'} />
       <GradientBackground />
 
       <View style={styles.contentWrapper}>
@@ -68,8 +88,36 @@ export default function CreateLegacy({ navigation }) {
           <Title text="you like to" style={styles.mainTitleSerif} />
           <Title text="Preserve today?" style={styles.mainTitleSerif} />
         </View>
+        {!PRESERVE_OPTIONS && (
+          <Animated.View style={{ transform: [{ scale: scaleAnim }] }}>
+            <TouchableOpacity
+              activeOpacity={0.95}
+              onPress={handlePreservePress}
+              style={styles.cardTouchWrapper}
+            >
+              <LinearGradient
+                colors={['#F5EAD9', '#D5A760']}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 1 }}
+                style={styles.preserveCard}
+              >
+                <View style={styles.plusIconCircle}>
+                  <Ionicons name="add" size={26} color="#FFFFFF" />
+                </View>
 
-        {/* ── 2x2 Clean Uniform Card Grid ── */}
+                <AppText
+                  text="Preserve a new memory"
+                  style={styles.preserveCardTitle}
+                />
+                <AppText
+                  text="Record a video, voice note, or upload a document."
+                  style={styles.preserveCardDescription}
+                />
+              </LinearGradient>
+            </TouchableOpacity>
+          </Animated.View>
+        )}
+
         <View style={styles.gridContainer}>
           {PRESERVE_OPTIONS.map(option => (
             <TouchableOpacity
@@ -162,5 +210,41 @@ const styles = StyleSheet.create({
   },
   cardDescText: {
     fontSize: FontSize.small,
+  },
+
+  cardTouchWrapper: {
+    borderRadius: Radius.xLarge,
+    marginBottom: Responsive.height(36),
+  },
+  preserveCard: {
+    width: '100%',
+    borderRadius: Radius.full,
+    paddingVertical: Spacing.large,
+    paddingHorizontal: Spacing.large,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  plusIconCircle: {
+    width: Responsive.width(48),
+    height: Responsive.width(48),
+    borderRadius: Radius.full * 3,
+    backgroundColor: '#D4A843',
+    borderWidth: 1.5,
+    borderColor: COLORS.WHITE,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: Spacing.medium || 12,
+    elevation: 10,
+  },
+  preserveCardTitle: {
+    fontSize: FontSize.large,
+    color: COLORS.BLACK,
+    marginBottom: 8,
+  },
+  preserveCardDescription: {
+    fontSize: FontSize.small || 12,
+    color: COLORS.BLACK,
+    textAlign: 'center',
+    opacity: 0.8,
   },
 });

@@ -1,8 +1,15 @@
 import React from 'react';
-import { StyleSheet, View, TouchableOpacity, StatusBar } from 'react-native';
+import {
+  StyleSheet,
+  View,
+  TouchableOpacity,
+  StatusBar,
+  Image,
+} from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import LinearGradient from 'react-native-linear-gradient';
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 import AppText from '../../../components/typography/appText/appText';
 import Subtitle from '../../../components/typography/subtitle/subtitle';
@@ -17,14 +24,15 @@ import {
 import HeaderBack from '../../../components/common/headerBack/headerBack';
 import { Button } from '../../../components/common/button/button';
 import GradientBackground from '../../../components/common/gradientBackground/gradientBackground';
+import VoiceMessageBubble from '../../../components/messages/voiceMessageBubble/voiceMessageBubble';
+import DocumentDownloadCard from '../../../components/common/documentDownloadCard/documentDownloadCard';
 
 export default function ReviewSummary({ navigation, route }) {
-  const recipientName = route?.params?.recipientName || 'Sofia Chen';
-  const noteContent = route?.params?.noteContent || 'No note added yet';
+  const { messageType } = route?.params || {};
 
-  const handleFinalSeal = () => {
-    console.log('Memory successfully encrypted and saved permanently.');
-  };
+  const recipientName = route?.params?.recipientName || 'Advice for my son';
+  const noteContent =
+    route?.params?.noteContent || 'Thoughts on responsibilty and dicipline';
 
   return (
     <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
@@ -33,11 +41,75 @@ export default function ReviewSummary({ navigation, route }) {
 
       <View style={styles.topHeaderSpacing}>
         <AppText
-          text="READY TO SEAL YOUR MEMORY?"
+          text="READY TO SAVE YOUR TREASURE?"
           size="medium"
           color={COLORS.WHITE}
           align="center"
         />
+      </View>
+
+      <View style={{ paddingHorizontal: Spacing.medium }}>
+        {/* <Video source={{uri:""}} /> */}
+        {messageType === 'photo' && (
+          <Image
+            source={require('../../../../assets/images/avatar_1.jpg')}
+            style={{
+              alignSelf: 'center',
+              width: '100%',
+              height: Responsive.height(200),
+              borderRadius: Radius.xLarge,
+              marginBottom: Spacing.medium,
+            }}
+          />
+        )}
+        {messageType === 'voice' && <VoiceMessageBubble />}
+        {messageType === 'document' && (
+          <>
+            <LinearGradient
+              colors={['#EEDBB2', '#C59353']}
+              style={styles.attachedFileCard}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 1 }}
+            >
+              <View style={styles.fileCardLeftRow}>
+                <View style={styles.miniFileIconBox}>
+                  <Icon
+                    name="file-document-outline"
+                    size={22}
+                    color="#CD974A"
+                  />
+                </View>
+                <View style={styles.fileMetaDetailsColumn}>
+                  <AppText
+                    text={'Eleanor_Will_2025.pdf'}
+                    size="medium"
+                    color="#000000"
+                    fontFamily={FONT.TTForseSemiBold}
+                    numberOfLines={1}
+                  />
+                  <AppText
+                    text={`${'2.4 MB'} · Ready to attach`}
+                    size="small"
+                    color="rgba(0, 0, 0, 0.6)"
+                    fontFamily={FONT.TTForseMedium}
+                    style={styles.statusSubtitleSpacing}
+                  />
+                </View>
+              </View>
+
+              <TouchableOpacity
+                style={styles.clearCardCrossButton}
+                activeOpacity={0.7}
+              >
+                <Icon
+                  name="close"
+                  size={Responsive.width(20)}
+                  color="#000000"
+                />
+              </TouchableOpacity>
+            </LinearGradient>
+          </>
+        )}
       </View>
 
       <LinearGradient
@@ -48,7 +120,7 @@ export default function ReviewSummary({ navigation, route }) {
       >
         <View style={styles.summarySectionBlock}>
           <Subtitle
-            text="Recipient"
+            text="Title"
             size="medium"
             color="#1A1105"
             style={styles.serifLabel}
@@ -63,30 +135,23 @@ export default function ReviewSummary({ navigation, route }) {
 
         <View style={styles.summarySectionBlock}>
           <Subtitle
-            text="Attachment"
+            text="Label"
             size="medium"
             color="#1A1105"
             style={styles.serifLabel}
           />
-          <View style={styles.attachmentInlineRow}>
-            <Ionicons
-              name="videocam"
-              size={Responsive.width(18)}
-              color={COLORS.GOLD}
-              style={styles.inlineIconSpacing}
-            />
-            <Title
-              text="Video Message"
-              size="medium"
-              color={COLORS.BLACK}
-              fontFamily={FONT.TTForseSemiBold}
-            />
-          </View>
+
+          <Title
+            text="Life lessons"
+            size="medium"
+            color={COLORS.BLACK}
+            fontFamily={FONT.TTForseSemiBold}
+          />
         </View>
 
         <View style={styles.noMarginBottom}>
           <Subtitle
-            text="Note"
+            text="Description"
             size="medium"
             color={COLORS.BLACK}
             style={styles.serifLabel}
@@ -94,10 +159,11 @@ export default function ReviewSummary({ navigation, route }) {
           <Subtitle text={noteContent} size="medium" color={COLORS.BLACK} />
         </View>
       </LinearGradient>
+
       <View style={{ padding: Spacing.medium }}>
         <Button
-          onPress={() => navigation.navigate('MemorySealedSuccess')}
-          title="Lock Secure & Save Message"
+          onPress={() => navigation.navigate('TreasureSaved')}
+          title="Save Treasure"
         />
       </View>
     </SafeAreaView>
@@ -159,5 +225,43 @@ const styles = StyleSheet.create({
   },
   flexSpacer: {
     flex: 1,
+  },
+
+  attachedFileCard: {
+    width: '100%',
+    borderRadius: 24,
+    paddingVertical: Spacing.medium + 4,
+    paddingHorizontal: Spacing.medium,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: Responsive.height(32),
+  },
+  fileCardLeftRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    flex: 1,
+    paddingRight: Spacing.small,
+  },
+  miniFileIconBox: {
+    width: Responsive.width(42),
+    height: Responsive.width(42),
+    borderRadius: 12,
+    backgroundColor: 'rgba(255, 255, 255, 0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  fileMetaDetailsColumn: {
+    marginLeft: Spacing.small + 2,
+    flex: 1,
+  },
+  statusSubtitleSpacing: {
+    marginTop: 2,
+  },
+  clearCardCrossButton: {
+    width: Responsive.width(28),
+    height: Responsive.width(28),
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 });

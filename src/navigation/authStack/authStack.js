@@ -17,6 +17,7 @@ const AuthStack = () => {
       <Stack.Screen name="Register" component={screens.Register} />
       <Stack.Screen name="Secure" component={screens.SecureVault} />
       <Stack.Screen name="MPin" component={screens.MPin} />
+      <Stack.Screen name="Roadmap" component={screens.Roadmap} />
     </Stack.Navigator>
   );
 };

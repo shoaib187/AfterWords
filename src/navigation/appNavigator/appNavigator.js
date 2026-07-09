@@ -10,7 +10,7 @@ const AppNavigator = () => {
   const { isAuthenticated } = useAuth();
   return (
     <NavigationContainer>
-      <StatusBar backgroundColor={COLORS.BLACK} />
+      <StatusBar animated backgroundColor={COLORS.BLACK} />
       {!isAuthenticated ? <AuthStack /> : <TabNavigator />}
     </NavigationContainer>
   );

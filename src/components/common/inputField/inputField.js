@@ -45,7 +45,7 @@ export default function InputField({
 
   const animatedBorderColor = borderAnim.interpolate({
     inputRange: [0, 1],
-    outputRange: [COLORS.BORDER, 'pink'],
+    outputRange: [COLORS.GOLD, 'pink'],
   });
 
   const animatedShadowOpacity = glowAnim.interpolate({
@@ -107,7 +107,7 @@ export default function InputField({
 
 const styles = StyleSheet.create({
   inputContainer: {
-    width: '100%',
+    flex: 1,
     marginBottom: Spacing.small,
   },
   label: {

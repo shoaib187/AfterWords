@@ -14,8 +14,10 @@ import {
 } from '../../../components/constants/styles';
 import HeaderBack from '../../../components/common/headerBack/headerBack';
 import GradientBackground from '../../../components/common/gradientBackground/gradientBackground';
+import { useAuth } from '../../../configs/authContext/authContext';
 
 export default function ProfileSettings({ navigation }) {
+  const { logout } = useAuth();
   const handleNavigation = destination => {
     if (navigation && destination) navigation.navigate(destination);
   };
@@ -220,7 +222,11 @@ export default function ProfileSettings({ navigation }) {
         </View>
 
         {/* SIGN OUT ACTION ITEM BLOCK */}
-        <TouchableOpacity style={styles.signOutBoxButton} activeOpacity={0.8}>
+        <TouchableOpacity
+          onPress={() => logout()}
+          style={styles.signOutBoxButton}
+          activeOpacity={0.8}
+        >
           <View style={styles.rowLeftWrap}>
             <Icon name="logout" size={Responsive.width(20)} color="#F43F5E" />
             <Title

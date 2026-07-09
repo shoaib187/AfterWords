@@ -3,7 +3,7 @@ import SecureVault from '../../screens/auth/secure/secure';
 
 import Home from '../../screens/home/home';
 
-import CreateLegacy from '../../screens/legacy/createLeagacy/createLeagacy';
+import CreateTreasure from '../../screens/treasure/createTreasure/createTreasure';
 
 import VideoMessageRecorder from '../../screens/message/videoMessage/videoMessage';
 import VoiceMessageRecorder from '../../screens/message/voiceMessageRecorder/voiceMessageRecorder';
@@ -16,7 +16,7 @@ import FileDetails from '../../screens/message/fileDetails/fileDetails';
 import AssignRecipients from '../../screens/recepients/assignRecepients/assignRecepients';
 import NewRecipient from '../../screens/recepients/newRecepient/newRecepient';
 import ReviewSummary from '../../screens/recepients/reviewSummary/reviewSummary';
-import MemorySealedSuccess from '../../screens/recepients/memorySealedSuccess/memorySealedSuccess';
+import TreasureSaved from '../../screens/recepients/treasureSaved/treasureSaved';
 
 import MyVault from '../../screens/vault/myVault/myVault';
 import VaultItemDetail from '../../screens/vault/vaultItemDetail/vaultItemDetail';
@@ -24,8 +24,8 @@ import GettingStarted from '../../screens/auth/gettingStarted/gettingStarted';
 import Login from '../../screens/auth/login/login';
 import MPin from '../../screens/auth/mPin/mPin';
 import OnboardingScreen from '../../screens/auth/onboarding/onboarding';
-import LegacyInbox from '../../screens/inbox/legacyInbox/legacyInbox';
-import SecureAccess from '../../screens/inbox/secureAccess/secureAccess';
+import LegacyInbox from '../../screens/legacy/legacyInbox/legacyInbox';
+import SecureAccess from '../../screens/legacy/myLagacies/myLagacies';
 import AccountRecovery from '../../screens/profile/accountRecovery/accountRecovery';
 import AddNewRecepient from '../../screens/profile/addNewRecepient/addNewRecepient';
 import EstateExecutor from '../../screens/profile/estateExecutor/estateExecutor';
@@ -35,9 +35,15 @@ import SecurityAndPrivacy from '../../screens/profile/securityAndPrivacy/securit
 import Subscription from '../../screens/profile/subscription/subscription';
 import TrustedDelegates from '../../screens/profile/trustedDelegates/trustedDelegates';
 import VaultHome from '../../screens/vault/vaultHome/vaultHome';
-import GiftsScreen from '../../screens/inbox/giftsScreen/giftsScreen';
-import MessageDetails from '../../screens/inbox/messageDetails/messageDetails';
+import GiftsScreen from '../../screens/legacy/giftsScreen/giftsScreen';
+import MessageDetails from '../../screens/legacy/messageDetails/messageDetails';
 import RecipientDirectory from '../../screens/profile/recipientDirectory/recipientDirectory';
+import Roadmap from '../../screens/auth/roadmap/roadmap';
+import AddMessageDetails from '../../screens/message/addMessageDetails/addMessageDetails';
+import ReleaseRules from '../../screens/recepients/releaseRules/releaseRules';
+import ReviewLegacy from '../../screens/recepients/reviewLegacy/reviewLegacy';
+import MyLagacies from '../../screens/legacy/myLagacies/myLagacies';
+import LegacyDetails from '../../screens/legacy/legacyDetails/legacyDetails';
 
 export const screens = {
   // Auth
@@ -47,12 +53,13 @@ export const screens = {
   OnboardingScreen,
   Register,
   SecureVault,
+  Roadmap,
 
   // Home
   Home,
 
   // Legacy
-  CreateLegacy,
+  CreateTreasure,
 
   // Messages
   VideoMessageRecorder,
@@ -62,12 +69,15 @@ export const screens = {
   PhotoMessagePreview,
   DocumentMessage,
   FileDetails,
+  AddMessageDetails,
 
   // Recipients
   AssignRecipients,
   NewRecipient,
   ReviewSummary,
-  MemorySealedSuccess,
+  TreasureSaved,
+  ReleaseRules,
+  ReviewLegacy,
 
   // Vault
   MyVault,
@@ -90,4 +100,8 @@ export const screens = {
   SecurityAndPrivacy,
   Subscription,
   TrustedDelegates,
+
+  // Legacies
+  MyLagacies,
+  LegacyDetails,
 };

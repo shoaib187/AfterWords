@@ -15,7 +15,8 @@ import {
 import { Button } from '../../../components/common/button/button';
 import GradientBackground from '../../../components/common/gradientBackground/gradientBackground';
 
-export default function MemorySealedSuccess({ navigation }) {
+export default function TreasureSaved({ navigation, route }) {
+  const { isFromLegacy } = route?.params || {};
   return (
     <SafeAreaView style={styles.container}>
       <GradientBackground />
@@ -30,9 +31,17 @@ export default function MemorySealedSuccess({ navigation }) {
             />
           </View>
 
-          <Title text="Sealed." size="xxLarge" align="center" />
+          <Title
+            text={isFromLegacy ? 'Legacy Created' : 'Treasure saved.'}
+            size="xxLarge"
+            align="center"
+          />
           <Subtitle
-            text="Your memory has been saved to your vault and will be delivered as scheduled."
+            text={
+              isFromLegacy
+                ? 'Your legacy has been successfully created.'
+                : 'Your treasure has been saved to my treasure.'
+            }
             size="medium"
             align="center"
             style={styles.statusDescriptionText}
@@ -40,16 +49,30 @@ export default function MemorySealedSuccess({ navigation }) {
         </View>
 
         <View style={styles.footerActionGroup}>
-          <Button
-            onPress={() => navigation.navigate('Home')}
-            title="Continue Another"
-            rightIcon="arrow-right"
-          />
-          <Button
-            onPress={() => navigation.navigate('Home')}
-            title="Go to My Vault"
-            variant="other"
-          />
+          {isFromLegacy ? (
+            <Button
+              onPress={() => navigation.navigate('Home')}
+              title="Return to my Treasure"
+            />
+          ) : (
+            <>
+              <Button
+                onPress={() => navigation.navigate('Home')}
+                title="Continue Another Treasure"
+                rightIcon="arrow-right"
+                variant="other"
+              />
+              <Button
+                onPress={() => navigation.navigate('Home')}
+                title="Go to My Treasure"
+                variant="other"
+              />
+              <Button
+                onPress={() => navigation.navigate('AssignRecipients')}
+                title="Create Legacy"
+              />
+            </>
+          )}
         </View>
       </View>
     </SafeAreaView>

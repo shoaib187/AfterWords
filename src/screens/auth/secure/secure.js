@@ -79,7 +79,7 @@ export default function SecureVault({ navigation }) {
 
         <View style={styles.bottomWrapper}>
           <Button
-            onPress={() => saveToken('MY_NAME_IS_SHOAIB')}
+            onPress={() => navigation?.navigate('Roadmap')}
             title="Enable Face ID"
           />
         </View>
