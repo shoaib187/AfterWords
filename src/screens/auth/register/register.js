@@ -1,12 +1,10 @@
 import React, { useState } from 'react';
 import {
-  Text,
   View,
   ScrollView,
   Alert,
   StyleSheet,
   TouchableOpacity,
-  StatusBar,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Button } from '../../../components/common/button/button';
@@ -18,6 +16,7 @@ import {
   Responsive,
   Spacing,
 } from '../../../components/constants/styles';
+import GradientBackground from '../../../components/common/gradientBackground/gradientBackground';
 
 export default function Register({ navigation }) {
   const [fullName, setFullName] = useState('');
@@ -49,7 +48,7 @@ export default function Register({ navigation }) {
 
   return (
     <View style={styles.container}>
-      <StatusBar barStyle="light-content" />
+      <GradientBackground />
       <SafeAreaView style={styles.safeArea}>
         <HeaderBack showBack={true} title={'Create your vault'} />
         <ScrollView

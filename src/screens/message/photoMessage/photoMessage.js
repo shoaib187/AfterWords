@@ -23,6 +23,7 @@ import { FONT } from '../../../components/constants/font';
 import HeaderBack from '../../../components/common/headerBack/headerBack';
 import Stepper from '../../../components/messages/stepper/stepper';
 import { Button } from '../../../components/common/button/button';
+import GradientBackground from '../../../components/common/gradientBackground/gradientBackground';
 
 export default function PhotoMessage({ navigation }) {
   const [photoUri, setPhotoUri] = useState(null);
@@ -54,13 +55,7 @@ export default function PhotoMessage({ navigation }) {
 
   return (
     <SafeAreaView style={styles.container}>
-      <LinearGradient
-        colors={['rgba(197, 147, 83, 0.35)', 'rgba(0, 0, 0, 0)']}
-        style={styles.headerGlowBackground}
-        start={{ x: 0.5, y: 0 }}
-        end={{ x: 0.5, y: 1 }}
-      />
-
+      <GradientBackground />
       <HeaderBack title={'New Photo Memory'} />
       <View style={styles.safeAreaContainer}>
         <Stepper />

@@ -15,11 +15,13 @@ import {
   Radius,
 } from '../../../components/constants/styles';
 import { COLORS } from '../../../components/constants/color';
+import GradientBackground from '../../../components/common/gradientBackground/gradientBackground';
 
 export default function FamilyTree({ navigation }) {
   return (
     <SafeAreaView style={styles.container}>
       <HeaderBack title="Family Tree" />
+      <GradientBackground />
       <ScrollView
         contentContainerStyle={styles.scrollContainer}
         showsVerticalScrollIndicator={false}

@@ -13,6 +13,7 @@ import {
 import HeaderBack from '../../../components/common/headerBack/headerBack';
 import Title from '../../../components/typography/title/title';
 import Subtitle from '../../../components/typography/subtitle/subtitle';
+import GradientBackground from '../../../components/common/gradientBackground/gradientBackground';
 
 // Strict structural mapping of the choice matrices from Screenshot 2026-06-08 at 4.48.02 PM.png
 const PRESERVE_OPTIONS = [
@@ -58,12 +59,7 @@ export default function CreateLegacy({ navigation }) {
   return (
     <SafeAreaView style={styles.container}>
       <HeaderBack title={'Create Legacy'} />
-      <LinearGradient
-        colors={['rgba(197, 147, 83, 0.6)', 'rgba(0, 0, 0, 0)']}
-        style={styles.ambientTopGlow}
-        start={{ x: 0.5, y: 0 }}
-        end={{ x: 0.5, y: 1 }}
-      />
+      <GradientBackground />
 
       <View style={styles.contentWrapper}>
         {/* ── Main Serif Layout Heading Header ── */}

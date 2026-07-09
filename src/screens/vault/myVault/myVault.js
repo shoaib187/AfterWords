@@ -17,6 +17,7 @@ import VideosList from '../../../components/vault/videosList/videosList';
 import VoiceList from '../../../components/vault/voiceList/voiceList';
 import PhotosList from '../../../components/vault/photosList/photosList';
 import DocumentList from '../../../components/vault/documentList/documentList';
+import GradientBackground from '../../../components/common/gradientBackground/gradientBackground';
 
 export default function MyVault({ navigation }) {
   const [searchQuery, setSearchQuery] = useState('');
@@ -40,13 +41,7 @@ export default function MyVault({ navigation }) {
 
   return (
     <SafeAreaView style={styles.container}>
-      <LinearGradient
-        colors={['rgba(197, 147, 83, 0.35)', 'rgba(0, 0, 0, 0)']}
-        style={styles.headerGlowBackground}
-        start={{ x: 0.5, y: 0 }}
-        end={{ x: 0.5, y: 1 }}
-      />
-
+      <GradientBackground />
       <HeaderBack title={'My Vault'} />
 
       <View style={styles.safeAreaContainer}>

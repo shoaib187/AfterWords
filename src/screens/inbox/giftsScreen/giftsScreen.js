@@ -20,6 +20,7 @@ import { FONT } from '../../../components/constants/font';
 import AppText from '../../../components/typography/appText/appText';
 import Title from '../../../components/typography/title/title';
 import HeaderBack from '../../../components/common/headerBack/headerBack';
+import GradientBackground from '../../../components/common/gradientBackground/gradientBackground';
 
 // Complete mock data accurately mirroring Screenshot 2026-06-15 at 10.45.09 AM.png
 const GIFT_DATA = [
@@ -121,12 +122,7 @@ export default function GiftsScreen({ navigation }) {
 
   return (
     <SafeAreaView style={styles.container}>
-      <LinearGradient
-        colors={['rgba(197, 147, 83, 0.25)', 'rgba(0, 0, 0, 0)']}
-        style={styles.ambientGlow}
-        start={{ x: 0.5, y: 0 }}
-        end={{ x: 0.5, y: 1 }}
-      />
+      <GradientBackground />
       <HeaderBack title={'Legacy Inbox'} />
       <View style={styles.headerProfileBlock}>
         <AppText text={'A Gift From'} style={styles.giftFromSubText} />

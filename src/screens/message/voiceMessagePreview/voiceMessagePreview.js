@@ -15,6 +15,7 @@ import HeaderBack from '../../../components/common/headerBack/headerBack';
 import Stepper from '../../../components/messages/stepper/stepper';
 import VoiceMessageBubble from '../../../components/messages/voiceMessageBubble/voiceMessageBubble';
 import { Button } from '../../../components/common/button/button';
+import GradientBackground from '../../../components/common/gradientBackground/gradientBackground';
 
 export default function VoiceMessagePreview({ navigation, route }) {
   const [noteText, setNoteText] = useState('');
@@ -43,12 +44,7 @@ export default function VoiceMessagePreview({ navigation, route }) {
   return (
     <SafeAreaView style={styles.container}>
       <HeaderBack title={'Voice Message'} />
-      <LinearGradient
-        colors={['rgba(197, 147, 83, 0.35)', 'rgba(0, 0, 0, 0)']}
-        style={styles.headerGlowBackground}
-        start={{ x: 0.5, y: 0 }}
-        end={{ x: 0.5, y: 1 }}
-      />
+      <GradientBackground />
 
       <SafeAreaView style={styles.safeArea}>
         <Stepper />

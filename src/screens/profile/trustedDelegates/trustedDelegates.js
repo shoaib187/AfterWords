@@ -9,6 +9,7 @@ import AppText from '../../../components/typography/appText/appText';
 import { COLORS } from '../../../components/constants/color';
 import { Responsive, Spacing } from '../../../components/constants/styles';
 import HeaderBack from '../../../components/common/headerBack/headerBack';
+import GradientBackground from '../../../components/common/gradientBackground/gradientBackground';
 
 export default function TrustedDelegates({ navigation }) {
   const [medicalAccess, setMedicalAccess] = useState(true);
@@ -18,12 +19,7 @@ export default function TrustedDelegates({ navigation }) {
   return (
     <SafeAreaView style={styles.container}>
       {/* Background Top Ambient Gold Wash */}
-      <LinearGradient
-        colors={['rgba(197, 147, 83, 0.22)', 'rgba(0, 0, 0, 0)']}
-        style={styles.ambientGlow}
-        start={{ x: 0.5, y: 0 }}
-        end={{ x: 0.5, y: 1 }}
-      />
+      <GradientBackground />
 
       <HeaderBack title={'Trusted Delegates (POA)'} />
 

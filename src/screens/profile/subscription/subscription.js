@@ -13,6 +13,7 @@ import {
 } from '../../../components/constants/styles';
 import { COLORS } from '../../../components/constants/color';
 import HeaderBack from '../../../components/common/headerBack/headerBack';
+import GradientBackground from '../../../components/common/gradientBackground/gradientBackground';
 
 const plans = [
   {
@@ -175,12 +176,7 @@ export default function Subscription({ navigation }) {
   const [isAnnual, setIsAnnual] = useState(false);
   return (
     <SafeAreaView style={styles.container}>
-      <LinearGradient
-        colors={['rgba(197, 147, 83, 0.22)', 'rgba(0, 0, 0, 0)']}
-        style={styles.ambientGlow}
-        start={{ x: 0.5, y: 0 }}
-        end={{ x: 0.5, y: 1 }}
-      />
+      <GradientBackground />
 
       <HeaderBack title={'Choose Plan'} />
 

@@ -16,9 +16,11 @@ import {
   Responsive,
   Spacing,
 } from '../../components/constants/styles';
+
 import { FONT } from '../../components/constants/font';
 import { COLORS } from '../../components/constants/color';
 import Title from '../../components/typography/title/title';
+import GradientBackground from '../../components/common/gradientBackground/gradientBackground';
 
 // Mock data array directly mapping the items present in Screenshot 2026-06-08 at 4.34.27 PM.png
 const RECENT_MEMORIES = [
@@ -68,6 +70,7 @@ export default function Home({ navigation }) {
 
   return (
     <SafeAreaView style={styles.safeArea} edges={['top']}>
+      <GradientBackground />
       <View style={styles.topProfileBar}>
         <View style={styles.profileLeftSection}>
           <View style={styles.avatarCircle}>

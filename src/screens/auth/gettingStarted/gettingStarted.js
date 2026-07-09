@@ -1,5 +1,11 @@
 import React from 'react';
-import { StyleSheet, View, StatusBar } from 'react-native';
+import {
+  StyleSheet,
+  View,
+  StatusBar,
+  Image,
+  ImageBackground,
+} from 'react-native';
 
 import { SafeAreaView } from 'react-native-safe-area-context';
 import AppText from '../../../components/typography/appText/appText';
@@ -17,14 +23,18 @@ export default function GettingStarted({ navigation }) {
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="light-content" />
       <View style={styles.safeArea}>
-        <View style={styles.centerContainer}>
-          {/* <Image
-              source={require('../../assets/images/logo.png')}
-              style={styles.logo}
-              resizeMode="contain"
-            /> */}
+        <ImageBackground
+          source={require('../../../../assets/png/circle-neon.png')}
+          style={styles.centerContainer}
+          resizeMode="contain"
+        >
+          <Image
+            source={require('../../../../assets/png/logo.png')}
+            style={styles.logo}
+            resizeMode="contain"
+          />
           <AppText text={'MESSAGE THAT LAST FOREVER'} color={COLORS.GOLD} />
-        </View>
+        </ImageBackground>
 
         {/* Bottom Area: Description text and CTA Button */}
         <View style={styles.bottomContainer}>

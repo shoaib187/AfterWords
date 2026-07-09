@@ -23,6 +23,7 @@ import HeaderBack from '../../../components/common/headerBack/headerBack';
 import { Button } from '../../../components/common/button/button';
 import Title from '../../../components/typography/title/title';
 import SearchBar from '../../../components/common/searchBar/searchBar';
+import GradientBackground from '../../../components/common/gradientBackground/gradientBackground';
 
 const INITIAL_RECIPIENTS = [
   {
@@ -76,12 +77,7 @@ export default function RecipientDirectory({ navigation }) {
 
   return (
     <SafeAreaView style={styles.container}>
-      <LinearGradient
-        colors={['rgba(197, 147, 83, 0.25)', 'rgba(0, 0, 0, 0)']}
-        style={styles.headerGlowBackground}
-        start={{ x: 0.5, y: 0 }}
-        end={{ x: 0.5, y: 1 }}
-      />
+      <GradientBackground />
 
       <HeaderBack title={'Recipient Directory'} />
       <ScrollView

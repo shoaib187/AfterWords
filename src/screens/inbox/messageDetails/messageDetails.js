@@ -17,6 +17,7 @@ import HeaderBack from '../../../components/common/headerBack/headerBack';
 import Title from '../../../components/typography/title/title';
 import AppText from '../../../components/typography/appText/appText';
 import DocumentDownloadCard from '../../../components/common/documentDownloadCard/documentDownloadCard';
+import GradientBackground from '../../../components/common/gradientBackground/gradientBackground';
 
 export default function MessageDetails({ navigation, route }) {
   const { type } = route?.params;
@@ -26,12 +27,7 @@ export default function MessageDetails({ navigation, route }) {
 
   return (
     <SafeAreaView style={styles.container}>
-      <LinearGradient
-        colors={['rgba(197, 147, 83, 0.2)', 'rgba(0, 0, 0, 0)']}
-        style={styles.ambientGlow}
-        start={{ x: 0.5, y: 0 }}
-        end={{ x: 0.5, y: 1 }}
-      />
+      <GradientBackground />
 
       <HeaderBack title={'Message Details'} />
       <ScrollView

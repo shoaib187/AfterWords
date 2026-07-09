@@ -3,6 +3,7 @@ import {
   Animated,
   Dimensions,
   FlatList,
+  ImageBackground,
   StatusBar,
   StyleSheet,
   View,
@@ -12,14 +13,14 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import AppText from '../../../components/typography/appText/appText';
 import { Button } from '../../../components/common/button/button';
 import { COLORS } from '../../../components/constants/color';
+import { Responsive, Spacing } from '../../../components/constants/styles';
 
 const { width } = Dimensions.get('screen');
 
 export const onboardingData = [
   {
     id: '1',
-    image:
-      'https://images.unsplash.com/photo-1521737604893-d14cc237f11d?auto=format&fit=crop&w=800&q=80',
+    image: require('../../../../assets/png/security.png'),
     icon: 'mail-open-outline',
     title: 'MESSAGES THAT LAST FOREVER',
     description:
@@ -27,21 +28,11 @@ export const onboardingData = [
   },
   {
     id: '2',
-    image:
-      'https://images.unsplash.com/photo-1520607162513-77705c0f0d4a?auto=format&fit=crop&w=800&q=80',
+    image: require('../../../../assets/png/calendar.png'),
     icon: 'shield-checkmark-outline',
     title: 'SAFE & SECURE',
     description:
       'Your memories are encrypted and protected, ensuring only the people you choose can access them.',
-  },
-  {
-    id: '3',
-    image:
-      'https://images.unsplash.com/photo-1520975916090-3105956dac38?auto=format&fit=crop&w=800&q=80',
-    icon: 'heart-outline',
-    title: 'LEAVE YOUR LEGACY',
-    description:
-      'Share your love, stories, and wisdom with future generations, creating a lasting impact beyond today.',
   },
 ];
 
@@ -99,20 +90,30 @@ export default function OnboardingScreen({ navigation }) {
 
     return (
       <View style={styles.slide}>
-        <Animated.Image
-          source={{ uri: item.image }}
-          style={[
-            styles.image,
-            {
-              transform: [
-                { translateX: imageTranslate },
-                { scale: imageScale },
-              ],
-            },
-          ]}
-          resizeMode="cover"
-        />
-
+        <ImageBackground
+          source={require('../../../../assets/png/circle-neon.png')}
+          style={{
+            justifyContent: 'center',
+            alignItems: 'center',
+            width: '100%',
+            flex: 0.7,
+          }}
+          resizeMode="contain"
+        >
+          <Animated.Image
+            source={item?.image}
+            style={[
+              styles.image,
+              {
+                transform: [
+                  { translateX: imageTranslate },
+                  { scale: imageScale },
+                ],
+              },
+            ]}
+            resizeMode="cover"
+          />
+        </ImageBackground>
         <Animated.View
           style={{
             opacity,
@@ -120,7 +121,6 @@ export default function OnboardingScreen({ navigation }) {
           }}
         >
           <AppText text={item.title} color={COLORS.GOLD} style={styles.title} />
-
           <AppText text={item.description} style={styles.description} />
         </Animated.View>
       </View>
@@ -203,15 +203,14 @@ const styles = StyleSheet.create({
   },
 
   image: {
-    width: width * 0.85,
-    height: 320,
-    borderRadius: 20,
-    marginBottom: 40,
+    width: Responsive.width(100),
+    height: Responsive.width(100),
+    marginLeft: Spacing.large,
   },
 
   title: {
     textAlign: 'center',
-    marginBottom: 12,
+    marginBottom: Spacing.medium,
   },
 
   description: {

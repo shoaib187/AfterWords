@@ -15,6 +15,7 @@ import AppText from '../../../components/typography/appText/appText';
 import { Responsive, Spacing } from '../../../components/constants/styles';
 import { COLORS } from '../../../components/constants/color';
 import HeaderBack from '../../../components/common/headerBack/headerBack';
+import GradientBackground from '../../../components/common/gradientBackground/gradientBackground';
 
 const securitySettings = [
   {
@@ -53,12 +54,7 @@ export default function SecurityAndPrivacy({ navigation }) {
   return (
     <SafeAreaView style={styles.container}>
       {/* Background Top Ambient Gold Wash Gradient Backdrop */}
-      <LinearGradient
-        colors={['rgba(197, 147, 83, 0.28)', 'rgba(0, 0, 0, 0)']}
-        style={styles.ambientGlow}
-        start={{ x: 0.5, y: 0 }}
-        end={{ x: 0.5, y: 1 }}
-      />
+      <GradientBackground />
 
       <HeaderBack title={'Security & Privacy'} />
       <ScrollView

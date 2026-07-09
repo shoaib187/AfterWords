@@ -12,11 +12,13 @@ import {
 } from '../../../components/constants/styles';
 import { COLORS } from '../../../components/constants/color';
 import HeaderBack from '../../../components/common/headerBack/headerBack';
+import GradientBackground from '../../../components/common/gradientBackground/gradientBackground';
 
 export default function EstateExecutor({ navigation }) {
   return (
     <SafeAreaView style={styles.container}>
       <HeaderBack title={'Estate Executors'} />
+      <GradientBackground />
       <ScrollView
         contentContainerStyle={styles.scrollContainer}
         showsVerticalScrollIndicator={false}

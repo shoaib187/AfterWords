@@ -13,16 +13,12 @@ import {
   Spacing,
 } from '../../../components/constants/styles';
 import { Button } from '../../../components/common/button/button';
+import GradientBackground from '../../../components/common/gradientBackground/gradientBackground';
 
 export default function MemorySealedSuccess({ navigation }) {
   return (
     <SafeAreaView style={styles.container}>
-      <LinearGradient
-        colors={['rgba(190, 140, 53, 0.35)', 'rgba(0, 0, 0, 0)']}
-        style={styles.radialGlowBackground}
-        start={{ x: 0.5, y: 0.15 }}
-        end={{ x: 0.5, y: 0.55 }}
-      />
+      <GradientBackground />
 
       <View style={styles.safeArea}>
         <View style={styles.centerContent}>

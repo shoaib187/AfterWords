@@ -1,15 +1,13 @@
 import React from 'react';
-import { StyleSheet } from 'react-native';
-import LinearGradient from 'react-native-linear-gradient';
+import { Image, StyleSheet } from 'react-native';
 import { Responsive } from '../../constants/styles';
 
 export default function GradientBackground({}) {
   return (
-    <LinearGradient
-      colors={['rgba(197, 147, 83, 0.35)', 'rgba(0, 0, 0, 0)']}
+    <Image
       style={styles.headerGlowBackground}
-      start={{ x: 0.5, y: 0 }}
-      end={{ x: 0.5, y: 1 }}
+      source={require('../../../../assets/png/top_gradient.png')}
+      resizeMode="contain"
     />
   );
 }
@@ -22,5 +20,7 @@ const styles = StyleSheet.create({
     right: 0,
     height: Responsive.height(260),
     zIndex: 0,
+    width: '100%',
+    opacity: 0.5,
   },
 });

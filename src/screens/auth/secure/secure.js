@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { StyleSheet, View, Switch } from 'react-native';
+import { StyleSheet, View, Switch, Image } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import HeaderBack from '../../../components/common/headerBack/headerBack';
 import Ionicons from 'react-native-vector-icons/Ionicons';
@@ -15,6 +15,7 @@ import { COLORS } from '../../../components/constants/color';
 import Title from '../../../components/typography/title/title';
 import Subtitle from '../../../components/typography/subtitle/subtitle';
 import { useAuth } from '../../../configs/authContext/authContext';
+import GradientBackground from '../../../components/common/gradientBackground/gradientBackground';
 
 export default function SecureVault({ navigation }) {
   const [isBiometricEnabled, setIsBiometricEnabled] = useState(true);
@@ -22,16 +23,20 @@ export default function SecureVault({ navigation }) {
 
   return (
     <View style={styles.container}>
+      <GradientBackground />
       <HeaderBack showBack={true} title={'Secure your Vault'} />
       <SafeAreaView style={styles.safeArea}>
         <View style={styles.contentContainer}>
           <View style={styles.illustrationWrapper}>
-            <View style={styles.outerRingGraphic}>
-              <View style={styles.innerFingerprintDisc}>
-                {/* Imgage here */}
-              </View>
-              {/* verfied badge as well */}
+            {/* <View style={styles.outerRingGraphic}> */}
+            <View style={styles.innerFingerprintDisc}>
+              <Image
+                source={require('../../../../assets/png/scanning.png')}
+                style={{ width: '100%', height: '100%' }}
+                resizeMode="contain"
+              />
             </View>
+            {/* </View> */}
           </View>
 
           <AppText
@@ -122,11 +127,8 @@ const styles = StyleSheet.create({
     width: Responsive.width(100),
     height: Responsive.width(100),
     borderRadius: Responsive.width(50),
-    backgroundColor: '#1E1F24',
     justifyContent: 'center',
     alignItems: 'center',
-    borderWidth: 1,
-    borderColor: 'rgba(197, 147, 83, 0.2)',
   },
 
   toggleCard: {

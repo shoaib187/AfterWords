@@ -23,6 +23,7 @@ import { FONT } from '../../../components/constants/font';
 import HeaderBack from '../../../components/common/headerBack/headerBack';
 import MemoryEditModal from '../../../components/vault/memoryEditModal/memoryEditModal';
 import DeleteConfirmationModal from '../../../components/common/deleteModal/deleteModal';
+import GradientBackground from '../../../components/common/gradientBackground/gradientBackground';
 
 export default function VaultItemDetail({ navigation, route }) {
   const [visible, setVisible] = React.useState(false);
@@ -39,12 +40,7 @@ export default function VaultItemDetail({ navigation, route }) {
 
   return (
     <SafeAreaView style={styles.container}>
-      <LinearGradient
-        colors={['rgba(197, 147, 83, 0.25)', 'rgba(0, 0, 0, 0)']}
-        style={styles.headerGlowBackground}
-        start={{ x: 0.5, y: 0 }}
-        end={{ x: 0.5, y: 1 }}
-      />
+      <GradientBackground />
       <HeaderBack title={'Vault item details'} />
 
       <View style={styles.safeAreaContainer}>

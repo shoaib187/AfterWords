@@ -13,6 +13,7 @@ import {
   Spacing,
 } from '../../../components/constants/styles';
 import HeaderBack from '../../../components/common/headerBack/headerBack';
+import GradientBackground from '../../../components/common/gradientBackground/gradientBackground';
 
 export default function ProfileSettings({ navigation }) {
   const handleNavigation = destination => {
@@ -59,6 +60,7 @@ export default function ProfileSettings({ navigation }) {
   return (
     <SafeAreaView style={styles.container}>
       <HeaderBack title={'Profile & Settings'} />
+      <GradientBackground />
       <ScrollView
         contentContainerStyle={styles.scrollLayout}
         showsVerticalScrollIndicator={false}

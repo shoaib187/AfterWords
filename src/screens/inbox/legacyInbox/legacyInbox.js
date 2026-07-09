@@ -20,6 +20,7 @@ import { FONT } from '../../../components/constants/font';
 import HeaderBack from '../../../components/common/headerBack/headerBack';
 import Title from '../../../components/typography/title/title';
 import AppText from '../../../components/typography/appText/appText';
+import GradientBackground from '../../../components/common/gradientBackground/gradientBackground';
 
 export default function LegacyInbox({ navigation }) {
   const [email, setEmail] = useState('Sofia.chen@gmail.com');
@@ -70,12 +71,7 @@ export default function LegacyInbox({ navigation }) {
 
   return (
     <SafeAreaView style={styles.container}>
-      <LinearGradient
-        colors={['rgba(197, 147, 83, 0.45)', 'rgba(0, 0, 0, 0)']}
-        style={styles.backgroundGlow}
-        start={{ x: 0.5, y: 0 }}
-        end={{ x: 0.5, y: 1 }}
-      />
+      <GradientBackground />
 
       <HeaderBack title={'Legacy Inbox'} />
 

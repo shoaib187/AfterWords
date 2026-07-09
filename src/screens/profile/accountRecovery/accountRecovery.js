@@ -15,6 +15,7 @@ import {
   Responsive,
   Spacing,
 } from '../../../components/constants/styles';
+import GradientBackground from '../../../components/common/gradientBackground/gradientBackground';
 
 export default function AccountRecovery({ navigation }) {
   const [isRevealed, setIsRevealed] = useState(false);
@@ -121,12 +122,7 @@ export default function AccountRecovery({ navigation }) {
 
   return (
     <SafeAreaView style={styles.container}>
-      <LinearGradient
-        colors={['rgba(212,168,67,0.25)', 'rgba(0,0,0,0)']}
-        style={styles.ambientGlow}
-        start={{ x: 0.5, y: 0 }}
-        end={{ x: 0.5, y: 1 }}
-      />
+      <GradientBackground />
 
       <HeaderBack title="Account Recovery" />
 
