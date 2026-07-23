@@ -13,8 +13,8 @@ import HeaderBack from '../../../components/common/headerBack/headerBack';
 import Title from '../../../components/typography/title/title';
 import Subtitle from '../../../components/typography/subtitle/subtitle';
 import GradientBackground from '../../../components/common/gradientBackground/gradientBackground';
-import LinearGradient from 'react-native-linear-gradient';
 import { COLORS } from '../../../components/constants/color';
+import GradientWrapper from '../../../components/common/gradientWrapper/gradientWrapper';
 
 // Strict structural mapping of the choice matrices from Screenshot 2026-06-08 at 4.48.02 PM.png
 const PRESERVE_OPTIONS = [
@@ -95,14 +95,18 @@ export default function CreateTreasure({ navigation }) {
               onPress={handlePreservePress}
               style={styles.cardTouchWrapper}
             >
-              <LinearGradient
-                colors={['#F5EAD9', '#D5A760']}
-                start={{ x: 0, y: 0 }}
-                end={{ x: 1, y: 1 }}
-                style={styles.preserveCard}
+              <GradientWrapper
+                wrapperStyle={{
+                  alignItems: 'center',
+                  paddingVertical: Spacing.xLarge,
+                }}
               >
                 <View style={styles.plusIconCircle}>
-                  <Ionicons name="add" size={26} color="#FFFFFF" />
+                  <Ionicons
+                    name="add"
+                    size={Responsive.width(26)}
+                    color="#FFFFFF"
+                  />
                 </View>
 
                 <AppText
@@ -113,7 +117,7 @@ export default function CreateTreasure({ navigation }) {
                   text="Record a video, voice note, or upload a document."
                   style={styles.preserveCardDescription}
                 />
-              </LinearGradient>
+              </GradientWrapper>
             </TouchableOpacity>
           </Animated.View>
         )}

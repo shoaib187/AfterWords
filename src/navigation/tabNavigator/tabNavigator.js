@@ -16,7 +16,7 @@ import LinearGradient from 'react-native-linear-gradient';
 import { Responsive, Radius, Spacing } from '../../components/constants/styles';
 import { COLORS } from '../../components/constants/color';
 import { HomeStack } from '../homeStack/homeStack';
-import { VaultStack } from '../vaultStack/vaultStack';
+import { TreasuresStack } from '../treasuresStack/treasuresStack';
 import { LegacyStack } from '../legacyStack/legacyStack';
 import { ProfileStack } from '../profileStack/profileStack';
 import { TreasureStack } from '../treasureStack/treasureStack';
@@ -29,9 +29,7 @@ const AVAILABLE_WIDTH = SCREEN_WIDTH - TAB_BAR_MARGIN * 2;
 const TAB_COUNT = 5;
 const TAB_WIDTH = AVAILABLE_WIDTH / TAB_COUNT;
 
-// ==========================================
 // CUSTOM PREMIUM ANIMATED TAB BAR COMPONENT
-// ==========================================
 const CustomTabBar = ({ state, descriptors, navigation }) => {
   const animationPosition = useRef(new Animated.Value(0)).current;
   const animationOpacity = useRef(new Animated.Value(0)).current;
@@ -175,7 +173,7 @@ const TabNavigator = () => {
         }}
       >
         <Tab.Screen name="Home" component={HomeStack} />
-        <Tab.Screen name="Vault" component={VaultStack} />
+        <Tab.Screen name="Treasures" component={TreasuresStack} />
         <Tab.Screen name="Treasure" component={TreasureStack} />
         <Tab.Screen name="Legacy" component={LegacyStack} />
         <Tab.Screen name="Profile" component={ProfileStack} />
@@ -227,6 +225,13 @@ const getTabBarVisibility = route => {
     'TrustedDelegates',
     'AddMessageDetails',
     'TreasureSaved',
+    'TreasureDetails',
+    'AddToCollections',
+    'GiftDetails',
+    'ExploreEncestors',
+    'FamilyHistory',
+    'LegalExecutor',
+    'AddExecutor',
   ];
 
   if (hiddenScreens.includes(routeName)) {

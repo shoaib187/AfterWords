@@ -6,16 +6,16 @@ const Stack = createStackNavigator();
 const LegacyStack = () => {
   return (
     <Stack.Navigator
-      initialRouteName="LegacyHome"
+      initialRouteName="LegacyGifts"
       screenOptions={{
         headerShown: false,
         animation: 'slide_from_right',
       }}
     >
-      <Stack.Screen name="LegacyHome" component={screens.MyLagacies} />
-      <Stack.Screen name="LegacyDetails" component={screens.LegacyDetails} />
-      <Stack.Screen name="GiftsScreen" component={screens.GiftsScreen} />
+      <Stack.Screen name="LegacyGifts" component={screens.LegacyGifts} />
+      <Stack.Screen name="GiftDetails" component={screens.GiftDetails} />
       <Stack.Screen name="MessageDetails" component={screens.MessageDetails} />
+      <Stack.Screen name="FamilyTree" component={screens.FamilyTree} />
     </Stack.Navigator>
   );
 };

@@ -29,12 +29,7 @@ export default function NewRecipient({ navigation }) {
   const [name, setName] = useState('');
   const [relationship, setRelationship] = useState('');
   const [email, setEmail] = useState('');
-
-  const handleSaveRecipient = () => {
-    console.log('Recipient Saved:', { name, relationship, email });
-    // Navigate back or update local cache context state
-    navigation?.goBack();
-  };
+  const [phone, setPhone] = useState('');
 
   return (
     <SafeAreaView style={styles.container}>
@@ -60,12 +55,20 @@ export default function NewRecipient({ navigation }) {
           onChangeText={setRelationship}
         />
         <InputField
-          label={'Email Address'}
+          label={'Contact Method'}
           placeholder="123@gamil.com"
           value={email}
           onChangeText={setEmail}
           keyboardAppearance="dark"
           keyboardType="email-address"
+        />
+        <InputField
+          label={'Phone'}
+          placeholder="+12342424"
+          keyboardAppearance="dark"
+          keyboardType="phone-pad"
+          value={phone}
+          onChangeText={setPhone}
         />
 
         <Button title="Save" />

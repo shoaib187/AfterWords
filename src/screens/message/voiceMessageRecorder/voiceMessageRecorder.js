@@ -103,30 +103,6 @@ export default function VoiceMessageRecorder({ navigation }) {
       <GradientBackground />
 
       <SafeAreaView style={styles.safeArea}>
-        <View style={styles.progressRowContainer}>
-          <View style={[styles.progressStepCapsule, styles.stepActive]}>
-            <AppText
-              text="1 Pick format"
-              size="tiny"
-              color={COLORS.BLACK}
-              fontFamily={FONT.TTForseSemiBold}
-            />
-          </View>
-          <View style={styles.progressConnectorLine} />
-          <View style={[styles.progressStepCapsule, styles.stepActive]}>
-            <AppText
-              text="2 Create"
-              size="tiny"
-              color={COLORS.BLACK}
-              fontFamily={FONT.TTForseSemiBold}
-            />
-          </View>
-          <View style={styles.progressConnectorLine} />
-          <View style={[styles.progressStepCapsule, styles.stepInactive]}>
-            <AppText text="3 Assign" size="tiny" color="#63523B" />
-          </View>
-        </View>
-
         {/* Dynamic Context Target Header */}
         <View style={styles.sectionTitleRow}>
           <View

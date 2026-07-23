@@ -18,32 +18,37 @@ import NewRecipient from '../../screens/recepients/newRecepient/newRecepient';
 import ReviewSummary from '../../screens/recepients/reviewSummary/reviewSummary';
 import TreasureSaved from '../../screens/recepients/treasureSaved/treasureSaved';
 
-import MyVault from '../../screens/vault/myVault/myVault';
 import VaultItemDetail from '../../screens/vault/vaultItemDetail/vaultItemDetail';
 import GettingStarted from '../../screens/auth/gettingStarted/gettingStarted';
 import Login from '../../screens/auth/login/login';
 import MPin from '../../screens/auth/mPin/mPin';
 import OnboardingScreen from '../../screens/auth/onboarding/onboarding';
 import LegacyInbox from '../../screens/legacy/legacyInbox/legacyInbox';
-import SecureAccess from '../../screens/legacy/myLagacies/myLagacies';
 import AccountRecovery from '../../screens/profile/accountRecovery/accountRecovery';
-import AddNewRecepient from '../../screens/profile/addNewRecepient/addNewRecepient';
-import EstateExecutor from '../../screens/profile/estateExecutor/estateExecutor';
+
 import FamilyTree from '../../screens/profile/familyTree/familyTree';
 import ProfileSettings from '../../screens/profile/profileSettings/profileSettings';
 import SecurityAndPrivacy from '../../screens/profile/securityAndPrivacy/securityAndPrivacy';
 import Subscription from '../../screens/profile/subscription/subscription';
 import TrustedDelegates from '../../screens/profile/trustedDelegates/trustedDelegates';
 import VaultHome from '../../screens/vault/vaultHome/vaultHome';
-import GiftsScreen from '../../screens/legacy/giftsScreen/giftsScreen';
 import MessageDetails from '../../screens/legacy/messageDetails/messageDetails';
 import RecipientDirectory from '../../screens/profile/recipientDirectory/recipientDirectory';
 import Roadmap from '../../screens/auth/roadmap/roadmap';
 import AddMessageDetails from '../../screens/message/addMessageDetails/addMessageDetails';
 import ReleaseRules from '../../screens/recepients/releaseRules/releaseRules';
 import ReviewLegacy from '../../screens/recepients/reviewLegacy/reviewLegacy';
-import MyLagacies from '../../screens/legacy/myLagacies/myLagacies';
-import LegacyDetails from '../../screens/legacy/legacyDetails/legacyDetails';
+import MyTreasures from '../../screens/treasure/myTreasures/myTreasures';
+import TreasureDetails from '../../screens/treasure/treasureDetails/treasureDetails';
+import AddToCollections from '../../screens/treasure/addToCollections/addToCollections';
+import LegacyGifts from '../../screens/legacy/legacyGifts/legacyGifts';
+import GiftDetails from '../../screens/legacy/giftDetails/giftDetails';
+import EditProfile from '../../screens/profile/editProfile/editProfile';
+import MyFamilyTree from '../../screens/profile/myFamilyTree/myFamilyTree';
+import ExploreEncestors from '../../screens/profile/exploreEncestors/exploreEncestors';
+import FamilyHistory from '../../screens/profile/familyHistory/familyHistory';
+import LegalExecutor from '../../screens/profile/legalExecutor/legalExecutor';
+import AddExecutor from '../../screens/profile/addExecutor/addExecutor';
 
 export const screens = {
   // Auth
@@ -60,6 +65,8 @@ export const screens = {
 
   // Legacy
   CreateTreasure,
+  LegacyGifts,
+  GiftDetails,
 
   // Messages
   VideoMessageRecorder,
@@ -79,29 +86,30 @@ export const screens = {
   ReleaseRules,
   ReviewLegacy,
 
-  // Vault
-  MyVault,
+  // Treasures
+  MyTreasures,
   VaultItemDetail,
   VaultHome,
+  TreasureDetails,
+  AddToCollections,
 
   // Inbox
   LegacyInbox,
-  SecureAccess,
-  GiftsScreen,
   MessageDetails,
   RecipientDirectory,
 
   // Profile
   AccountRecovery,
-  AddNewRecepient,
-  EstateExecutor,
+
   FamilyTree,
   ProfileSettings,
   SecurityAndPrivacy,
   Subscription,
   TrustedDelegates,
-
-  // Legacies
-  MyLagacies,
-  LegacyDetails,
+  EditProfile,
+  MyFamilyTree,
+  ExploreEncestors,
+  FamilyHistory,
+  LegalExecutor,
+  AddExecutor,
 };

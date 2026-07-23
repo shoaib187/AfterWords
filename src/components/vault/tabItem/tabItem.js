@@ -64,7 +64,6 @@ const styles = StyleSheet.create({
   },
   tabItemButton: {
     alignItems: 'center',
-    width: '22%',
   },
   activeTabGradient: {
     width: Responsive.width(56),

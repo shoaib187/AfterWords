@@ -1,7 +1,6 @@
 import React from 'react';
 import { StyleSheet, View, TouchableOpacity, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import LinearGradient from 'react-native-linear-gradient';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import Title from '../../../components/typography/title/title';
 import { FONT } from '../../../components/constants/font';
@@ -12,9 +11,86 @@ import {
   Responsive,
   Spacing,
 } from '../../../components/constants/styles';
-import HeaderBack from '../../../components/common/headerBack/headerBack';
 import GradientBackground from '../../../components/common/gradientBackground/gradientBackground';
 import { useAuth } from '../../../configs/authContext/authContext';
+import HeaderWithSubtitle from '../../../components/common/headerWithSubtitle/headerWithSubtitle';
+import ProfileCard from '../../../components/profile/profileCard/profileCard';
+import Stats from '../../../components/profile/stats/stats';
+import MenuItem from '../../../components/profile/menuItem/menuItem';
+
+const MENU_SECTIONS = [
+  {
+    title: 'PROFILE',
+    items: [
+      {
+        icon: 'account-outline',
+        title: 'Personal Profile',
+        description: 'Manage your profile',
+        screen: 'EditProfile',
+      },
+    ],
+  },
+  {
+    title: 'PEOPLE & NETWORK',
+    items: [
+      {
+        icon: 'account-box-multiple-outline',
+        title: 'Recipient Directory',
+        description: 'Manage your contacts',
+        screen: 'RecipientDirectory',
+      },
+      {
+        icon: 'family-tree',
+        title: 'Family Tree',
+        description: 'Map descendants & future receivers',
+        screen: 'MyFamilyTree',
+      },
+    ],
+  },
+  {
+    title: 'LEGACY',
+    items: [
+      {
+        icon: 'shield-account-outline',
+        title: 'Legal Executors',
+        description: 'Control vault release upon passing',
+        screen: 'LegalExecutor',
+      },
+      {
+        icon: 'badge-account-outline',
+        title: 'Trusted Delegates (POA)',
+        description: 'Manage living incapacitation',
+        screen: 'TrustedDelegates',
+      },
+      {
+        icon: 'archive-outline',
+        title: 'Archive Treasures',
+        description: 'Restore your treasures',
+        screen: 'ArchiveTreasures',
+      },
+    ],
+  },
+  {
+    title: 'ACCOUNT',
+    items: [
+      {
+        icon: 'shield-lock-outline',
+        title: 'Security & Privacy',
+        screen: 'SecurityAndPrivacy',
+      },
+      {
+        icon: 'credit-card-outline',
+        title: 'Subscription & Storage',
+        screen: 'Subscription',
+      },
+      {
+        icon: 'account-key-outline',
+        title: 'Account Recovery',
+        screen: 'AccountRecovery',
+      },
+    ],
+  },
+];
 
 export default function ProfileSettings({ navigation }) {
   const { logout } = useAuth();
@@ -22,204 +98,48 @@ export default function ProfileSettings({ navigation }) {
     if (navigation && destination) navigation.navigate(destination);
   };
 
-  // Helper renderer to keep row groupings layout highly scannable
-  const renderSettingRow = ({ icon, title, description, onPress, isLast }) => (
-    <TouchableOpacity
-      onPress={onPress}
-      activeOpacity={0.7}
-      style={[styles.rowContainer, !isLast && styles.rowBottomBorder]}
-    >
-      <View style={styles.rowLeftWrap}>
-        <View style={styles.iconSquareFrame}>
-          <Icon
-            name={icon}
-            size={Responsive.width(20)}
-            color="rgba(197, 147, 83, 0.8)"
-          />
-        </View>
-        <View style={styles.textStack}>
-          <Title
-            text={title}
-            size="medium"
-            fontFamily={FONT.TTForseSemiBold}
-            color="#FFFFFF"
-          />
-          {description && (
-            <AppText
-              text={description}
-              size="small"
-              fontFamily={FONT.TTForseRegular}
-              color="#A1A1AA"
-              style={styles.descriptionSpacing}
-            />
-          )}
-        </View>
-      </View>
-      <Icon name="chevron-right" size={20} color="rgba(255, 255, 255, 0.3)" />
-    </TouchableOpacity>
-  );
-
   return (
     <SafeAreaView style={styles.container}>
-      <HeaderBack title={'Profile & Settings'} />
+      <HeaderWithSubtitle
+        title={'Account'}
+        subtitle={'Manage your legacy, security'}
+        showRightBtn={false}
+      />
       <GradientBackground />
       <ScrollView
         contentContainerStyle={styles.scrollLayout}
         showsVerticalScrollIndicator={false}
       >
-        <LinearGradient
-          colors={['#EEDBB2', '#CD974A']}
-          style={styles.profileCardGradient}
-          start={{ x: 0, y: 0 }}
-          end={{ x: 1, y: 1 }}
-        >
-          <TouchableOpacity style={styles.profileCardInner} activeOpacity={0.9}>
-            <View style={styles.profileInfoLeft}>
-              {/* Monogram Avatar Circle */}
-              <View style={styles.avatarCircle}>
-                <Title
-                  text="E"
-                  size="large"
-                  fontFamily={FONT.TTForseSemiBold}
-                  color="#1C1917"
-                />
-              </View>
+        <ProfileCard
+          name={'Shoaib'}
+          email={'example@gmail.com'}
+          memberSince={'2007'}
+          isPremium={true}
+        />
 
-              {/* Profile Details */}
-              <View style={styles.profileMetaStack}>
-                <Title
-                  text="Eleanor Whitfield"
-                  size="large"
-                  fontFamily={FONT.TTForseBold}
-                  color="#1C1917"
-                />
-                <AppText
-                  text="eleanor@whitfield.com"
-                  size="small"
-                  fontFamily={FONT.TTForseMedium}
-                  color="#1C1917"
-                  style={styles.emailTextGap}
-                />
-
-                {/* Badges Row Layout */}
-                <View style={styles.badgeRow}>
-                  <View style={styles.premiumBadge}>
-                    <AppText
-                      text="Premium"
-                      size="tiny"
-                      fontFamily={FONT.TTForseSemiBold}
-                      color="#FFFFFF"
-                    />
-                  </View>
-                  <AppText
-                    text="Member since 2023"
-                    size="tiny"
-                    fontFamily={FONT.TTForseMedium}
-                    color="rgba(28, 25, 23, 0.7)"
-                    style={styles.memberSinceText}
-                  />
-                </View>
-              </View>
-            </View>
-            <Icon
-              name="chevron-right"
-              size={Responsive.width(24)}
-              color="#1C1917"
+        <Stats />
+        {MENU_SECTIONS.map(section => (
+          <View key={section.title} style={styles.sectionBlock}>
+            <AppText
+              text={section.title}
+              size="tiny"
+              fontFamily={FONT.TTForseSemiBold}
+              color="#A1A1AA"
+              style={styles.sectionHeaderLabel}
             />
-          </TouchableOpacity>
-        </LinearGradient>
 
-        {/* SECTION 1: PEOPLE & NETWORK */}
-        <View style={styles.sectionBlock}>
-          <AppText
-            text="PEOPLE & NETWORK"
-            size="tiny"
-            fontFamily={FONT.TTForseSemiBold}
-            color="#A1A1AA"
-            style={styles.sectionHeaderLabel}
-          />
-          <View style={styles.groupedCardFrame}>
-            {renderSettingRow({
-              icon: 'account-box-multiple-outline',
-              title: 'Recipient Directory',
-              description: 'Manage your contacts',
-              onPress: () => handleNavigation('RecipientDirectory'),
-              isLast: false,
-            })}
-            {renderSettingRow({
-              icon: 'vector-triangle',
-              title: 'Family Tree',
-              description: 'Map descendants & future receivers',
-              onPress: () => handleNavigation('FamilyTree'),
-              isLast: true,
-            })}
+            {section.items.map((item, index) => (
+              <MenuItem
+                key={item.title}
+                icon={item.icon}
+                title={item.title}
+                description={item.description}
+                isLast={index === section.items.length - 1}
+                onPress={() => handleNavigation(item.screen)}
+              />
+            ))}
           </View>
-        </View>
-
-        {/* SECTION 2: NOTIFICATIONS */}
-        <View style={styles.sectionBlock}>
-          <AppText
-            text="NOTIFICATIONS"
-            size="tiny"
-            fontFamily={FONT.TTForseSemiBold}
-            color="#A1A1AA"
-            style={styles.sectionHeaderLabel}
-          />
-          <View style={styles.groupedCardFrame}>
-            {renderSettingRow({
-              icon: 'shield-account-outline',
-              title: 'Legal Executors',
-              description: 'Control vault release upon passing',
-              onPress: () => handleNavigation('EstateExecutor'),
-              isLast: false,
-            })}
-            {renderSettingRow({
-              icon: 'badge-account-outline',
-              title: 'Trusted Delegates (POA)',
-              description: 'Manage living incapacitation',
-              onPress: () => handleNavigation('TrustedDelegates'),
-              isLast: true,
-            })}
-          </View>
-        </View>
-
-        {/* SECTION 3: ACCOUNT & SETTING */}
-        <View style={styles.sectionBlock}>
-          <AppText
-            text="ACCOUNT & SETTING"
-            size="tiny"
-            fontFamily={FONT.TTForseBold}
-            color="#A1A1AA"
-            style={styles.sectionHeaderLabel}
-          />
-
-          <View style={[styles.groupedCardFrame, styles.singleRowContainer]}>
-            {renderSettingRow({
-              icon: 'shield-lock-outline',
-              title: 'Security & Privacy',
-              onPress: () => handleNavigation('SecurityAndPrivacy'),
-              isLast: true,
-            })}
-          </View>
-
-          <View style={[styles.groupedCardFrame, styles.singleRowContainer]}>
-            {renderSettingRow({
-              icon: 'credit-card-outline',
-              title: 'Subscription & Storage',
-              onPress: () => handleNavigation('Subscription'),
-              isLast: true,
-            })}
-          </View>
-
-          <View style={[styles.groupedCardFrame, styles.singleRowContainer]}>
-            {renderSettingRow({
-              icon: 'account-key-outline',
-              title: 'Account Recovery',
-              onPress: () => handleNavigation('AccountRecovery'),
-              isLast: true,
-            })}
-          </View>
-        </View>
+        ))}
 
         {/* SIGN OUT ACTION ITEM BLOCK */}
         <TouchableOpacity
@@ -363,7 +283,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingHorizontal: Spacing.medium + 4,
-    marginTop: Spacing.small,
   },
   signOutTextShift: {
     marginLeft: Spacing.medium,

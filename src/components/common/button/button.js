@@ -25,6 +25,7 @@ const Button = React.memo(
     rightIcon,
     iconSize = 20,
     iconColor,
+    flexDirection,
   }) => {
     const isPrimary = variant === 'primary';
 
@@ -53,7 +54,7 @@ const Button = React.memo(
         {loading ? (
           <ActivityIndicator color={COLORS.BLACK} size={22} />
         ) : (
-          <View style={styles.content}>
+          <View style={[styles.content, { flexDirection: flexDirection }]}>
             {leftIcon && (
               <Icon
                 name={leftIcon}
