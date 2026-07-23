@@ -49,6 +49,9 @@ import ExploreEncestors from '../../screens/profile/exploreEncestors/exploreEnce
 import FamilyHistory from '../../screens/profile/familyHistory/familyHistory';
 import LegalExecutor from '../../screens/profile/legalExecutor/legalExecutor';
 import AddExecutor from '../../screens/profile/addExecutor/addExecutor';
+import AddTrustedDelegate from '../../screens/profile/addTrustedDelegate/addTrustedDelegate';
+import ArchieveTreasures from '../../screens/treasure/archiveTreasure/archiveTreasure';
+import AddRecoveryContact from '../../screens/profile/addRcoveryContact/addRcoveryContact';
 
 export const screens = {
   // Auth
@@ -92,6 +95,7 @@ export const screens = {
   VaultHome,
   TreasureDetails,
   AddToCollections,
+  ArchieveTreasures,
 
   // Inbox
   LegacyInbox,
@@ -112,4 +116,6 @@ export const screens = {
   FamilyHistory,
   LegalExecutor,
   AddExecutor,
+  AddTrustedDelegate,
+  AddRecoveryContact,
 };

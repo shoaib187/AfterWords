@@ -26,6 +26,18 @@ const ProfileStack = () => {
       <Stack.Screen name="LegalExecutor" component={screens.LegalExecutor} />
       <Stack.Screen name="AddExecutor" component={screens.AddExecutor} />
       <Stack.Screen
+        name="ArchieveTreasures"
+        component={screens.ArchieveTreasures}
+      />
+      <Stack.Screen
+        name="AddRecoveryContact"
+        component={screens.AddRecoveryContact}
+      />
+      <Stack.Screen
+        name="AddTrustedDelegate"
+        component={screens.AddTrustedDelegate}
+      />
+      <Stack.Screen
         name="AccountRecovery"
         component={screens.AccountRecovery}
       />

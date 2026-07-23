@@ -1,229 +1,307 @@
 import React, { useState } from 'react';
-import {
-  StyleSheet,
-  View,
-  TouchableOpacity,
-  ScrollView,
-  Switch,
-} from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import LinearGradient from 'react-native-linear-gradient';
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import { StyleSheet, View, ScrollView, TouchableOpacity } from 'react-native';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 import Title from '../../../components/typography/title/title';
-import { FONT } from '../../../components/constants/font';
 import AppText from '../../../components/typography/appText/appText';
-import { Responsive, Spacing } from '../../../components/constants/styles';
 import { COLORS } from '../../../components/constants/color';
-import HeaderBack from '../../../components/common/headerBack/headerBack';
 import GradientBackground from '../../../components/common/gradientBackground/gradientBackground';
+import HeaderBack from '../../../components/common/headerBack/headerBack';
+import {
+  FontSize,
+  Radius,
+  Responsive,
+  Spacing,
+} from '../../../components/constants/styles';
+import GradientWrapper from '../../../components/common/gradientWrapper/gradientWrapper';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
-const securitySettings = [
-  {
-    id: '2fa',
-    title: 'Two-Factor Auth',
-    icon: 'shield-check-outline',
-    iconColor: '#34D399',
-    iconBg: 'rgba(52, 211, 153, 0.04)',
+// Data
+const VERIFICATION_DATA = {
+  banner: {
+    icon: 'lock-closed-outline',
+    title: 'Military-Grade Encryption',
+    subtitle:
+      'Your memories are encrypted before storage. Only authorized recipients can decrypt them.',
   },
-  {
-    id: 'biometric',
-    title: 'Biometric Login',
-    subtitle: 'Face ID active',
-    icon: 'fingerprint',
-    iconColor: '#CD974A',
-    iconBg: 'rgba(197, 147, 83, 0.05)',
+  section: {
+    title: 'RECIPIENT VERIFICATION LAYERS',
+    description:
+      'Choose how recipients must prove their identity before unlocking a delivered legacy.',
   },
-];
+  options: [
+    {
+      id: 'standard',
+      title: 'Standard Verification',
+      subtitle: 'Email Link + SMS Access Code',
+    },
+    {
+      id: 'strict',
+      title: 'Strict Verification',
+      subtitle: 'SMS Code + Security Questions',
+    },
+    {
+      id: 'multi_step',
+      title: 'Multi-Step Validation',
+      subtitle: 'Email + SMS + Identity Document',
+    },
+    {
+      id: 'executor',
+      title: 'Executor Confirmation',
+      subtitle: 'Executor must manually approve recipient access',
+    },
+  ],
+};
 
-const verificationOptions = [
-  {
-    id: 'standard',
-    title: 'Standard ( SMS )',
-  },
-  {
-    id: 'strict',
-    title: 'Strict ( SMS + Q&A )',
-  },
-];
+// Reusable Security Banner Component
+const SecurityBanner = ({ data }) => {
+  return (
+    <View style={styles.banner}>
+      <Ionicons
+        name={data.icon}
+        size={Responsive.width(28)}
+        color={COLORS.GOLD}
+        style={styles.bannerIcon}
+      />
+      <View style={styles.bannerTextContainer}>
+        <Title
+          text={data.title}
+          size="small"
+          color={COLORS.WHITE}
+          style={styles.bannerTitle}
+        />
+        <AppText
+          text={data.subtitle}
+          size="small"
+          color={COLORS.GOLD}
+          style={styles.bannerSubtitle}
+        />
+      </View>
+    </View>
+  );
+};
 
-export default function SecurityAndPrivacy({ navigation }) {
-  const [twoFactorAuth, setTwoFactorAuth] = useState(false);
-  const [biometricLogin, setBiometricLogin] = useState(true);
-  const [verificationMode, setVerificationMode] = useState('standard');
+// Reusable Section Header Component
+const SectionHeader = ({ title, description }) => {
+  return (
+    <>
+      <AppText text={title} size="small" color={COLORS.WHITE} />
+      <AppText
+        text={description}
+        size="medium"
+        style={styles.sectionDescription}
+      />
+    </>
+  );
+};
+
+// Reusable Verification Option Component with Gradient
+const VerificationOption = ({ option, isSelected, onSelect }) => {
+  return (
+    <TouchableOpacity
+      activeOpacity={0.85}
+      onPress={() => onSelect(option.id)}
+      style={styles.optionWrapper}
+    >
+      {isSelected ? (
+        // Selected option with GradientWrapper
+        <GradientWrapper wrapperStyle={styles.selectedCard}>
+          <View style={styles.optionContent}>
+            <View style={styles.optionTextContainer}>
+              <Title
+                text={option.title}
+                size="medium"
+                color={COLORS.BLACK}
+                style={styles.selectedTitleText}
+              />
+              <AppText
+                text={option.subtitle}
+                size="small"
+                color="#3B2A10"
+                style={styles.selectedSubtitleText}
+              />
+            </View>
+            <View style={styles.iconContainer}>
+              <Ionicons
+                name="checkmark-circle"
+                size={Responsive.width(26)}
+                color={COLORS.BLACK}
+              />
+            </View>
+          </View>
+        </GradientWrapper>
+      ) : (
+        // Unselected option with dark outline
+        <View style={styles.unselectedCard}>
+          <View style={styles.optionContent}>
+            <View style={styles.optionTextContainer}>
+              <Title
+                text={option.title}
+                size="medium"
+                color={COLORS.WHITE}
+                style={styles.unselectedTitleText}
+              />
+              <AppText
+                text={option.subtitle}
+                size="small"
+                color="#888888"
+                style={styles.unselectedSubtitleText}
+              />
+            </View>
+            <View style={styles.iconContainer}>
+              <View style={styles.unselectedCircle} />
+            </View>
+          </View>
+        </View>
+      )}
+    </TouchableOpacity>
+  );
+};
+
+export default function SecurityAndPrivacy() {
+  const [selectedOption, setSelectedOption] = useState('strict');
+
+  const handleSelect = id => {
+    setSelectedOption(id);
+  };
 
   return (
     <SafeAreaView style={styles.container}>
-      {/* Background Top Ambient Gold Wash Gradient Backdrop */}
-      <GradientBackground />
-
       <HeaderBack title={'Security & Privacy'} />
+      <GradientBackground />
       <ScrollView
-        contentContainerStyle={styles.scrollLayout}
+        contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
       >
-        <View style={styles.authGroupedCardFrame}>
-          <View style={styles.settingsCard}>
-            {securitySettings.map((item, index) => {
-              const value = item.id === '2fa' ? twoFactorAuth : biometricLogin;
-
-              const setter =
-                item.id === '2fa' ? setTwoFactorAuth : setBiometricLogin;
-
-              return (
-                <View
-                  key={item.id}
-                  style={[
-                    styles.settingRow,
-                    index !== securitySettings.length - 1 && styles.rowBorder,
-                  ]}
-                >
-                  <View style={styles.rowLeftWrap}>
-                    <View
-                      style={[styles.iconBox, { backgroundColor: item.iconBg }]}
-                    >
-                      <Icon name={item.icon} size={20} color={item.iconColor} />
-                    </View>
-
-                    <View>
-                      <Title text={item.title} size="medium" color="#FFF" />
-
-                      {!!item.subtitle && (
-                        <AppText
-                          text={item.subtitle}
-                          size="small"
-                          color="#A1A1AA"
-                        />
-                      )}
-                    </View>
-                  </View>
-
-                  <Switch
-                    value={value}
-                    onValueChange={setter}
-                    trackColor={{
-                      false: '#27272A',
-                      true: '#CD974A',
-                    }}
-                    thumbColor={value ? '#1C1917' : '#71717A'}
-                  />
-                </View>
-              );
-            })}
-          </View>
-        </View>
-
-        {/* Section Segment Title Label */}
-        <AppText
-          text="RECIPIENT VERIFICATION (HANDOVER)"
-          size="tiny"
-          fontFamily={FONT.TTForseBold}
-          color="#A1A1AA"
-          style={styles.sectionTitle}
+        <SecurityBanner data={VERIFICATION_DATA.banner} />
+        <SectionHeader
+          title={VERIFICATION_DATA.section.title}
+          description={VERIFICATION_DATA.section.description}
         />
 
-        {verificationOptions.map(item => (
-          <TouchableOpacity
-            key={item.id}
-            activeOpacity={0.8}
-            onPress={() => setVerificationMode(item.id)}
-            style={[
-              styles.optionCard,
-              verificationMode === item.id && styles.selectedOption,
-            ]}
-          >
-            <Title text={item.title} size="medium" color="#FFF" />
-
-            {verificationMode === item.id && (
-              <Icon
-                name="check-circle"
-                size={Responsive.width(20)}
-                color="#CD974A"
-              />
-            )}
-          </TouchableOpacity>
-        ))}
+        <View style={styles.optionsList}>
+          {VERIFICATION_DATA.options.map(option => (
+            <VerificationOption
+              key={option.id}
+              option={option}
+              isSelected={selectedOption === option.id}
+              onSelect={handleSelect}
+            />
+          ))}
+        </View>
       </ScrollView>
     </SafeAreaView>
   );
 }
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: COLORS.BLACK,
   },
-
-  ambientGlow: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    height: Responsive.height(240),
+  scrollContent: {
+    paddingHorizontal: Spacing.large,
+    paddingTop: Spacing.medium,
+    paddingBottom: Spacing.xLarge,
   },
 
-  scrollLayout: {
-    paddingHorizontal: Spacing.medium,
-    paddingTop: Spacing.large,
-    paddingBottom: Responsive.height(40),
-  },
-
-  settingsCard: {
-    backgroundColor: '#050505',
-    borderRadius: 24,
-    borderWidth: 0.6,
-    borderColor: COLORS.GOLD,
-    overflow: 'hidden',
-    paddingHorizontal: Spacing.medium + 2,
-    marginBottom: Responsive.height(32),
-  },
-
-  settingRow: {
-    height: Responsive.height(80),
+  /* Security Header Banner */
+  banner: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    alignItems: 'flex-start',
+    backgroundColor: '#261D0C',
+    borderRadius: Radius.xLarge,
+    borderWidth: 1,
+    borderColor: '#3B301B',
+    padding: Spacing.large,
+    marginBottom: Spacing.xLarge,
   },
-
-  rowBorder: {
-    borderBottomWidth: 1,
-    borderBottomColor: 'rgba(255,255,255,0.04)',
+  bannerIcon: {
+    marginRight: Spacing.medium,
+    marginTop: Responsive.height(2),
   },
-
-  rowLeftWrap: {
-    flexDirection: 'row',
-    alignItems: 'center',
+  bannerTextContainer: {
     flex: 1,
   },
-
-  iconBox: {
-    width: 40,
-    height: 40,
-    borderRadius: 12,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginRight: Spacing.medium,
+  bannerTitle: {
+    marginBottom: Spacing.tiny,
+  },
+  bannerSubtitle: {
+    lineHeight: Responsive.height(17),
+    opacity: 0.9,
   },
 
-  sectionTitle: {
-    letterSpacing: 1.2,
-    marginBottom: Spacing.medium,
-    paddingLeft: 4,
+  /* Section Title & Subtitle */
+  sectionHeader: {
+    letterSpacing: Responsive.width(0.8),
+    marginBottom: Spacing.tiny,
+  },
+  sectionDescription: {
+    lineHeight: Responsive.height(18),
+    marginBottom: Spacing.xLarge,
+    fontSize: FontSize.small,
+    marginTop: Spacing.small,
   },
 
-  optionCard: {
-    backgroundColor: '#050505',
-    borderRadius: 22,
-    borderWidth: 0.6,
-    borderColor: COLORS.GOLD,
-    height: Responsive.height(76),
+  /* Options List */
+  optionsList: {
+    gap: Spacing.medium,
+  },
+  optionWrapper: {
+    width: '100%',
+  },
+  optionContent: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
+    paddingVertical: Spacing.medium,
     paddingHorizontal: Spacing.large,
-    marginBottom: Spacing.small + 2,
+    minHeight: Responsive.height(76),
+    width: '100%',
   },
 
-  selectedOption: {
-    borderColor: '#CD974A',
-    backgroundColor: 'rgba(197,147,83,0.02)',
+  /* Selected Card with Gradient */
+  selectedCard: {
+    borderRadius: Radius.large,
+    padding: 0, // GradientWrapper handles padding
+    width: '100%',
+  },
+  selectedTitleText: {
+    color: COLORS.BLACK,
+  },
+  selectedSubtitleText: {
+    color: '#3B2A10',
+  },
+
+  /* Unselected Card (Dark Outline) */
+  unselectedCard: {
+    backgroundColor: COLORS.BLACK,
+    borderWidth: 1,
+    borderColor: COLORS.GOLD,
+    borderRadius: Radius.large,
+    width: '100%',
+  },
+  unselectedTitleText: {
+    color: COLORS.WHITE,
+  },
+  unselectedSubtitleText: {
+    color: '#888888',
+  },
+
+  /* Option Typography */
+  optionTextContainer: {
+    flex: 1,
+    paddingRight: Spacing.small,
+  },
+
+  /* Radio / Check Circle */
+  iconContainer: {
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  unselectedCircle: {
+    width: Responsive.width(24),
+    height: Responsive.width(24),
+    borderRadius: Responsive.width(12),
+    borderWidth: 2,
+    borderColor: '#666666',
   },
 });

@@ -171,7 +171,7 @@ const styles = StyleSheet.create({
     marginBottom: Spacing.medium,
   },
   snapshotCard: {
-    width: (SCREEN_WIDTH - Spacing.large * 2 - Spacing.medium) / 2,
+    width: (SCREEN_WIDTH - Spacing.large - Spacing.medium) / 2,
     borderRadius: Radius.large,
     borderWidth: 0.5,
     borderColor: COLORS.GOLD,

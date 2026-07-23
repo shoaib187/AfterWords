@@ -170,13 +170,14 @@ const TabNavigator = () => {
         tabBar={props => <CustomTabBar {...props} />}
         screenOptions={{
           headerShown: false,
+          sceneStyle: { backgroundColor: COLORS.BLACK },
         }}
       >
         <Tab.Screen name="Home" component={HomeStack} />
         <Tab.Screen name="Treasures" component={TreasuresStack} />
         <Tab.Screen name="Treasure" component={TreasureStack} />
         <Tab.Screen name="Legacy" component={LegacyStack} />
-        <Tab.Screen name="Profile" component={ProfileStack} />
+        <Tab.Screen name="Account" component={ProfileStack} />
       </Tab.Navigator>
     </SafeAreaView>
   );
@@ -186,11 +187,11 @@ const getIconName = routeName => {
   switch (routeName) {
     case 'Home':
       return 'home';
-    case 'Vault':
+    case 'Treasures':
       return 'archive';
     case 'Legacy':
       return 'inbox';
-    case 'Profile':
+    case 'Account':
       return 'person';
     default:
       return 'home';
@@ -232,6 +233,11 @@ const getTabBarVisibility = route => {
     'FamilyHistory',
     'LegalExecutor',
     'AddExecutor',
+    'AddTrustedDelegate',
+    'ArchieveTreasures',
+    'AddRecoveryContact',
+    'AssignRecipient',
+    'NewRecepient',
   ];
 
   if (hiddenScreens.includes(routeName)) {

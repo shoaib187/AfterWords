@@ -1,178 +1,217 @@
 import React, { useState } from 'react';
 import { StyleSheet, View, ScrollView, Switch } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import LinearGradient from 'react-native-linear-gradient';
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import Ionicons from 'react-native-vector-icons/Ionicons';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import Title from '../../../components/typography/title/title';
-import { FONT } from '../../../components/constants/font';
 import AppText from '../../../components/typography/appText/appText';
 import { COLORS } from '../../../components/constants/color';
-import { Responsive, Spacing } from '../../../components/constants/styles';
-import HeaderBack from '../../../components/common/headerBack/headerBack';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import GradientBackground from '../../../components/common/gradientBackground/gradientBackground';
+import HeaderBack from '../../../components/common/headerBack/headerBack';
+import {
+  Radius,
+  Responsive,
+  Spacing,
+} from '../../../components/constants/styles';
+import GradientWrapper from '../../../components/common/gradientWrapper/gradientWrapper';
+import { Button } from '../../../components/common/button/button';
+
+const DELEGATE_DATA = {
+  banner: {
+    icon: 'heart',
+    title: 'Living Assistance',
+    description:
+      'Delegates are trusted individuals authorized to assist with specific life responsibilities (medical, financial, or family coordination) while you are living.',
+  },
+  activeDelegate: {
+    name: 'Eleanor Whitfield',
+    role: 'Spouse - Primary',
+    initial: 'E',
+  },
+  controls: [
+    {
+      id: 'medical',
+      title: 'Medical & Health',
+      subtitle: 'Can act on your behalf',
+      icon: 'heart-outline',
+      iconLibrary: 'Ionicons',
+      key: 'medicalAccess',
+      defaultValue: true,
+    },
+    {
+      id: 'financial',
+      title: 'Financial Matters',
+      subtitle: 'Bank & emergency funds',
+      icon: 'wallet-outline',
+      iconLibrary: 'Ionicons',
+      key: 'financialAccess',
+      defaultValue: true,
+    },
+    {
+      id: 'legacy',
+      title: 'Legacy Memories',
+      subtitle: 'View locked Vault content',
+      icon: 'archive-outline',
+      iconLibrary: 'MaterialCommunityIcons',
+      key: 'legacyAccess',
+      defaultValue: false,
+    },
+  ],
+};
+
+const DelegateCard = ({ name, role, initial }) => {
+  return (
+    <View style={styles.delegateCard}>
+      <View style={styles.avatarCircle}>
+        <AppText
+          text={initial}
+          size="large"
+          color={COLORS.BLACK}
+          style={styles.avatarText}
+        />
+      </View>
+      <View style={styles.delegateInfo}>
+        <Title
+          text={name}
+          size="medium"
+          color={COLORS.WHITE}
+          style={styles.delegateName}
+        />
+        <AppText
+          text={role}
+          size="small"
+          color="#A0A0A0"
+          style={styles.delegateRole}
+        />
+      </View>
+    </View>
+  );
+};
+
+const ControlItem = ({ control, value, onToggle }) => {
+  const renderIcon = () => {
+    const IconComponent =
+      control.iconLibrary === 'MaterialCommunityIcons'
+        ? MaterialCommunityIcons
+        : Ionicons;
+    return (
+      <IconComponent
+        name={control.icon}
+        size={Responsive.width(20)}
+        color={COLORS.GOLD}
+      />
+    );
+  };
+
+  return (
+    <View style={styles.controlCard}>
+      <View style={styles.iconBadge}>{renderIcon()}</View>
+      <View style={styles.controlInfo}>
+        <Title
+          text={control.title}
+          size="small"
+          color={COLORS.WHITE}
+          style={styles.controlTitle}
+        />
+        <AppText
+          text={control.subtitle}
+          size="tiny"
+          color="#777777"
+          style={styles.controlSubtitle}
+        />
+      </View>
+      <Switch
+        value={value}
+        onValueChange={() => onToggle(control.key)}
+        trackColor={{ false: '#262626', true: COLORS.GOLD }}
+        thumbColor={COLORS.WHITE}
+      />
+    </View>
+  );
+};
+
+const Banner = ({ data }) => {
+  return (
+    <GradientWrapper wrapperStyle={styles.banner}>
+      <Ionicons
+        name={data.icon}
+        size={Responsive.width(30)}
+        color={COLORS.GOLD}
+        style={styles.heartIcon}
+      />
+      <Title
+        text={data.title}
+        size="xLarge"
+        color={COLORS.BLACK}
+        style={styles.bannerTitle}
+      />
+      <AppText
+        text={data.description}
+        size="small"
+        color="#2C1F0A"
+        align="center"
+        style={styles.bannerSubtitle}
+      />
+    </GradientWrapper>
+  );
+};
+
+const SectionHeader = ({ text }) => {
+  return (
+    <AppText
+      text={text}
+      size="small"
+      color={COLORS.WHITE}
+      style={styles.sectionHeader}
+    />
+  );
+};
 
 export default function TrustedDelegates({ navigation }) {
-  const [medicalAccess, setMedicalAccess] = useState(true);
-  const [financialAccess, setFinancialAccess] = useState(true);
-  const [legacyAccess, setLegacyAccess] = useState(false);
+  const [accessControls, setAccessControls] = useState(() => {
+    const initial = {};
+    DELEGATE_DATA.controls.forEach(control => {
+      initial[control.key] = control.defaultValue;
+    });
+    return initial;
+  });
+
+  const handleToggle = key => {
+    setAccessControls(prev => ({
+      ...prev,
+      [key]: !prev[key],
+    }));
+  };
+
+  const activeDelegatesCount = DELEGATE_DATA.activeDelegate ? 1 : 0;
 
   return (
     <SafeAreaView style={styles.container}>
-      {/* Background Top Ambient Gold Wash */}
+      <HeaderBack title={'Trusted Delegates'} />
       <GradientBackground />
-
-      <HeaderBack title={'Trusted Delegates (POA)'} />
-
       <ScrollView
-        contentContainerStyle={styles.scrollLayout}
+        contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
       >
-        {/* Delegate Card Block (As seen in Screenshot 2026-06-16 at 5.19.47 AM.png) */}
-        <LinearGradient
-          colors={['#EEDBB2', '#CD974A']}
-          style={styles.delegateCardGradient}
-          start={{ x: 0, y: 0 }}
-          end={{ x: 1, y: 1 }}
-        >
-          <View style={styles.delegateCardInner}>
-            <View style={styles.avatarCircle}>
-              <Title
-                text="E"
-                size="large"
-                fontFamily={FONT.TTForseSemiBold}
-                color="#1C1917"
-              />
-            </View>
-
-            <View style={styles.delegateMetaStack}>
-              <Title
-                text="Eleanor Whitfield"
-                size="large"
-                fontFamily={FONT.TTForseSemiBold}
-                color="#1C1917"
-              />
-              <AppText
-                text="Spouse\ POA (living POA )"
-                size="small"
-                fontFamily={FONT.TTForseMedium}
-                color="#1C1917"
-                style={styles.subLabelOffset}
-              />
-            </View>
-          </View>
-        </LinearGradient>
-
-        {/* Section Heading Label */}
-        <AppText
-          text="GRANULAR ACCESS CONTROL"
-          size="tiny"
-          fontFamily={FONT.TTForseSemiBold}
-          color="#A1A1AA"
-          style={styles.sectionHeaderLabel}
+        <Banner data={DELEGATE_DATA.banner} />
+        <SectionHeader text={`ACTIVE DELEGATES (${activeDelegatesCount})`} />
+        <DelegateCard {...DELEGATE_DATA.activeDelegate} />
+        <SectionHeader text="GRANULAR ACCESS CONTROL" />
+        <View style={styles.controlList}>
+          {DELEGATE_DATA.controls.map(control => (
+            <ControlItem
+              key={control.id}
+              control={control}
+              value={accessControls[control.key]}
+              onToggle={handleToggle}
+            />
+          ))}
+        </View>
+        <Button
+          onPress={() => navigation.navigate('AddTrustedDelegate')}
+          style={{ marginTop: Spacing.large }}
+          title="Add Trusted Delegate"
         />
-
-        {/* ==========================================
-            TOGGLE ACCESS ROW 1: MEDICAL DIRECTIVES
-           ========================================== */}
-        <View style={styles.controlCardBox}>
-          <View style={styles.cardLeftWrap}>
-            <View style={styles.iconWrapperSquare}>
-              <Icon name="heart" size={22} color="#EF4444" />
-            </View>
-            <View style={styles.cardTextStack}>
-              <Title
-                text="Medical Directives"
-                size="medium"
-                fontFamily={FONT.TTForseBold}
-                color="#FFFFFF"
-              />
-              <AppText
-                text="living wills, DNRS"
-                size="small"
-                fontFamily={FONT.TTForseRegular}
-                color="#A1A1AA"
-                style={styles.metaTextSpacing}
-              />
-            </View>
-          </View>
-          <Switch
-            value={medicalAccess}
-            onValueChange={setMedicalAccess}
-            trackColor={{ false: '#3F3F46', true: '#CD974A' }}
-            thumbColor={medicalAccess ? '#1C1917' : '#A1A1AA'}
-            ios_backgroundColor="#3F3F46"
-          />
-        </View>
-
-        {/* ==========================================
-            TOGGLE ACCESS ROW 2: FINANCIAL FOLDERS
-           ========================================== */}
-        <View style={styles.controlCardBox}>
-          <View style={styles.cardLeftWrap}>
-            <View style={styles.iconWrapperSquare}>
-              <Icon name="file-document-outline" size={22} color="#CD974A" />
-            </View>
-            <View style={styles.cardTextStack}>
-              <Title
-                text="Financial Folders"
-                size="medium"
-                fontFamily={FONT.TTForseBold}
-                color="#FFFFFF"
-              />
-              <AppText
-                text="Trust, emergency funds"
-                size="small"
-                fontFamily={FONT.TTForseRegular}
-                color="#A1A1AA"
-                style={styles.metaTextSpacing}
-              />
-            </View>
-          </View>
-          <Switch
-            value={financialAccess}
-            onValueChange={setFinancialAccess}
-            trackColor={{ false: '#3F3F46', true: '#CD974A' }}
-            thumbColor={financialAccess ? '#1C1917' : '#A1A1AA'}
-            ios_backgroundColor="#3F3F46"
-          />
-        </View>
-
-        {/* ==========================================
-            TOGGLE ACCESS ROW 3: LEGACY MEMORY (DISABLED)
-           ========================================== */}
-        <View style={[styles.controlCardBox, styles.disabledCardAlpha]}>
-          <View style={styles.cardLeftWrap}>
-            <View style={styles.iconWrapperSquare}>
-              <Icon
-                name="lock-outline"
-                size={22}
-                color="rgba(255, 255, 255, 0.4)"
-              />
-            </View>
-            <View style={styles.cardTextStack}>
-              <Title
-                text="Legacy Memory"
-                size="medium"
-                fontFamily={FONT.TTForseBold}
-                color="rgba(255, 255, 255, 0.5)"
-              />
-              <AppText
-                text="Locked until passing"
-                size="small"
-                fontFamily={FONT.TTForseRegular}
-                color="#71717A"
-                style={styles.metaTextSpacing}
-              />
-            </View>
-          </View>
-          <Switch
-            value={legacyAccess}
-            onValueChange={setLegacyAccess}
-            trackColor={{ false: '#27272A', true: '#CD974A' }}
-            thumbColor={legacyAccess ? '#1C1917' : '#52525B'}
-            ios_backgroundColor="#27272A"
-          />
-        </View>
       </ScrollView>
     </SafeAreaView>
   );
@@ -181,104 +220,100 @@ export default function TrustedDelegates({ navigation }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: COLORS.BLACK || '#000000',
+    backgroundColor: COLORS.BLACK,
   },
-  ambientGlow: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    height: Responsive.height(200),
-    zIndex: 0,
-  },
-  headerBar: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingHorizontal: Spacing.large,
-    height: Responsive.height(64),
-    zIndex: 1,
-  },
-  backCircleButton: {
-    width: Responsive.width(36),
-    height: Responsive.width(36),
-    borderRadius: Responsive.width(18),
-    backgroundColor: '#D9A451',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  headerSpacer: {
-    width: Responsive.width(36),
-  },
-  scrollLayout: {
+  scrollContent: {
     paddingHorizontal: Spacing.medium,
     paddingTop: Spacing.medium,
-    paddingBottom: Responsive.height(40),
+    paddingBottom: Spacing.xLarge,
   },
-  delegateCardGradient: {
-    borderRadius: 28,
-    width: '100%',
-    marginBottom: Responsive.height(40),
+
+  /* Header Banner */
+  banner: {
+    backgroundColor: COLORS.GOLD,
+    borderRadius: Radius.xLarge,
+    paddingVertical: Spacing.xLarge,
+    paddingHorizontal: Spacing.large,
+    alignItems: 'center',
+    marginBottom: Spacing.xLarge,
   },
-  delegateCardInner: {
+  heartIcon: {
+    marginBottom: Spacing.tiny,
+  },
+  bannerTitle: {
+    marginBottom: Spacing.small,
+  },
+  bannerSubtitle: {
+    lineHeight: Responsive.height(18),
+  },
+
+  /* Section Titles */
+  sectionHeader: {
+    letterSpacing: Responsive.width(0.8),
+    marginBottom: Spacing.medium,
+  },
+
+  /* Active Delegate Card */
+  delegateCard: {
     flexDirection: 'row',
     alignItems: 'center',
-    padding: Spacing.large,
+    backgroundColor: '#1E170C',
+    borderRadius: Radius.xLarge,
+    paddingVertical: Spacing.medium,
+    paddingHorizontal: Spacing.medium,
+    marginBottom: Spacing.xLarge,
+    borderWidth: 1,
+    borderColor: '#3B301B',
   },
   avatarCircle: {
-    width: Responsive.width(56),
-    height: Responsive.width(56),
-    borderRadius: Responsive.width(28),
-    backgroundColor: 'rgba(28, 25, 23, 0.15)',
+    width: Responsive.width(48),
+    height: Responsive.width(48),
+    borderRadius: Responsive.width(24),
+    backgroundColor: COLORS.GOLD,
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: Spacing.medium,
   },
-  delegateMetaStack: {
-    flex: 1,
-    justifyContent: 'center',
+  avatarText: {
+    fontFamily: 'serif',
   },
-  subLabelOffset: {
-    marginTop: 3,
-  },
-  sectionHeaderLabel: {
-    letterSpacing: 1.2,
-    marginBottom: Spacing.medium,
-    paddingLeft: 2,
-  },
-  controlCardBox: {
-    width: '100%',
-    backgroundColor: '#050505',
-    borderRadius: 22,
-    borderWidth: 1,
-    borderColor: 'rgba(197, 147, 83, 0.4)', // Premium dynamic gold outline frame matrix ring
-    height: Responsive.height(92),
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingHorizontal: Spacing.medium + 4,
-    marginBottom: Spacing.medium,
-  },
-  disabledCardAlpha: {
-    borderColor: 'rgba(197, 147, 83, 0.15)',
-  },
-  cardLeftWrap: {
-    flexDirection: 'row',
-    alignItems: 'center',
+  delegateInfo: {
     flex: 1,
   },
-  iconWrapperSquare: {
-    width: 42,
-    height: 42,
+  delegateName: {
+    marginBottom: Spacing.tiny,
+  },
+  delegateRole: {},
+
+  /* Access Controls */
+  controlList: {
+    gap: Spacing.small,
+  },
+  controlCard: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: COLORS.BLACK,
+    borderRadius: Radius.circle,
+    borderWidth: 0.6,
+    borderColor: COLORS.GOLD,
+    paddingVertical: Spacing.small,
+    paddingHorizontal: Spacing.medium,
+    height: Responsive.height(72),
+  },
+  iconBadge: {
+    width: Responsive.width(40),
+    height: Responsive.width(40),
+    borderRadius: Responsive.width(20),
+    backgroundColor: '#1A140B',
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: Spacing.medium,
   },
-  cardTextStack: {
+  controlInfo: {
     flex: 1,
-    justifyContent: 'center',
   },
-  metaTextSpacing: {
-    marginTop: 3,
+  controlTitle: {
+    marginBottom: Spacing.tiny,
   },
+  controlSubtitle: {},
 });

@@ -90,6 +90,8 @@ export default function VoiceMessagePreview({ navigation, route }) {
             title="Redo"
             leftIcon="refresh"
             variant={'other'}
+            flexDirection="row"
+            iconColor={COLORS.GOLD}
             onPress={() => navigation.navigate('AssignRecipients')}
           />
           <Button
@@ -98,6 +100,7 @@ export default function VoiceMessagePreview({ navigation, route }) {
                 messageType: 'voice',
               });
             }}
+            flexDirection="row"
             style={{ flex: 1 }}
             title="Next"
             rightIcon="arrow-right"

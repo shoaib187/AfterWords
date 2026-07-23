@@ -66,7 +66,7 @@ const MENU_SECTIONS = [
         icon: 'archive-outline',
         title: 'Archive Treasures',
         description: 'Restore your treasures',
-        screen: 'ArchiveTreasures',
+        screen: 'ArchieveTreasures',
       },
     ],
   },

@@ -3,10 +3,8 @@ import {
   StyleSheet,
   Text,
   View,
-  TextInput,
   TouchableOpacity,
   ScrollView,
-  StatusBar,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Ionicons from 'react-native-vector-icons/Ionicons';
@@ -20,6 +18,10 @@ import {
 import { COLORS } from '../../../components/constants/color';
 import AppText from '../../../components/typography/appText/appText';
 import GradientWrapper from '../../../components/common/gradientWrapper/gradientWrapper';
+import InputField from '../../../components/common/inputField/inputField';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import { Button } from '../../../components/common/button/button';
+import Title from '../../../components/typography/title/title';
 
 export default function AddExecutor() {
   const [executorType, setExecutorType] = useState('individual'); // 'individual' | 'professional'
@@ -37,19 +39,28 @@ export default function AddExecutor() {
   const [proEmail, setProEmail] = useState('sofia@gmail.com');
   const [proPhone, setProPhone] = useState('+234****6534637');
 
+  // Focus states for animations
+  const [focusedField, setFocusedField] = useState(null);
+
+  const handleFocus = fieldName => {
+    setFocusedField(fieldName);
+  };
+
+  const handleBlur = () => {
+    setFocusedField(null);
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       <GradientBackground />
       <HeaderBack title={'Add Executor'} />
       <ScrollView contentContainerStyle={styles.scrollContent}>
-        {/* Gold Banner Header */}
         <GradientWrapper wrapperStyle={styles.banner}>
           <Ionicons
             name="person"
             size={Responsive.width(24)}
             color={COLORS.GOLD}
           />
-
           <AppText
             text={
               'Invite a trusted family member, close friend, or legal professional to execute your legacy delivery rules.'
@@ -59,8 +70,7 @@ export default function AddExecutor() {
           <AppText text={'Executor Type'} style={styles.bannerSubText} />
         </GradientWrapper>
 
-        {/* Executor Type Toggle */}
-        <Text style={styles.sectionTitle}>EXECUTORS TYPE</Text>
+        <Title text={'EXECUTORS TYPE'} style={styles.sectionTitle} />
         <View style={styles.toggleRow}>
           <TouchableOpacity
             style={[
@@ -107,109 +117,125 @@ export default function AddExecutor() {
           </TouchableOpacity>
         </View>
 
-        {/* Form Fields - Individual */}
         {executorType === 'individual' ? (
           <View style={styles.formContainer}>
             <View style={styles.row}>
-              <View style={styles.halfColumn}>
-                <Text style={styles.fieldLabel}>First Name</Text>
-                <TextInput
-                  style={styles.input}
-                  value={firstName}
-                  onChangeText={setFirstName}
-                  placeholderTextColor="#666"
-                />
-              </View>
+              <InputField
+                label="First Name"
+                value={firstName}
+                onChangeText={setFirstName}
+                placeholder="Enter first name"
+                wrapperStyle={styles.halfColumn}
+                isFocused={focusedField === 'firstName'}
+                onFocus={() => handleFocus('firstName')}
+                onBlur={handleBlur}
+              />
 
-              <View style={styles.halfColumn}>
-                <Text style={styles.fieldLabel}>Last Name</Text>
-                <TextInput
-                  style={styles.input}
-                  value={lastName}
-                  onChangeText={setLastName}
-                  placeholderTextColor="#666"
-                />
-              </View>
-            </View>
-
-            <View style={styles.fieldGroup}>
-              <Text style={styles.fieldLabel}>Email</Text>
-              <TextInput
-                style={styles.input}
-                value={individualEmail}
-                onChangeText={setIndividualEmail}
-                keyboardType="email-address"
-                placeholderTextColor="#666"
+              <InputField
+                label="Last Name"
+                value={lastName}
+                onChangeText={setLastName}
+                placeholder="Enter last name"
+                wrapperStyle={styles.halfColumn}
+                isFocused={focusedField === 'lastName'}
+                onFocus={() => handleFocus('lastName')}
+                onBlur={handleBlur}
               />
             </View>
 
-            <View style={styles.fieldGroup}>
-              <Text style={styles.fieldLabel}>Phone Number</Text>
-              <TextInput
-                style={styles.input}
-                value={individualPhone}
-                onChangeText={setIndividualPhone}
-                keyboardType="phone-pad"
-                placeholderTextColor="#666"
-              />
-            </View>
+            <InputField
+              label="Email"
+              value={individualEmail}
+              onChangeText={setIndividualEmail}
+              placeholder="Enter email address"
+              keyboardType="email-address"
+              isFocused={focusedField === 'individualEmail'}
+              onFocus={() => handleFocus('individualEmail')}
+              onBlur={handleBlur}
+            />
 
-            <View style={styles.fieldGroup}>
-              <Text style={styles.fieldLabel}>Relationship</Text>
-              <TextInput
-                style={styles.input}
-                value={relationship}
-                onChangeText={setRelationship}
-                placeholderTextColor="#666"
-              />
-            </View>
+            <InputField
+              label="Phone Number"
+              value={individualPhone}
+              onChangeText={setIndividualPhone}
+              placeholder="Enter phone number"
+              keyboardType="phone-pad"
+              isFocused={focusedField === 'individualPhone'}
+              onFocus={() => handleFocus('individualPhone')}
+              onBlur={handleBlur}
+            />
+
+            <InputField
+              label="Relationship"
+              value={relationship}
+              onChangeText={setRelationship}
+              placeholder="Enter relationship"
+              isFocused={focusedField === 'relationship'}
+              onFocus={() => handleFocus('relationship')}
+              onBlur={handleBlur}
+            />
           </View>
         ) : (
           /* Form Fields - Professional */
           <View style={styles.formContainer}>
-            <View style={styles.fieldGroup}>
-              <Text style={styles.fieldLabel}>Firm / Practice Name</Text>
-              <TextInput
-                style={styles.input}
-                value={firmName}
-                onChangeText={setFirmName}
-                placeholderTextColor="#666"
-              />
-            </View>
+            <InputField
+              label="Firm / Practice Name"
+              value={firmName}
+              onChangeText={setFirmName}
+              placeholder="Enter firm name"
+              isFocused={focusedField === 'firmName'}
+              onFocus={() => handleFocus('firmName')}
+              onBlur={handleBlur}
+            />
 
-            <View style={styles.fieldGroup}>
-              <Text style={styles.fieldLabel}>Primary Contact Person</Text>
-              <TextInput
-                style={styles.input}
-                value={contactPerson}
-                onChangeText={setContactPerson}
-                placeholderTextColor="#666"
-              />
-            </View>
+            <InputField
+              label="Primary Contact Person"
+              value={contactPerson}
+              onChangeText={setContactPerson}
+              placeholder="Enter contact person"
+              isFocused={focusedField === 'contactPerson'}
+              onFocus={() => handleFocus('contactPerson')}
+              onBlur={handleBlur}
+            />
 
-            <View style={styles.fieldGroup}>
-              <Text style={styles.fieldLabel}>Email</Text>
-              <TextInput
-                style={styles.input}
-                value={proEmail}
-                onChangeText={setProEmail}
-                keyboardType="email-address"
-                placeholderTextColor="#666"
-              />
-            </View>
+            <InputField
+              label="Email"
+              value={proEmail}
+              onChangeText={setProEmail}
+              placeholder="Enter email address"
+              keyboardType="email-address"
+              isFocused={focusedField === 'proEmail'}
+              onFocus={() => handleFocus('proEmail')}
+              onBlur={handleBlur}
+            />
 
-            <View style={styles.fieldGroup}>
-              <Text style={styles.fieldLabel}>Phone Number</Text>
-              <TextInput
-                style={styles.input}
-                value={proPhone}
-                onChangeText={setProPhone}
-                keyboardType="phone-pad"
-                placeholderTextColor="#666"
+            <InputField
+              label="Phone Number"
+              value={proPhone}
+              onChangeText={setProPhone}
+              placeholder="Enter phone number"
+              keyboardType="phone-pad"
+              isFocused={focusedField === 'proPhone'}
+              onFocus={() => handleFocus('proPhone')}
+              onBlur={handleBlur}
+            />
+            <View style={styles.cardContainer}>
+              <MaterialCommunityIcons
+                name="shield-check-outline"
+                size={Responsive.width(28)}
+                color={COLORS.GOLD}
+                style={styles.icon}
+              />
+              <AppText
+                text={
+                  'An encrypted invitation will be sent to this person. They must accept the invitation and verify their identity to become an active executor.'
+                }
+                style={styles.noticeText}
               />
             </View>
           </View>
         )}
+        <Button title="Send Secure Invitation" />
       </ScrollView>
     </SafeAreaView>
   );
@@ -218,7 +244,7 @@ export default function AddExecutor() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#000000',
+    backgroundColor: COLORS.BLACK,
   },
   scrollContent: {
     paddingHorizontal: 20,
@@ -234,15 +260,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     alignItems: 'center',
     marginBottom: 28,
-  },
-  avatarIconWrapper: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-    backgroundColor: '#3B2A10',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginBottom: 12,
   },
   bannerText: {
     fontSize: FontSize.small,
@@ -299,9 +316,6 @@ const styles = StyleSheet.create({
   },
 
   /* Form Elements */
-  formContainer: {
-    gap: 20,
-  },
   row: {
     flexDirection: 'row',
     gap: 12,
@@ -309,23 +323,22 @@ const styles = StyleSheet.create({
   halfColumn: {
     flex: 1,
   },
-  fieldGroup: {
-    width: '100%',
+  cardContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#2F2F2F',
+    borderRadius: 20,
+    paddingVertical: 18,
+    paddingHorizontal: 16,
+    marginVertical: 10,
   },
-  fieldLabel: {
-    color: '#FFFFFF',
-    fontSize: 14,
-    fontFamily: 'serif',
-    marginBottom: 10,
+  icon: {
+    marginRight: 14,
   },
-  input: {
-    height: 52,
-    borderRadius: 26,
-    borderWidth: 1.5,
-    borderColor: '#3B301B',
-    backgroundColor: '#000000',
-    color: '#FFFFFF',
-    paddingHorizontal: 20,
-    fontSize: 14,
+  noticeText: {
+    color: COLORS.GOLD,
+    fontSize: FontSize.small,
+    lineHeight: 18,
+    width: '30%',
   },
 });

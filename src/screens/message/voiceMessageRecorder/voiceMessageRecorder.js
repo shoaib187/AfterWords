@@ -157,9 +157,7 @@ export default function VoiceMessageRecorder({ navigation }) {
           </View>
         </View>
 
-        {/* Conditional Footer Interface Controls Renderer Layer */}
         {status === 'ready' || status === 'recording' ? (
-          /* Active Recording State Sub-Block Layout */
           <View style={styles.captureControlBlock}>
             <TouchableOpacity
               style={[
@@ -191,7 +189,6 @@ export default function VoiceMessageRecorder({ navigation }) {
             />
           </View>
         ) : (
-          /* Review State Sub-Block Layout Container (Screenshot 2026-06-09 at 8.49.32 AM.png) */
           <View style={styles.reviewFlowControlWrapper}>
             <View style={styles.playbackControlBlock}>
               <TouchableOpacity
@@ -216,12 +213,15 @@ export default function VoiceMessageRecorder({ navigation }) {
                 title="Cancel"
                 variant="other"
                 style={{ flex: 1 }}
+                flexDirection="row"
+                iconColor={COLORS.GOLD}
               />
               <Button
                 rightIcon="arrow-right"
                 onPress={handleContinuePipeline}
                 title="Continue"
                 style={{ flex: 1 }}
+                flexDirection="row"
               />
             </View>
           </View>

@@ -54,7 +54,12 @@ const Button = React.memo(
         {loading ? (
           <ActivityIndicator color={COLORS.BLACK} size={22} />
         ) : (
-          <View style={[styles.content, { flexDirection: flexDirection }]}>
+          <View
+            style={[
+              styles.content,
+              { flexDirection: flexDirection ? flexDirection : 'row' },
+            ]}
+          >
             {leftIcon && (
               <Icon
                 name={leftIcon}

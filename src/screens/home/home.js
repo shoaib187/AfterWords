@@ -53,7 +53,7 @@ const styles = StyleSheet.create({
   },
 
   scrollLayout: {
-    paddingHorizontal: Spacing.large,
+    paddingHorizontal: Spacing.medium,
     paddingTop: Spacing.medium,
     paddingBottom: 100,
   },
