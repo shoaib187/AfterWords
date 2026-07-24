@@ -10,6 +10,7 @@ import { Button } from '../../../components/common/button/button';
 import { COLORS } from '../../../components/constants/color';
 import { Spacing } from '../../../components/constants/styles';
 import Description from '../../../components/common/description/description';
+import { useToast } from '../../../configs/toastContext/toastContext';
 
 export default function AddMessageDetails({ navigation, route }) {
   const { messageType } = route?.params || {};
@@ -17,6 +18,7 @@ export default function AddMessageDetails({ navigation, route }) {
   const videoFilePath = route?.params?.videoFilePath || null;
   const photoFiles = route?.params?.photoFiles || [];
   const documentFile = route?.params?.documentFile || null;
+  const { showToast } = useToast();
 
   // Form state
   const [title, setTitle] = useState('');

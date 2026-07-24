@@ -32,11 +32,6 @@ export default function LegacySnapshot({ dataState, navigation }) {
             color={COLORS.GRAY}
             align="center"
           />
-
-          <Button
-            title="Create First Treasure"
-            style={{ marginTop: Spacing.medium }}
-          />
         </View>
       ) : (
         <View style={styles.activeStateContainer}>

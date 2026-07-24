@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, ScrollView } from 'react-native';
+import { StyleSheet, ScrollView, View, ActivityIndicator } from 'react-native';
 import { COLORS } from '../../components/constants/color';
 import { Spacing } from '../../components/constants/styles';
 
@@ -22,10 +22,19 @@ export default function Home({ navigation, dashboardData }) {
 
   const { firstName } = user || {};
 
-  // console.log('data', dashboardStats);
   const { estateReadiness, stats } = dashboardStats?.data || {};
-  // console.log('stats', stats);
-
+  if (isLoading) {
+    return (
+      <SafeAreaView style={styles.masterContainer}>
+        <HomeHeader firstName={firstName} />
+        <View
+          style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}
+        >
+          <ActivityIndicator size={40} color={COLORS.GOLD} />
+        </View>
+      </SafeAreaView>
+    );
+  }
   return (
     <SafeAreaView style={styles.masterContainer}>
       <HomeHeader firstName={firstName} />
@@ -36,6 +45,7 @@ export default function Home({ navigation, dashboardData }) {
         <ReadlineStats dataState={estateReadiness} />
         <LegacySnapshot dataState={stats} navigation={navigation} />
         <Button
+          style={{ marginTop: Spacing.medium }}
           title={'Create Treasure'}
           onPress={() => navigation.navigate('CreateTreasure')}
         />

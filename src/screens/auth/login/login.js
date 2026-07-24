@@ -25,6 +25,7 @@ import { COLORS } from '../../../components/constants/color';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { login } from '../../../utils/apis/auth/api';
 import { useAuth } from '../../../configs/authContext/authContext';
+import { useToast } from '../../../configs/toastContext/toastContext';
 
 export default function Login({ navigation }) {
   const [email, setEmail] = useState('');
@@ -32,17 +33,18 @@ export default function Login({ navigation }) {
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const { saveToken } = useAuth();
+  const { showToast } = useToast();
 
   const validateForm = () => {
     if (!email || !password) {
-      Alert.alert('Validation Error', 'Please fill in all required fields.');
+      showToast('Please fill in all required fields.');
       return false;
     }
 
     // Email format validation
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
-      Alert.alert('Validation Error', 'Please enter a valid email address.');
+      showToast('Please enter a valid email address.');
       return false;
     }
 
@@ -74,8 +76,7 @@ export default function Login({ navigation }) {
         );
       }
     } catch (error) {
-      Alert.alert(
-        'Login Failed',
+      showToast(
         error?.response?.data?.message || 'An error occurred during login.',
       );
     } finally {

@@ -22,6 +22,7 @@ import { COLORS } from '../../../components/constants/color';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { login, register } from '../../../utils/apis/auth/api';
 import { useAuth } from '../../../configs/authContext/authContext';
+import { useToast } from '../../../configs/toastContext/toastContext';
 
 export default function Register({ navigation }) {
   const [firstName, setFirstName] = useState('');
@@ -32,14 +33,14 @@ export default function Register({ navigation }) {
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const { saveToken } = useAuth();
-
+  const { showToast } = useToast();
   const validateForm = () => {
     return email && password && phone;
   };
 
   const handleRegister = async () => {
     if (!validateForm()) {
-      Alert.alert('Validation Error', 'Please fill in all required fields.');
+      showToast('Please fill in all required fields.');
       return;
     }
     try {
@@ -69,10 +70,7 @@ export default function Register({ navigation }) {
       }
       navigation.replace('Secure');
     } catch (error) {
-      Alert.alert(
-        'Registration Failed',
-        error.message || 'Something went wrong',
-      );
+      showToast(error.message || 'Something went wrong');
     } finally {
       setLoading(false);
     }

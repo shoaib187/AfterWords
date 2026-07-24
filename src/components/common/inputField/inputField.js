@@ -112,7 +112,7 @@ export default function InputField({
           styles.fieldWrapper,
           {
             opacity: !editable ? 0.5 : 1,
-            borderColor: error ? COLORS.RED : isFocused ? 'pink' : COLORS.GOLD,
+            borderColor: error ? COLORS.RED : COLORS.GOLD,
           },
           inputStyle,
           error && styles.errorBorder,

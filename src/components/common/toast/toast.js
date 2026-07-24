@@ -3,35 +3,32 @@ import {
   Animated,
   Text,
   StyleSheet,
-  Dimensions,
   Platform,
   TouchableOpacity,
-  Easing
+  Easing,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import { COLORS } from '../../constants/color';
 
-const { width: SCREEN_WIDTH } = Dimensions.get('window');
 const STATUS_BAR_HEIGHT = Platform.OS === 'ios' ? 44 : 0;
 
 const ToastTypes = {
   success: {
-    bgColor: COLORS.SUCCESS,
+    bgColor: '#4caf50',
     icon: 'check-circle',
     iconColor: '#fff',
   },
   error: {
-    bgColor: COLORS.ERROR || '#f44336',
+    bgColor: '#f44336',
     icon: 'error',
     iconColor: '#fff',
   },
   warning: {
-    bgColor: COLORS.WARNING || '#ff9800',
+    bgColor: '#ff9800',
     icon: 'warning',
     iconColor: '#fff',
   },
   info: {
-    bgColor: COLORS.INFO || '#2196f3',
+    bgColor: '#2196f3',
     icon: 'info',
     iconColor: '#fff',
   },
@@ -41,18 +38,18 @@ export default function Toast({
   visible,
   message,
   duration = 3000,
-  type = "success",
-  position = "top",
+  type = 'success',
+  position = 'top',
   customColor,
   icon,
-  onHide
+  onHide,
 }) {
   const slideAnim = useRef(new Animated.Value(-100)).current;
   const opacityAnim = useRef(new Animated.Value(0)).current;
   const scaleAnim = useRef(new Animated.Value(0.8)).current;
   const shakeAnim = useRef(new Animated.Value(0)).current;
 
-  const isTopPosition = position === "top";
+  const isTopPosition = position === 'top';
   const initialPosition = isTopPosition ? -100 : 100;
   const finalPosition = isTopPosition ? STATUS_BAR_HEIGHT : 30;
 
@@ -158,10 +155,7 @@ export default function Toast({
           backgroundColor,
           top: 0,
           bottom: !isTopPosition ? finalPosition + 10 : undefined,
-          transform: [
-            { translateY: slideAnim },
-            { translateX: shakeAnim },
-          ],
+          transform: [{ translateY: slideAnim }, { translateX: shakeAnim }],
           opacity: opacityAnim,
           shadowColor: backgroundColor,
           elevation: 8,

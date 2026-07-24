@@ -1,4 +1,4 @@
-import { ScrollView, View } from 'react-native';
+import { ActivityIndicator, ScrollView, View } from 'react-native';
 import React, { useState } from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import GradientBackground from '../../../components/common/gradientBackground/gradientBackground';
@@ -50,7 +50,7 @@ const recentItems = [
 export default function MyTreasures({ navigation }) {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedTab, setSelectedTab] = useState('videos');
-  const { data } = useTreasures();
+  const { data, isLoading } = useTreasures();
   console.log('data is', data);
 
   const treasures = data?.data?.treasures || [];
@@ -89,19 +89,32 @@ export default function MyTreasures({ navigation }) {
             size="small"
             style={styles.sectionHeaderTracking}
           />
-          <View style={{ gap: Spacing.medium }}>
-            {treasures?.map(item => (
-              <RecentItemCard
-                key={item?._id}
-                item={item}
-                onPress={() =>
-                  navigation.navigate('TreasureDetails', {
-                    id: item?._id,
-                  })
-                }
-              />
-            ))}
-          </View>
+          {isLoading ? (
+            <View
+              style={{
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: '100%',
+                height: 100,
+              }}
+            >
+              <ActivityIndicator size={40} color={COLORS.GOLD} />
+            </View>
+          ) : (
+            <View style={{ gap: Spacing.medium }}>
+              {treasures?.map(item => (
+                <RecentItemCard
+                  key={item?._id}
+                  item={item}
+                  onPress={() =>
+                    navigation.navigate('TreasureDetails', {
+                      id: item?._id,
+                    })
+                  }
+                />
+              ))}
+            </View>
+          )}
         </View>
       </ScrollView>
     </SafeAreaView>

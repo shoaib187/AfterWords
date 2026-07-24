@@ -1,5 +1,11 @@
 import React, { useRef } from 'react';
-import { StyleSheet, View, TouchableOpacity, Animated } from 'react-native';
+import {
+  StyleSheet,
+  View,
+  TouchableOpacity,
+  Animated,
+  Alert,
+} from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import AppText from '../../../components/typography/appText/appText';
@@ -76,6 +82,7 @@ export default function CreateTreasure({ navigation }) {
     ]).start();
     navigation.navigate('CreateLegacy');
   };
+
   return (
     <SafeAreaView style={styles.container}>
       <HeaderBack title={'Create Treasure'} />
@@ -129,6 +136,13 @@ export default function CreateTreasure({ navigation }) {
               activeOpacity={0.8}
               style={styles.gridCard}
               onPress={() => {
+                if (option.id === 'video') {
+                  Alert.alert(
+                    'Feature Coming Soon',
+                    `The ${option.title} feature is not yet available. Please check back later.`,
+                  );
+                  return;
+                }
                 navigation.navigate(option?.route);
               }}
             >
