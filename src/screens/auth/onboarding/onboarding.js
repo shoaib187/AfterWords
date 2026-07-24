@@ -50,6 +50,7 @@ export default function OnboardingScreen({ navigation }) {
     if (index < onboardingData.length - 1) {
       flatListRef.current.scrollToIndex({ index: index + 1 });
     } else {
+      // navigation.navigate('Secure');
       navigation.navigate('Register');
     }
   };

@@ -1,17 +1,7 @@
 import React, { useState } from 'react';
-import {
-  StyleSheet,
-  View,
-  TouchableOpacity,
-  TextInput,
-  ScrollView,
-  StatusBar,
-} from 'react-native';
+import { StyleSheet, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import Ionicons from 'react-native-vector-icons/Ionicons';
-import LinearGradient from 'react-native-linear-gradient';
 
-import AppText from '../../../components/typography/appText/appText';
 import {
   FontSize,
   Radius,
@@ -24,12 +14,34 @@ import { Button } from '../../../components/common/button/button';
 import HeaderBack from '../../../components/common/headerBack/headerBack';
 import InputField from '../../../components/common/inputField/inputField';
 import GradientBackground from '../../../components/common/gradientBackground/gradientBackground';
+import { useCreateRecipient } from '../../../hooks/useRecipient/useRecipient';
 
 export default function NewRecipient({ navigation }) {
   const [name, setName] = useState('');
   const [relationship, setRelationship] = useState('');
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
+
+  const { mutate: createRecipient, isPending } = useCreateRecipient();
+  const handleCreateRecipient = () => {
+    const payload = {
+      name,
+      relationship,
+      email,
+      phone,
+    };
+    createRecipient(
+      { payload },
+      {
+        onSuccess: () => {
+          navigation.goBack();
+        },
+        onError: error => {
+          console.error('Error creating recipient:', error);
+        },
+      },
+    );
+  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -71,7 +83,12 @@ export default function NewRecipient({ navigation }) {
           onChangeText={setPhone}
         />
 
-        <Button title="Save" />
+        <Button
+          loading={isPending}
+          onPress={handleCreateRecipient}
+          title="Save"
+          disabled={!name || !relationship || !email || !phone || isPending}
+        />
       </ScrollView>
     </SafeAreaView>
   );

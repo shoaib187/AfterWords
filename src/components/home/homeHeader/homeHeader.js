@@ -6,20 +6,46 @@ import { Radius, Responsive, Spacing } from '../../constants/styles';
 
 import AppText from '../../typography/appText/appText';
 
-export const HomeHeader = () => {
+export const HomeHeader = ({ firstName }) => {
+  const getGreeting = () => {
+    const currentHour = new Date().getHours();
+
+    if (currentHour >= 5 && currentHour < 12) {
+      return 'Good Morning';
+    } else if (currentHour >= 12 && currentHour < 17) {
+      return 'Good Afternoon';
+    } else if (currentHour >= 17 && currentHour < 20) {
+      return 'Good Evening';
+    } else {
+      return 'Good Night';
+    }
+  };
+
+  const greeting = getGreeting();
+
   return (
     <View style={styles.topHeaderNav}>
       <View style={styles.userInfoRow}>
         <View style={styles.profileAvatarCircle}>
-          <AppText text={'E'} size="medium" weight="bold" color="#1C1917" />
+          <AppText
+            text={firstName?.charAt(0)?.toUpperCase() || '?'}
+            size="large"
+            color={COLORS.BLACK}
+            weight="bold"
+          />
         </View>
         <View style={styles.greetingTextColumn}>
-          <AppText text="Good Morning" size="small" color="#999" />
           <AppText
-            text={'Eleanor'}
+            text={`${greeting}`}
+            size="small"
+            color="#999"
+            style={styles.greetingText}
+          />
+          <AppText
+            text={firstName || 'Guest'}
             size="large"
-            weight="bold"
             color={COLORS.WHITE}
+            weight="bold"
           />
         </View>
       </View>
@@ -29,7 +55,7 @@ export const HomeHeader = () => {
       >
         <Ionicons
           name="notifications-outline"
-          size={Responsive.width(20)}
+          size={Responsive.width(24)}
           color={COLORS.WHITE}
         />
         <View style={styles.activeNotificationDot} />
@@ -39,10 +65,6 @@ export const HomeHeader = () => {
 };
 
 const styles = StyleSheet.create({
-  masterContainer: {
-    flex: 1,
-    backgroundColor: COLORS.BLACK,
-  },
   topHeaderNav: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -59,9 +81,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   profileAvatarCircle: {
-    width: Responsive.width(42),
-    height: Responsive.width(42),
-    borderRadius: Radius.circle || 21,
+    width: Responsive.width(48),
+    height: Responsive.width(48),
+    borderRadius: Radius.circle || 24,
     backgroundColor: '#C59353',
     justifyContent: 'center',
     alignItems: 'center',
@@ -70,9 +92,9 @@ const styles = StyleSheet.create({
   greetingTextColumn: {
     justifyContent: 'center',
   },
-  nameHeaderText: {
-    marginTop: -2,
-    fontFamily: 'System',
+  greetingText: {
+    marginBottom: 2,
+    fontWeight: '500',
   },
   notificationBellButton: {
     padding: Spacing.tiny,
@@ -86,5 +108,7 @@ const styles = StyleSheet.create({
     height: 8,
     borderRadius: 4,
     backgroundColor: '#EF4444',
+    borderWidth: 1,
+    borderColor: COLORS.BLACK,
   },
 });

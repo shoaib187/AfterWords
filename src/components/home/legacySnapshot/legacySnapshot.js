@@ -10,11 +10,9 @@ import { Button } from '../../common/button/button';
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
 export default function LegacySnapshot({ dataState, navigation }) {
-  const hasData = dataState?.hasData ?? false;
-
   return (
     <View style={styles.masterContainer}>
-      {!hasData ? (
+      {!dataState ? (
         <View style={styles.emptyStateContainer}>
           <MCOIcon
             name="safe-square-outline"
@@ -54,12 +52,12 @@ export default function LegacySnapshot({ dataState, navigation }) {
               <View style={styles.snapshotCard}>
                 <MCOIcon
                   name="image-multiple-outline"
-                  size={20}
+                  size={Responsive.width(20)}
                   color="#10B981"
                   style={styles.gridCardIconSpacing}
                 />
                 <AppText
-                  text={String(dataState?.snapshots?.treasures || 0)}
+                  text={String(dataState?.treasureCount || 0)}
                   size="large"
                 />
                 <AppText text="Treasure" />
@@ -68,12 +66,12 @@ export default function LegacySnapshot({ dataState, navigation }) {
               <View style={styles.snapshotCard}>
                 <Icon
                   name="heart"
-                  size={20}
+                  size={Responsive.width(20)}
                   color="#C49753"
                   style={styles.gridCardIconSpacing}
                 />
                 <AppText
-                  text={String(dataState?.snapshots?.legacies || 0)}
+                  text={String(dataState?.legacyCount || 0)}
                   size="large"
                   color={COLORS.WHITE}
                 />
@@ -91,7 +89,7 @@ export default function LegacySnapshot({ dataState, navigation }) {
                   style={styles.gridCardIconSpacing}
                 />
                 <AppText
-                  text={String(dataState?.snapshots?.recipients || 0)}
+                  text={String(dataState?.recipientCount || 0)}
                   size="large"
                   color={COLORS.WHITE}
                 />
@@ -106,7 +104,7 @@ export default function LegacySnapshot({ dataState, navigation }) {
                   style={styles.gridCardIconSpacing}
                 />
                 <AppText
-                  text={String(dataState?.snapshots?.scheduled || 0)}
+                  text={String(dataState?.scheduledCount || 0)}
                   size="large"
                 />
                 <AppText text="Scheduled" />

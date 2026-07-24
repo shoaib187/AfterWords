@@ -4,19 +4,19 @@ import { StyleSheet, View } from 'react-native';
 import AppText from '../../../components/typography/appText/appText';
 import Title from '../../../components/typography/title/title';
 
-export default function LabelSection() {
+export default function LabelSection({ label }) {
   return (
     <View style={styles.section}>
       <Title text="Labels" />
 
       <View style={styles.tagsContainer}>
         <View style={styles.tag}>
-          <AppText text="Legal" style={styles.tagText} />
+          <AppText text={label} style={styles.tagText} />
         </View>
 
-        <View style={styles.tag}>
+        {/* <View style={styles.tag}>
           <AppText text="Property" style={styles.tagText} />
-        </View>
+        </View> */}
       </View>
     </View>
   );

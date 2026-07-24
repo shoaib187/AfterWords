@@ -1,12 +1,5 @@
 import React from 'react';
-import {
-  StyleSheet,
-  View,
-  TouchableOpacity,
-  StatusBar,
-  ScrollView,
-  Platform,
-} from 'react-native';
+import { StyleSheet, View, ScrollView, Platform, Alert } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import FeatherIcon from 'react-native-vector-icons/Feather';
 import { COLORS } from '../../../components/constants/color';
@@ -20,21 +13,103 @@ import HeaderBack from '../../../components/common/headerBack/headerBack';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Title from '../../../components/typography/title/title';
 import { Button } from '../../../components/common/button/button';
+import { useCreateLegacyGift } from '../../../hooks/useLegacy/useLegacy';
 
-export default function ReviewLegacy({ navigation }) {
-  // Data snapshot mirror representing the overview state in the UI mock
+export default function ReviewLegacy({ navigation, route }) {
+  const { payload } = route?.params || {};
+  const { mutate: createLegacy, isPending } = useCreateLegacyGift();
+
+  console.log('Full payload received:', payload);
+
+  // Remove only 'recipients' from payload, keep everything else including recipientIds
+  const cleanPayload = { ...payload };
+  delete cleanPayload.recipients; // Remove only the recipients array
+
+  console.log('Clean payload (without recipients):', cleanPayload);
+
+  // Get treasure info from payload
+  const treasureTitle = payload?.treasureTitle || 'Untitled Treasure';
+  const treasureType = payload?.treasureType || 'Document';
+
+  // Get recipients for display
+  const recipients = payload?.recipients || [];
+
+  // Get release rule display text
+  const getReleaseRuleDisplay = (releaseType, releaseDate) => {
+    if (releaseType === 'estate') {
+      return 'Upon Estate activation';
+    } else if (releaseType === 'scheduled' && releaseDate) {
+      // Format date for display
+      const date = new Date(releaseDate);
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      const day = String(date.getDate()).padStart(2, '0');
+      const year = date.getFullYear();
+      return `Scheduled for ${month}/${day}/${year}`;
+    }
+    return 'Not specified';
+  };
+
+  const releaseType = payload?.releaseType || 'estate';
+  const releaseDate = payload?.releaseDate || null;
+
+  const handleCreateLegacy = () => {
+    createLegacy(
+      { payload: cleanPayload },
+      {
+        onSuccess: data => {
+          navigation.navigate('TreasureSaved', {
+            isFromLegacy: true,
+            treasureId: data,
+          });
+        },
+        onError: error => {
+          console.error('Error creating legacy:', error);
+
+          let errorMessage = 'Failed to create legacy gift. Please try again.';
+
+          if (error.response) {
+            const status = error.response.status;
+            const data = error.response.data;
+
+            if (status === 400) {
+              errorMessage =
+                data?.message || 'Invalid request. Please check your input.';
+            } else if (status === 401) {
+              errorMessage = 'Authentication failed. Please login again.';
+            } else if (status === 500) {
+              errorMessage = 'Server error. Please try again later.';
+            } else {
+              errorMessage = data?.message || 'Server error occurred';
+            }
+          } else if (error.request) {
+            errorMessage = 'Network error. Please check your connection.';
+          }
+
+          Alert.alert('Error', errorMessage);
+        },
+      },
+    );
+  };
+
   const legacySummary = {
     stepTitle: 'Legacy Step 3 of 3',
     instruction: 'Please review your delivery instructions before finalizing.',
     treasure: {
-      title: 'Advice for my Son',
-      type: 'Video',
+      title: treasureTitle,
+      type: treasureType,
     },
-    recipients: [
-      { id: '1', name: 'James Whitfield', relation: 'Son' },
-      { id: '2', name: 'Sofia Chen', relation: 'Daughter' },
-    ],
-    releaseTerms: 'Scheduled for 03-11-2026',
+    recipients: recipients,
+    releaseTerms: getReleaseRuleDisplay(releaseType, releaseDate),
+  };
+
+  // Get icon based on treasure type
+  const getIconName = type => {
+    if (!type) return 'file';
+    const lowerType = type.toLowerCase();
+    if (lowerType === 'video') return 'video';
+    if (lowerType === 'voice') return 'mic';
+    if (lowerType === 'photo') return 'image';
+    return 'file';
   };
 
   return (
@@ -72,7 +147,7 @@ export default function ReviewLegacy({ navigation }) {
             />
             <View style={styles.cardContentRow}>
               <FeatherIcon
-                name="video"
+                name={getIconName(legacySummary.treasure.type)}
                 size={20}
                 color="rgba(28, 25, 23, 0.6)"
                 style={styles.cardIconPadding}
@@ -85,7 +160,7 @@ export default function ReviewLegacy({ navigation }) {
                   color="#1C1917"
                 />
                 <AppText
-                  text={legacySummary.treasure.type}
+                  text={legacySummary.treasure.type || 'Document'}
                   size="small"
                   color="#44403C"
                   style={styles.metaSubtextGap}
@@ -108,35 +183,59 @@ export default function ReviewLegacy({ navigation }) {
               color="#1C1917"
               style={styles.cardSectionLabel}
             />
-            {legacySummary.recipients.map((recipient, idx) => (
-              <View
-                key={recipient.id}
-                style={[
-                  styles.cardContentRow,
-                  idx > 0 && styles.recipientRowGap,
-                ]}
-              >
+            {Array.isArray(legacySummary.recipients) &&
+            legacySummary.recipients.length > 0 ? (
+              legacySummary.recipients.map((recipient, idx) => (
+                <View
+                  key={recipient.id || recipient._id || idx}
+                  style={[
+                    styles.cardContentRow,
+                    idx > 0 && styles.recipientRowGap,
+                  ]}
+                >
+                  <FeatherIcon
+                    name="user"
+                    size={20}
+                    color="rgba(28, 25, 23, 0.6)"
+                    style={styles.cardIconPadding}
+                  />
+                  <View style={styles.recipientRowMeta}>
+                    <AppText
+                      text={recipient.name || 'Unknown'}
+                      size="medium"
+                      weight="bold"
+                      color="#1C1917"
+                    />
+                    <AppText
+                      text={
+                        recipient.relationship ||
+                        recipient.relation ||
+                        'No relation'
+                      }
+                      size="medium"
+                      color="#44403C"
+                    />
+                  </View>
+                </View>
+              ))
+            ) : (
+              <View style={styles.cardContentRow}>
                 <FeatherIcon
-                  name="user"
+                  name="users"
                   size={20}
                   color="rgba(28, 25, 23, 0.6)"
                   style={styles.cardIconPadding}
                 />
-                <View style={styles.recipientRowMeta}>
-                  <AppText
-                    text={recipient.name}
-                    size="medium"
-                    weight="bold"
-                    color="#1C1917"
-                  />
-                  <AppText
-                    text={recipient.relation}
-                    size="medium"
-                    color="#44403C"
-                  />
-                </View>
+                <AppText
+                  text={`${
+                    payload?.recipientIds?.length || 0
+                  } recipients selected`}
+                  size="medium"
+                  weight="bold"
+                  color="#1C1917"
+                />
               </View>
-            ))}
+            )}
           </LinearGradient>
 
           {/* CARD 3: RELEASE TERMS */}
@@ -155,7 +254,7 @@ export default function ReviewLegacy({ navigation }) {
             />
             <View style={styles.cardContentRow}>
               <FeatherIcon
-                name="calendar"
+                name={releaseType === 'estate' ? 'shield' : 'calendar'}
                 size={20}
                 color="rgba(28, 25, 23, 0.6)"
                 style={styles.cardIconPadding}
@@ -167,14 +266,22 @@ export default function ReviewLegacy({ navigation }) {
                   weight="bold"
                   color="#1C1917"
                 />
+                {releaseType === 'estate' && (
+                  <AppText
+                    text="Release upon estate activation"
+                    size="small"
+                    color="#44403C"
+                    style={styles.metaSubtextGap}
+                  />
+                )}
               </View>
             </View>
           </LinearGradient>
+
           <Button
-            title="Save Legacy"
-            onPress={() =>
-              navigation.navigate('TreasureSaved', { isFromLegacy: true })
-            }
+            title={isPending ? 'Saving...' : 'Save Legacy'}
+            onPress={handleCreateLegacy}
+            disabled={isPending}
           />
         </View>
       </ScrollView>
@@ -261,7 +368,7 @@ const styles = StyleSheet.create({
   recipientRowMeta: {
     flex: 1,
     flexDirection: 'row',
-    justifyContent: 'between',
+    justifyContent: 'space-between',
     alignItems: 'center',
   },
   primarySaveButton: {

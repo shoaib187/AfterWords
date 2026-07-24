@@ -1,24 +1,30 @@
 import { View, Text, StyleSheet } from 'react-native';
 import React, { memo } from 'react';
 import Feather from 'react-native-vector-icons/Feather';
+import { useUser } from '../../../hooks/useUser/useUser';
+import { Responsive } from '../../constants/styles';
 
 const Intro = () => {
+  const { user } = useUser();
   return (
     <View>
       <Text style={styles.subHeaderTitle}>A LEGACY DELIVERED</Text>
-      <Text style={styles.mainHeaderTitle}>Gift From James Whitfield</Text>
+      <Text style={styles.mainHeaderTitle}>
+        Gift From {user?.firstName || ''} {user?.lastName || ''}
+      </Text>
       <Text style={styles.verificationText}>Secure Access Verified</Text>
 
       <View style={styles.infoBanner}>
         <Feather
           name="alert-circle"
-          size={20}
+          size={Responsive.width(20)}
           color="#D1A354"
           style={styles.infoIcon}
         />
         <Text style={styles.infoText}>
-          James has prepared these preserved gifts for you. They have been
-          securely unlocked based on his instructions.
+          {user?.firstName || ''} {user?.lastName || ''} has prepared these
+          preserved gifts for you. They have been securely unlocked based on his
+          instructions.
         </Text>
       </View>
     </View>

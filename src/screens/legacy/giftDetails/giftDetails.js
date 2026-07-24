@@ -20,9 +20,14 @@ import {
 import { COLORS } from '../../../components/constants/color';
 import GradientWrapper from '../../../components/common/gradientWrapper/gradientWrapper';
 import { Button } from '../../../components/common/button/button';
+import { useLegacyGift } from '../../../hooks/useLegacy/useLegacy';
 
 export default function GiftDetails({ navigation, route }) {
-  const { type } = route?.params;
+  const { type, id } = route?.params;
+
+  const { data } = useLegacyGift(id);
+  console.log('da', data);
+
   return (
     <SafeAreaView style={styles.container}>
       <GradientBackground />

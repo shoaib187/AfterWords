@@ -1,17 +1,9 @@
 import React, { useState } from 'react';
-import {
-  StyleSheet,
-  View,
-  TouchableOpacity,
-  Image,
-  StatusBar,
-} from 'react-native';
+import { StyleSheet, View, TouchableOpacity, Image } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import LinearGradient from 'react-native-linear-gradient';
 import { launchImageLibrary } from 'react-native-image-picker';
 
-import Title from '../../../components/typography/title/title';
 import AppText from '../../../components/typography/appText/appText';
 import { COLORS } from '../../../components/constants/color';
 import {
@@ -27,6 +19,7 @@ import GradientBackground from '../../../components/common/gradientBackground/gr
 
 export default function PhotoMessage({ navigation }) {
   const [photoUri, setPhotoUri] = useState(null);
+  const [photos, setPhotos] = useState(null);
 
   const handleChoosePhoto = async () => {
     const options = {
@@ -36,11 +29,10 @@ export default function PhotoMessage({ navigation }) {
 
     launchImageLibrary(options, response => {
       if (response.didCancel) {
-        console.log('User cancelled image picker');
       } else if (response.errorCode) {
-        console.error('ImagePicker Error: ', response.errorMessage);
       } else if (response.assets && response.assets.length > 0) {
         setPhotoUri(response.assets[0].uri);
+        setPhotos(response.assets[0]);
       }
     });
   };
@@ -50,7 +42,7 @@ export default function PhotoMessage({ navigation }) {
       console.log('Please select a photo before continuing');
       return;
     }
-    navigation.navigate('PhotoMessagePreview', { photoUri });
+    navigation.navigate('PhotoMessagePreview', { photoUri: photos });
   };
 
   return (
@@ -58,8 +50,6 @@ export default function PhotoMessage({ navigation }) {
       <GradientBackground />
       <HeaderBack title={'New Photo Memory'} />
       <View style={styles.safeAreaContainer}>
-        <Stepper />
-
         <View style={styles.sectionTitleRow}>
           <View style={styles.purpleStatusDot} />
           <AppText

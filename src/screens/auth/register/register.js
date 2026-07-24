@@ -20,31 +20,59 @@ import {
 import GradientBackground from '../../../components/common/gradientBackground/gradientBackground';
 import { COLORS } from '../../../components/constants/color';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import { login, register } from '../../../utils/apis/auth/api';
+import { useAuth } from '../../../configs/authContext/authContext';
 
 export default function Register({ navigation }) {
-  const [fullName, setFullName] = useState('');
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [loading, setLoading] = useState(false);
   const [phone, setPhone] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const { saveToken } = useAuth();
+
+  const validateForm = () => {
+    return email && password && phone;
+  };
 
   const handleRegister = async () => {
-    if (!fullName || !email || !password) {
-      Alert.alert('All fields are required');
+    if (!validateForm()) {
+      Alert.alert('Validation Error', 'Please fill in all required fields.');
       return;
     }
-
-    if (password.length < 6) {
-      Alert.alert('Password must be at least 6 characters');
-      return;
-    }
-
     try {
       setLoading(true);
-      const payload = { fullName, email, password };
+
+      const payload = {
+        firstName: firstName.trim(),
+        lastName: lastName.trim(),
+        email: email.trim().toLowerCase(),
+        password: password,
+        phone: phone.trim(),
+      };
+
+      const response = await register(payload);
+      // console.log('res', response);
+
+      if (response) {
+        const loginPayload = {
+          email,
+          password,
+        };
+        const res = await login(loginPayload);
+        console.log('res', res);
+        if (res?.data?.token) {
+          saveToken(res.data.token);
+        }
+      }
       navigation.replace('Secure');
     } catch (error) {
-      Alert.alert('Registration failed');
+      Alert.alert(
+        'Registration Failed',
+        error.message || 'Something went wrong',
+      );
     } finally {
       setLoading(false);
     }
@@ -68,20 +96,26 @@ export default function Register({ navigation }) {
             />
           </View>
           <View style={styles.formContainer}>
-            <View style={{ flexDirection: 'row', gap: Spacing.small }}>
+            <View style={styles.nameRow}>
               <InputField
                 label="First Name"
-                value={fullName}
-                placeholder="John Doe"
-                onChangeText={setFullName}
+                value={firstName}
+                placeholder="John"
+                onChangeText={setFirstName}
                 placeholderTextColor="#666"
+                containerStyle={styles.nameInput}
+                required={true}
+                validationType={null}
               />
               <InputField
                 label="Last Name"
-                value={fullName}
-                placeholder="John Doe"
-                onChangeText={setFullName}
+                value={lastName}
+                placeholder="Doe"
+                onChangeText={setLastName}
                 placeholderTextColor="#666"
+                containerStyle={styles.nameInput}
+                required={true}
+                validationType={null}
               />
             </View>
 
@@ -93,6 +127,8 @@ export default function Register({ navigation }) {
               keyboardType="email-address"
               autoCapitalize="none"
               placeholderTextColor="#666"
+              required={true}
+              validationType="email"
             />
 
             <InputField
@@ -100,31 +136,38 @@ export default function Register({ navigation }) {
               value={password}
               placeholder="••••••••"
               onChangeText={setPassword}
-              secureTextEntry
+              secureTextEntry={!showPassword}
               placeholderTextColor="#666"
+              required={true}
+              validationType="password"
               rightIcon={
-                <Pressable onPress={() => {}}>
+                <Pressable onPress={() => setShowPassword(!showPassword)}>
                   <MaterialCommunityIcons
-                    name="eye"
+                    name={showPassword ? 'eye-off' : 'eye'}
                     color={COLORS.WHITE}
                     size={Responsive.width(22)}
                   />
                 </Pressable>
               }
             />
+
             <InputField
               label="Phone"
               value={phone}
               placeholder="+1 234 567 890"
               onChangeText={setPhone}
-              secureTextEntry
+              keyboardType="phone-pad"
               placeholderTextColor="#666"
+              required={true}
+              validationType="phone"
             />
 
             <Button
               onPress={handleRegister}
+              // onPress={() => navigation.navigate('Secure')}
               title="Create Account"
               loading={loading}
+              disabled={loading}
               style={{ marginTop: Spacing.xLarge * 2 }}
             />
           </View>
@@ -175,7 +218,7 @@ export default function Register({ navigation }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#000000', // Pure obsidian dark mode backdrop
+    backgroundColor: '#000000',
   },
   safeArea: {
     flex: 1,
@@ -199,23 +242,23 @@ const styles = StyleSheet.create({
   subtitleText: {
     fontSize: FontSize.medium,
     fontWeight: '400',
-    color: '#A17A44', // Premium bronze-gold accent subtitle text
+    color: '#A17A44',
     lineHeight: FontSize.medium * 1.4,
   },
   formContainer: {
+    flex: 1,
+  },
+  nameRow: {
+    flexDirection: 'row',
+    gap: Spacing.small,
+  },
+  nameInput: {
     flex: 1,
   },
   footerContainer: {
     marginTop: Responsive.height(40),
     alignItems: 'center',
     justifyContent: 'flex-end',
-  },
-  footerText: {
-    fontSize: FontSize.tiny,
-    color: '#666666',
-    textAlign: 'center',
-    lineHeight: FontSize.tiny * 1.4,
-    paddingHorizontal: Spacing.medium,
   },
   loginRedirectRow: {
     flexDirection: 'row',
@@ -229,7 +272,7 @@ const styles = StyleSheet.create({
   },
   loginLinkText: {
     fontSize: FontSize.medium,
-    color: '#DCA257', // Accent gold links
+    color: '#DCA257',
     fontWeight: '600',
     textDecorationLine: 'underline',
   },

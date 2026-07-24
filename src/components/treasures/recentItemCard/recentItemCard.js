@@ -1,12 +1,34 @@
-import { Pressable, StyleSheet, View } from 'react-native';
-import React from 'react';
+import { ActivityIndicator, Pressable, StyleSheet, View } from 'react-native';
+import React, { Activity } from 'react';
 import LinearGradient from 'react-native-linear-gradient';
 import MCOIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 import { Radius, Responsive, Spacing } from '../../constants/styles';
 import AppText from '../../typography/appText/appText';
+import { formatDateTime } from '../../../utils/config';
+import { useDeleteTreasure } from '../../../hooks/useTreasures/useTreasures';
 
-export default function RecentItemCard({ onPress }) {
+const TYPE_ICON_MAP = {
+  video: { icon: 'video-outline', color: '#8B5CF6' },
+  voice: { icon: 'microphone-outline', color: '#F59E0B' },
+  photo: { icon: 'image-outline', color: '#10B981' },
+  document: { icon: 'file-document-outline', color: '#3B82F6' },
+};
+
+const DEFAULT_TYPE_ICON = { icon: 'file-outline', color: '#8B5CF6' };
+
+const getTypeIconInfo = type =>
+  TYPE_ICON_MAP[type?.toLowerCase()] || DEFAULT_TYPE_ICON;
+
+export default function RecentItemCard({ item, onPress }) {
+  const { icon, color } = getTypeIconInfo(item?.type);
+
+  const { mutate: deleteTreasure, isPending } = useDeleteTreasure();
+
+  const handleDelete = () => {
+    deleteTreasure({ id: item?._id });
+  };
+
   return (
     <Pressable onPress={onPress}>
       <LinearGradient
@@ -16,24 +38,20 @@ export default function RecentItemCard({ onPress }) {
         style={styles.recentItemGradientCard}
       >
         <View style={styles.whiteItemIconCircle}>
-          <MCOIcon
-            name="file-document-outline"
-            size={Responsive.width(24)}
-            color="#8B5CF6"
-          />
+          <MCOIcon name={icon} size={Responsive.width(24)} color={color} />
         </View>
 
         <View style={styles.recentCardContentMeta}>
-          <AppText text="Document" size="small" color="#71717A" />
+          <AppText text={item?.type} size="small" color="#71717A" />
           <AppText
-            text="Home Deed & Final Will"
+            text={item?.title}
             size="medium"
             numberOfLines={1}
             color="#1C1917"
             style={styles.itemTitleGap}
           />
           <AppText
-            text="Sep 22, 2026"
+            text={formatDateTime(item?.createdAt)}
             size="small"
             color="#71717A"
             style={styles.itemDateGap}
@@ -43,6 +61,17 @@ export default function RecentItemCard({ onPress }) {
         <View style={styles.usagesFloatingBadge}>
           <AppText text="Used in 2 Legacies" size="tiny" color="#065F46" />
         </View>
+        <Pressable style={styles.deleteBtn} onPress={handleDelete}>
+          {isPending ? (
+            <ActivityIndicator size="small" color="#EF4444" />
+          ) : (
+            <MCOIcon
+              name="delete-outline"
+              size={Responsive.width(18)}
+              color="#EF4444"
+            />
+          )}
+        </Pressable>
       </LinearGradient>
     </Pressable>
   );
@@ -91,5 +120,13 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.medium,
     paddingVertical: 5,
     borderRadius: Radius.large || 12,
+  },
+  deleteBtn: {
+    width: Responsive.width(32),
+    height: Responsive.width(32),
+    borderRadius: Radius.circle,
+    position: 'absolute',
+    top: Spacing.small,
+    right: Spacing.tiny,
   },
 });

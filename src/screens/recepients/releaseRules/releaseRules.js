@@ -5,9 +5,11 @@ import {
   TouchableOpacity,
   ScrollView,
   Platform,
+  Alert,
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import Icon from 'react-native-vector-icons/Feather';
+import DatePicker from 'react-native-date-picker';
 import { COLORS } from '../../../components/constants/color';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import AppText from '../../../components/typography/appText/appText';
@@ -19,21 +21,105 @@ import {
 import HeaderBack from '../../../components/common/headerBack/headerBack';
 import Title from '../../../components/typography/title/title';
 import { Button } from '../../../components/common/button/button';
+import { useCreateLegacyGift } from '../../../hooks/useLegacy/useLegacy';
 
-export default function ReleaseRules({ navigation }) {
+export default function ReleaseRules({ navigation, route }) {
+  const { recipientIds, treasureId, recipients } = route?.params || {};
+  const { mutate: createLegacy, isPending } = useCreateLegacyGift();
+
   const [selectedRule, setSelectedRule] = useState('estate');
-  const [scheduledDate, setScheduledDate] = useState('03/11/2026'); // Example filled state
+  const [showDatePicker, setShowDatePicker] = useState(false);
+  const [scheduledDate, setScheduledDate] = useState(new Date());
+  const [formattedDate, setFormattedDate] = useState('');
+
+  console.log(
+    'recipientIds',
+    recipientIds,
+    'treasureId',
+    treasureId,
+    recipients,
+  );
 
   const handleSelectRule = ruleType => {
     setSelectedRule(ruleType);
   };
 
+  // Format date for display
+  const formatDateForDisplay = date => {
+    if (!date) return 'mm/dd/yyyy';
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    const year = date.getFullYear();
+    return `${month}/${day}/${year}`;
+  };
+
+  // Format date for API (YYYY-MM-DD)
+  const formatDateForAPI = date => {
+    if (!date) return null;
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  };
+
+  const handleDateConfirm = selectedDate => {
+    setShowDatePicker(false);
+    if (selectedDate) {
+      setScheduledDate(selectedDate);
+      setFormattedDate(formatDateForDisplay(selectedDate));
+    }
+  };
+
+  const handleDateCancel = () => {
+    setShowDatePicker(false);
+  };
+
+  const showDatepicker = () => {
+    setShowDatePicker(true);
+  };
+
   // Condition check to block or pass button submission access
   const isButtonEnabled =
-    selectedRule === 'estate' ||
-    (selectedRule === 'scheduled' &&
-      scheduledDate &&
-      scheduledDate !== 'mm/dd/yyyy');
+    recipientIds &&
+    recipientIds.length > 0 &&
+    treasureId &&
+    (selectedRule === 'estate_activation' ||
+      (selectedRule === 'scheduled' &&
+        formattedDate &&
+        formattedDate !== 'mm/dd/yyyy'));
+
+  const handleCreateLegacy = () => {
+    // Validate required fields
+    if (!treasureId) {
+      Alert.alert('Error', 'Treasure ID is missing');
+      return;
+    }
+
+    if (!recipientIds || recipientIds.length === 0) {
+      Alert.alert('Error', 'Please select at least one recipient');
+      return;
+    }
+
+    // Prepare payload according to API expectations
+    const payload = {
+      treasureId: treasureId,
+      recipientIds: recipientIds,
+      releaseType: selectedRule, // 'estate' or 'scheduled'
+      releaseDate:
+        selectedRule === 'scheduled' ? formatDateForAPI(scheduledDate) : null,
+      recipients,
+    };
+
+    if (selectedRule === 'scheduled') {
+      const releaseDate = formatDateForAPI(scheduledDate);
+      if (!releaseDate) {
+        Alert.alert('Error', 'Please select a valid date');
+        return;
+      }
+      payload.releaseDate = releaseDate;
+    }
+    navigation.navigate('ReviewLegacy', { payload });
+  };
 
   return (
     <SafeAreaView style={styles.masterContainer}>
@@ -115,7 +201,7 @@ export default function ReleaseRules({ navigation }) {
             )}
           </TouchableOpacity>
 
-          {/* OPTION 2: TIME-BASED SCHEDULED ACTION MAP */}
+          {/* OPTION 2: TIME-BASED SCHEDULED ACTION */}
           <TouchableOpacity
             activeOpacity={0.9}
             onPress={() => handleSelectRule('scheduled')}
@@ -152,16 +238,14 @@ export default function ReleaseRules({ navigation }) {
                   <TouchableOpacity
                     style={styles.inlineDatePickerBadge}
                     activeOpacity={0.8}
-                    onPress={() => {
-                      // Implement your platform date picker logic trigger context here
-                    }}
+                    onPress={showDatepicker}
                   >
                     <AppText
-                      text={scheduledDate || 'mm/dd/yyyy'}
+                      text={formattedDate || 'mm/dd/yyyy'}
                       size="small"
                       weight="bold"
                       color={
-                        scheduledDate && scheduledDate !== 'mm/dd/yyyy'
+                        formattedDate && formattedDate !== 'mm/dd/yyyy'
                           ? '#1C1917'
                           : 'rgba(28, 25, 23, 0.5)'
                       }
@@ -195,13 +279,43 @@ export default function ReleaseRules({ navigation }) {
             )}
           </TouchableOpacity>
 
+          {/* Selected recipients summary */}
+          {recipientIds && recipientIds.length > 0 && (
+            <View style={styles.selectedSummaryContainer}>
+              <AppText
+                text={`${recipientIds.length} recipient${
+                  recipientIds.length > 1 ? 's' : ''
+                } selected`}
+                size="small"
+                color="#C59353"
+              />
+            </View>
+          )}
+
           <Button
-            title="Review Legacy"
-            disabled={!isButtonEnabled}
-            onPress={() => navigation?.navigate('ReviewLegacy')}
+            title={isPending ? 'Creating...' : 'Review Legacy'}
+            disabled={!isButtonEnabled || isPending}
+            onPress={handleCreateLegacy}
           />
         </View>
       </ScrollView>
+
+      {/* Date Picker Modal */}
+      <DatePicker
+        modal
+        open={showDatePicker}
+        date={scheduledDate}
+        mode="date"
+        onConfirm={handleDateConfirm}
+        onCancel={handleDateCancel}
+        minimumDate={new Date()}
+        title="Select Release Date"
+        confirmText="Confirm"
+        cancelText="Cancel"
+        theme="dark"
+        textColor="#FFFFFF"
+        buttonColor="#C59353"
+      />
     </SafeAreaView>
   );
 }
@@ -297,13 +411,17 @@ const styles = StyleSheet.create({
     minWidth: 120,
     alignItems: 'center',
   },
+  selectedSummaryContainer: {
+    alignItems: 'center',
+    marginVertical: Responsive.height(12),
+  },
   primarySubmitButton: {
     width: '100%',
     height: Responsive.height(54),
     borderRadius: Radius.large || 27,
     justifyContent: 'center',
     alignItems: 'center',
-    marginTop: 'auto', // Pushes button layout precisely to structural footer bottom
+    marginTop: 'auto',
   },
   btnActiveBackground: {
     backgroundColor: '#DCA257',

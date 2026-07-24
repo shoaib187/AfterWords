@@ -1,9 +1,6 @@
 import Sound from 'react-native-nitro-sound';
 
-import {
-  checkAudioPermission,
-  requestAudioPermission,
-} from '../audioPermissions/audioPermissions';
+import { requestAudioPermission } from '../audioPermissions/audioPermissions';
 
 let recordPath = '';
 let recordListener = null;

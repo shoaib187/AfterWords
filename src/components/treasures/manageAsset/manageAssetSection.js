@@ -4,7 +4,7 @@ import { StyleSheet, TouchableOpacity, View } from 'react-native';
 import Title from '../../../components/typography/title/title';
 import AppText from '../../../components/typography/appText/appText';
 import { FontSize, Radius, Responsive, Spacing } from '../../constants/styles';
-
+import { useNavigation } from '@react-navigation/native';
 const ActionButton = ({ title, onPress, variant = 'gold', style }) => (
   <TouchableOpacity
     activeOpacity={0.8}
@@ -22,7 +22,8 @@ const ActionButton = ({ title, onPress, variant = 'gold', style }) => (
   </TouchableOpacity>
 );
 
-export default function ManageAssetSection({ onRequestClose, onArchieve }) {
+export default function ManageAssetSection({ treasureId, onArchieve }) {
+  const navigation = useNavigation();
   return (
     <View style={styles.content}>
       <Title text="Manage Asset" />
@@ -37,7 +38,7 @@ export default function ManageAssetSection({ onRequestClose, onArchieve }) {
           <ActionButton
             title="Edit Treasure"
             style={styles.halfButton}
-            onPress={() => console.log('Edit Treasure')}
+            onPress={() => navigation.navigate('EditTreasure', { treasureId })}
           />
 
           <ActionButton

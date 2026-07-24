@@ -1,9 +1,8 @@
-import React, { useRef, useEffect } from 'react';
-import { View, Text, TextInput, StyleSheet, Animated } from 'react-native';
+import React, { useState } from 'react';
+import { View, TextInput, StyleSheet } from 'react-native';
 import { COLORS } from '../../constants/color';
 import { FontSize, Radius, Responsive, Spacing } from '../../constants/styles';
 import { FONT } from '../../constants/font';
-import Title from '../../typography/title/title';
 import AppText from '../../typography/appText/appText';
 
 export default function InputField({
@@ -19,44 +18,84 @@ export default function InputField({
   renderElement,
   editable = true,
   style,
-  isFocused,
   onFocus,
   onBlur,
+  showError = true,
   inputStyle,
+  validationType, // 'email' | 'phone' | 'password' | null
+  required = false,
   ...props
 }) {
-  const glowAnim = useRef(new Animated.Value(0)).current;
-  const borderAnim = useRef(new Animated.Value(0)).current;
+  const [error, setError] = useState('');
+  const [isFocused, setIsFocused] = useState(false);
 
-  useEffect(() => {
-    Animated.parallel([
-      Animated.timing(glowAnim, {
-        toValue: isFocused ? 1 : 0,
-        duration: 300,
-        useNativeDriver: false,
-      }),
-      Animated.timing(borderAnim, {
-        toValue: isFocused ? 1 : 0,
-        duration: 250,
-        useNativeDriver: false,
-      }),
-    ]).start();
-  }, [isFocused]);
+  const validateField = text => {
+    if (!text && required) {
+      setError(`${label} is required`);
+      return false;
+    }
 
-  const animatedBorderColor = borderAnim.interpolate({
-    inputRange: [0, 1],
-    outputRange: [COLORS.GOLD, 'pink'],
-  });
+    if (!text) {
+      setError('');
+      return true;
+    }
 
-  const animatedShadowOpacity = glowAnim.interpolate({
-    inputRange: [0, 1],
-    outputRange: [0, 0.9],
-  });
+    switch (validationType) {
+      case 'email': {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(text)) {
+          setError('Please enter a valid email address');
+          return false;
+        }
+        break;
+      }
+      case 'password': {
+        // Min 8 chars, at least one uppercase, one lowercase, one number
+        const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/;
+        if (!passwordRegex.test(text)) {
+          setError('Min 8 chars with uppercase, lowercase, and number');
+          return false;
+        }
+        break;
+      }
+      case 'phone': {
+        // + optional, 7-15 digits
+        const phoneRegex = /^\+?[\d]{7,15}$/;
+        const cleanPhone = text.replace(/\s/g, '');
+        if (!phoneRegex.test(cleanPhone)) {
+          setError('Enter valid phone (7-15 digits, + optional)');
+          return false;
+        }
+        break;
+      }
+      default:
+        break;
+    }
 
-  const animatedElevation = glowAnim.interpolate({
-    inputRange: [0, 1],
-    outputRange: [0, 10],
-  });
+    setError('');
+    return true;
+  };
+
+  const handleBlur = () => {
+    setIsFocused(false);
+    if (onBlur) onBlur();
+    validateField(value);
+  };
+
+  const handleFocus = () => {
+    setIsFocused(true);
+    if (onFocus) onFocus();
+    // Clear error on focus so user can correct
+    setError('');
+  };
+
+  const handleChangeText = text => {
+    onChangeText(text);
+    // Clear error while typing
+    if (error) {
+      setError('');
+    }
+  };
 
   return (
     <View style={[styles.inputContainer, wrapperStyle, style]}>
@@ -68,39 +107,43 @@ export default function InputField({
         />
       )}
 
-      <Animated.View
+      <View
         style={[
           styles.fieldWrapper,
           {
             opacity: !editable ? 0.5 : 1,
-            borderColor: animatedBorderColor,
-            shadowColor: COLORS.WHITE,
-            shadowOffset: { width: 0, height: 0 },
-            shadowOpacity: animatedShadowOpacity,
-            shadowRadius: 5,
-            elevation: animatedElevation,
+            borderColor: error ? COLORS.RED : isFocused ? 'pink' : COLORS.GOLD,
           },
           inputStyle,
+          error && styles.errorBorder,
         ]}
       >
         <TextInput
           value={value}
           placeholder={placeholder}
           placeholderTextColor={COLORS.GRAY}
-          style={[styles.input]}
-          onChangeText={onChangeText}
+          style={[styles.input, error && styles.errorText]}
+          onChangeText={handleChangeText}
           secureTextEntry={secureTextEntry}
           keyboardType={keyboardType}
           selectionColor={COLORS.RED}
           maxLength={maxLength}
           editable={editable}
-          onFocus={onFocus}
-          onBlur={onBlur}
+          onFocus={handleFocus}
+          onBlur={handleBlur}
           {...props}
         />
         {rightIcon && <View style={styles.iconContainer}>{rightIcon}</View>}
         {renderElement && renderElement()}
-      </Animated.View>
+      </View>
+      {showError && error && (
+        <AppText
+          text={error}
+          style={styles.errorTextStyle}
+          color={COLORS.RED}
+          size="small"
+        />
+      )}
     </View>
   );
 }
@@ -109,12 +152,6 @@ const styles = StyleSheet.create({
   inputContainer: {
     flex: 1,
     marginBottom: Spacing.small,
-  },
-  label: {
-    fontSize: FontSize.medium,
-    fontFamily: FONT.SpaceGroteskBold,
-    color: COLORS.WHITE,
-    marginBottom: Responsive.height(6),
   },
   fieldWrapper: {
     flexDirection: 'row',
@@ -138,5 +175,15 @@ const styles = StyleSheet.create({
     marginLeft: Spacing.small,
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  errorBorder: {
+    borderColor: COLORS.RED,
+  },
+  errorText: {
+    color: COLORS.RED,
+  },
+  errorTextStyle: {
+    marginTop: Spacing.tiny,
+    marginLeft: Spacing.small,
   },
 });

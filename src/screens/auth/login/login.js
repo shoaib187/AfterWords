@@ -1,152 +1,287 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState } from 'react';
 import {
-  StyleSheet,
   View,
-  StatusBar,
+  ScrollView,
+  Alert,
+  StyleSheet,
+  TouchableOpacity,
+  Pressable,
   KeyboardAvoidingView,
   Platform,
-  TouchableOpacity,
-  Animated,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import AppGradient from '../../../components/common/gradientBackground/gradientBackground';
-import HeaderBack from '../../../components/common/headerBack/headerBack';
+import { CommonActions } from '@react-navigation/native';
+import { Button } from '../../../components/common/button/button';
 import InputField from '../../../components/common/inputField/inputField';
-import { COLORS } from '../../../components/constants/color';
+import HeaderBack from '../../../components/common/headerBack/headerBack';
+import AppText from '../../../components/typography/appText/appText';
 import {
-  Radius,
+  FontSize,
   Responsive,
   Spacing,
 } from '../../../components/constants/styles';
+import GradientBackground from '../../../components/common/gradientBackground/gradientBackground';
+import { COLORS } from '../../../components/constants/color';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import { login } from '../../../utils/apis/auth/api';
+import { useAuth } from '../../../configs/authContext/authContext';
 
-export default function Login() {
+export default function Login({ navigation }) {
   const [email, setEmail] = useState('');
-  const [isFocused, setIsFocused] = useState(false);
+  const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const { saveToken } = useAuth();
 
-  const headerAnim = useRef(new Animated.Value(0)).current;
-  const heroAnim = useRef(new Animated.Value(0)).current;
-  const bottomAnim = useRef(new Animated.Value(0)).current;
+  const validateForm = () => {
+    if (!email || !password) {
+      Alert.alert('Validation Error', 'Please fill in all required fields.');
+      return false;
+    }
 
-  useEffect(() => {
-    Animated.stagger(150, [
-      Animated.spring(headerAnim, {
-        toValue: 1,
-        useNativeDriver: true,
-        tension: 80,
-        friction: 8,
-      }),
-      Animated.spring(heroAnim, {
-        toValue: 1,
-        useNativeDriver: true,
-        tension: 80,
-        friction: 8,
-      }),
-      Animated.spring(bottomAnim, {
-        toValue: 1,
-        useNativeDriver: true,
-        tension: 80,
-        friction: 8,
-      }),
-    ]).start();
-  }, []);
+    // Email format validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      Alert.alert('Validation Error', 'Please enter a valid email address.');
+      return false;
+    }
 
-  const slideUp = anim => ({
-    opacity: anim,
-    transform: [
-      {
-        translateY: anim.interpolate({
-          inputRange: [0, 1],
-          outputRange: [30, 0],
-        }),
-      },
-    ],
-  });
+    return true;
+  };
+
+  const handleLogin = async () => {
+    if (!validateForm()) {
+      return;
+    }
+
+    try {
+      setLoading(true);
+
+      const payload = {
+        email: email.trim().toLowerCase(),
+        password: password,
+      };
+      const response = await login(payload);
+      // console.log('res', response);
+      // return;
+      if (response?.data?.user) {
+        saveToken(response?.data?.token);
+        navigation.dispatch(
+          CommonActions.reset({
+            index: 0,
+            routes: [{ name: 'TabNavigation' }],
+          }),
+        );
+      }
+    } catch (error) {
+      Alert.alert(
+        'Login Failed',
+        error?.response?.data?.message || 'An error occurred during login.',
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleForgotPassword = () => {
+    // navigation.navigate('ForgotPassword');
+    Alert.alert(
+      'Reset Password',
+      'Password reset functionality will be available soon.',
+      [{ text: 'OK' }],
+    );
+  };
 
   return (
-    <AppGradient
-      colors={[COLORS.BLACK, COLORS.DARK_GRAY, COLORS.BLACK, '#1E1B24']}
-      style={styles.gradientRoot}
-    >
-      <StatusBar
-        translucent
-        backgroundColor="transparent"
-        barStyle="light-content"
-      />
-
+    <View style={styles.container}>
+      <GradientBackground />
       <SafeAreaView style={styles.safeArea}>
+        <HeaderBack showBack={true} title={'Welcome Back'} />
         <KeyboardAvoidingView
-          behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-          style={styles.flex}
+          style={styles.keyboardView}
+          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+          keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 20}
         >
-          <HeaderBack />
-          <Animated.View style={[styles.bottom, slideUp(bottomAnim)]}>
-            <View style={styles.inputRow}>
+          <ScrollView
+            contentContainerStyle={styles.scrollContent}
+            showsVerticalScrollIndicator={false}
+            keyboardShouldPersistTaps="handled"
+          >
+            <View style={styles.welcomeContainer}>
+              <AppText text={'Welcome Back'} style={styles.titleText} />
+              <AppText
+                text={'Access your vault and continue your legacy journey.'}
+                style={styles.subtitleText}
+              />
+            </View>
+
+            <View style={styles.formContainer}>
               <InputField
+                label="Email"
                 value={email}
-                label="Email address"
+                placeholder="example@gmail.com"
                 onChangeText={setEmail}
-                placeholder="you@example.com"
                 keyboardType="email-address"
-                rightIcon={
-                  <MaterialCommunityIcons
-                    name="email-outline"
-                    size={20}
-                    color={isFocused ? COLORS.RED : COLORS.GRAY}
-                  />
-                }
-                isFocused={isFocused}
-                onFocus={() => setIsFocused(true)}
-                onBlur={() => setIsFocused(false)}
-                wrapperStyle={styles.inputFlex}
+                autoCapitalize="none"
+                placeholderTextColor="#666"
+                required={true}
+                validationType="email"
               />
 
+              <InputField
+                label="Password"
+                value={password}
+                placeholder="••••••••"
+                onChangeText={setPassword}
+                secureTextEntry={!showPassword}
+                placeholderTextColor="#666"
+                required={true}
+                validationType="password"
+                showError={false}
+                rightIcon={
+                  <Pressable onPress={() => setShowPassword(!showPassword)}>
+                    <MaterialCommunityIcons
+                      name={showPassword ? 'eye-off' : 'eye'}
+                      color={COLORS.WHITE}
+                      size={Responsive.width(22)}
+                    />
+                  </Pressable>
+                }
+              />
+
+              {/* Forgot Password Link */}
               <TouchableOpacity
-                style={styles.chevronBtn}
-                activeOpacity={0.8}
-                onPress={() => {}}
+                onPress={handleForgotPassword}
+                style={styles.forgotPasswordContainer}
               >
-                <MaterialCommunityIcons
-                  name="chevron-right"
-                  size={Responsive.width(26)}
-                  color={COLORS.BLACK}
+                <AppText
+                  text={'Forgot Password?'}
+                  style={styles.forgotPasswordText}
                 />
               </TouchableOpacity>
+
+              <Button
+                onPress={handleLogin}
+                title="Sign In"
+                loading={loading}
+                disabled={loading}
+                style={{ marginTop: Spacing.xLarge }}
+              />
             </View>
-          </Animated.View>
+
+            <View style={styles.footerContainer}>
+              <View
+                style={{
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  flexWrap: 'wrap',
+                  justifyContent: 'center',
+                }}
+              >
+                <AppText text={'By continuing you agree to our'} size="small" />
+                <Pressable>
+                  <AppText
+                    color={COLORS.GOLD}
+                    text={' Terms of Service'}
+                    size="small"
+                  />
+                </Pressable>
+                <AppText text={' and'} size="small" />
+                <Pressable>
+                  <AppText
+                    color={COLORS.GOLD}
+                    text={' Privacy Policy'}
+                    size="small"
+                  />
+                </Pressable>
+              </View>
+
+              <View style={styles.registerRedirectRow}>
+                <AppText
+                  text={"Don't have a vault? "}
+                  style={styles.noAccountText}
+                />
+                <TouchableOpacity
+                  onPress={() => navigation.navigate('Register')}
+                >
+                  <AppText
+                    text={'Create One'}
+                    style={styles.registerLinkText}
+                  />
+                </TouchableOpacity>
+              </View>
+            </View>
+          </ScrollView>
         </KeyboardAvoidingView>
       </SafeAreaView>
-    </AppGradient>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  gradientRoot: { flex: 1 },
-  safeArea: { flex: 1, backgroundColor: 'transparent' },
-  flex: { flex: 1 },
-  header: { paddingHorizontal: Spacing.medium, paddingTop: 8 },
-  bottom: {
-    paddingHorizontal: Spacing.medium,
-    paddingBottom: Spacing.large,
-    position: 'absolute',
-    bottom: 0,
-    width: '100%',
+  container: {
+    flex: 1,
+    backgroundColor: '#000000',
   },
-  inputRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 10,
-  },
-  inputFlex: {
+  safeArea: {
     flex: 1,
   },
-  chevronBtn: {
-    width: Responsive.width(48),
-    height: Responsive.width(48),
-    borderRadius: Radius.full * 2,
-    backgroundColor: COLORS.WHITE,
-    justifyContent: 'center',
-    alignItems: 'center',
+  keyboardView: {
+    flex: 1,
+  },
+  scrollContent: {
+    paddingHorizontal: Spacing.medium,
+    paddingBottom: Spacing.xLarge,
+  },
+  welcomeContainer: {
+    marginTop: Responsive.height(24),
+    marginBottom: Responsive.height(32),
+  },
+  titleText: {
+    fontSize: FontSize.xLarge,
+    fontWeight: '600',
+    color: '#FFFFFF',
+    letterSpacing: 0.5,
+    marginBottom: Spacing.tiny,
+  },
+  subtitleText: {
+    fontSize: FontSize.medium,
+    fontWeight: '400',
+    color: '#A17A44',
+    lineHeight: FontSize.medium * 1.4,
+  },
+  formContainer: {
+    flex: 1,
+  },
+  forgotPasswordContainer: {
+    alignSelf: 'flex-end',
     marginTop: Spacing.small,
+    marginBottom: Spacing.medium,
+  },
+  forgotPasswordText: {
+    fontSize: FontSize.small,
+    color: COLORS.GOLD,
+    fontWeight: '500',
+  },
+  footerContainer: {
+    marginTop: Responsive.height(40),
+    alignItems: 'center',
+    justifyContent: 'flex-end',
+  },
+  registerRedirectRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: Spacing.large,
+  },
+  noAccountText: {
+    fontSize: FontSize.medium,
+    color: '#E0E0E0',
+    fontWeight: '400',
+  },
+  registerLinkText: {
+    fontSize: FontSize.medium,
+    color: '#DCA257',
+    fontWeight: '600',
+    textDecorationLine: 'underline',
   },
 });

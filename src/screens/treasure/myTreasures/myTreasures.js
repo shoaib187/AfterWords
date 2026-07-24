@@ -14,6 +14,7 @@ import Title from '../../../components/typography/title/title';
 import StatsGrid from '../../../components/treasures/statsGrid/statsGrid';
 import RecentItemCard from '../../../components/treasures/recentItemCard/recentItemCard';
 import HeaderWithSubtitle from '../../../components/common/headerWithSubtitle/headerWithSubtitle';
+import { useTreasures } from '../../../hooks/useTreasures/useTreasures';
 
 const recentItems = [
   {
@@ -49,6 +50,11 @@ const recentItems = [
 export default function MyTreasures({ navigation }) {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedTab, setSelectedTab] = useState('videos');
+  const { data } = useTreasures();
+  console.log('data is', data);
+
+  const treasures = data?.data?.treasures || [];
+  console.log('recentItems is', treasures);
 
   const stats = {
     treasures: 127,
@@ -84,17 +90,13 @@ export default function MyTreasures({ navigation }) {
             style={styles.sectionHeaderTracking}
           />
           <View style={{ gap: Spacing.medium }}>
-            {recentItems.map(item => (
+            {treasures?.map(item => (
               <RecentItemCard
-                key={item.id}
-                type={item.type}
-                title={item.title}
-                date={item.date}
-                usages={item.usages}
+                key={item?._id}
+                item={item}
                 onPress={() =>
                   navigation.navigate('TreasureDetails', {
-                    type: item.type,
-                    title: item.title,
+                    id: item?._id,
                   })
                 }
               />

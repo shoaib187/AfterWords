@@ -8,35 +8,33 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import ReadlineStats from '../../components/home/readlineStats/readlineStats';
 import LegacySnapshot from '../../components/home/legacySnapshot/legacySnapshot';
 import { Button } from '../../components/common/button/button';
+import { useDashboardStats, useUser } from '../../hooks/useUser/useUser';
 
 export default function Home({ navigation, dashboardData }) {
-  const dataState = dashboardData || {
-    hasData: true,
-    userName: 'Eleanor',
-    readinessPercentage: 80,
-    checklist: {
-      accountCreated: true,
-      firstTreasure: true,
-      recipientAdded: true,
-      executorsComplete: false,
-    },
-    snapshots: {
-      treasures: 127,
-      legacies: 48,
-      recipients: 12,
-      scheduled: 31,
-    },
-  };
+  const {
+    data: dashboardStats,
+    isLoading,
+    error,
+    isFetching,
+    refetch,
+  } = useDashboardStats();
+  const { user } = useUser();
+
+  const { firstName } = user || {};
+
+  // console.log('data', dashboardStats);
+  const { estateReadiness, stats } = dashboardStats?.data || {};
+  // console.log('stats', stats);
 
   return (
     <SafeAreaView style={styles.masterContainer}>
-      <HomeHeader />
+      <HomeHeader firstName={firstName} />
       <ScrollView
         contentContainerStyle={styles.scrollLayout}
         showsVerticalScrollIndicator={false}
       >
-        <ReadlineStats dataState={dataState} />
-        <LegacySnapshot dataState={dataState} navigation={navigation} />
+        <ReadlineStats dataState={estateReadiness} />
+        <LegacySnapshot dataState={stats} navigation={navigation} />
         <Button
           title={'Create Treasure'}
           onPress={() => navigation.navigate('CreateTreasure')}

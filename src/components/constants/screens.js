@@ -52,7 +52,8 @@ import AddExecutor from '../../screens/profile/addExecutor/addExecutor';
 import AddTrustedDelegate from '../../screens/profile/addTrustedDelegate/addTrustedDelegate';
 import ArchieveTreasures from '../../screens/treasure/archiveTreasure/archiveTreasure';
 import AddRecoveryContact from '../../screens/profile/addRcoveryContact/addRcoveryContact';
-
+import VideoMessagePreview from '../../screens/message/videoMessagePreview/videoMessagePreview';
+import EditTreasure from '../../screens/treasure/editTreasure/editTreasure';
 export const screens = {
   // Auth
   GettingStarted,
@@ -80,6 +81,7 @@ export const screens = {
   DocumentMessage,
   FileDetails,
   AddMessageDetails,
+  VideoMessagePreview,
 
   // Recipients
   AssignRecipients,
@@ -96,7 +98,7 @@ export const screens = {
   TreasureDetails,
   AddToCollections,
   ArchieveTreasures,
-
+  EditTreasure,
   // Inbox
   LegacyInbox,
   MessageDetails,

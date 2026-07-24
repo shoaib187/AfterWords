@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
-import { StyleSheet, View, Switch, Image } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { StyleSheet, View, Switch, Image, Alert, Platform } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import ReactNativeBiometrics from 'react-native-biometrics';
 import HeaderBack from '../../../components/common/headerBack/headerBack';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import {
@@ -17,9 +18,215 @@ import Subtitle from '../../../components/typography/subtitle/subtitle';
 import { useAuth } from '../../../configs/authContext/authContext';
 import GradientBackground from '../../../components/common/gradientBackground/gradientBackground';
 
+import { useUser } from '../../../hooks/useUser/useUser';
+import { updateBiometricPreference } from '../../../utils/apis/user/api';
+
+const rnBiometrics = new ReactNativeBiometrics();
+
 export default function SecureVault({ navigation }) {
-  const [isBiometricEnabled, setIsBiometricEnabled] = useState(true);
-  const { saveToken } = useAuth();
+  const [isBiometricEnabled, setIsBiometricEnabled] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [isBiometricAvailable, setIsBiometricAvailable] = useState(false);
+  const [biometricType, setBiometricType] = useState('');
+  const { token } = useAuth();
+  const { user, refetch: refetchUser } = useUser();
+
+  useEffect(() => {
+    checkBiometricAvailability();
+  }, []);
+
+  // Sync with user data when it loads
+  useEffect(() => {
+    if (user) {
+      setIsBiometricEnabled(user.biometricEnabled || false);
+    }
+  }, [user]);
+
+  const checkBiometricAvailability = async () => {
+    try {
+      // Check if device has biometric hardware and if it's enrolled
+      const { available, biometryType } =
+        await rnBiometrics.isSensorAvailable();
+
+      if (!available) {
+        setIsBiometricAvailable(false);
+        console.log('Biometric hardware not available');
+        return;
+      }
+
+      // Check if biometrics are actually enrolled/setup on the device
+      try {
+        const { keysExist } = await rnBiometrics.biometricKeysExist();
+
+        if (!keysExist) {
+          // No biometric keys exist, but the hardware is available
+          setIsBiometricAvailable(true);
+        } else {
+          setIsBiometricAvailable(true);
+        }
+      } catch (enrollError) {
+        console.log('Error checking biometric keys:', enrollError);
+        setIsBiometricAvailable(true);
+      }
+
+      // Set biometric type
+      let type = '';
+      if (biometryType === 'FaceID' || biometryType === 'Face') {
+        type = 'Face ID';
+      } else if (biometryType === 'TouchID' || biometryType === 'Fingerprint') {
+        type = 'Touch ID';
+      } else if (biometryType) {
+        type = biometryType;
+      } else {
+        type = Platform.OS === 'ios' ? 'Face ID' : 'Fingerprint';
+      }
+      setBiometricType(type);
+
+      console.log('Biometric available:', available, 'Type:', type);
+    } catch (error) {
+      console.log('Biometric check error:', error);
+      setIsBiometricAvailable(false);
+    }
+  };
+
+  const authenticateBiometric = async promptMessage => {
+    try {
+      const { success, error } = await rnBiometrics.simplePrompt({
+        promptMessage:
+          promptMessage || `Authenticate with ${biometricType || 'Biometric'}`,
+        cancelButtonText: 'Cancel',
+        fallbackButtonText: 'Use Password',
+      });
+
+      if (success) {
+        console.log('Biometric authentication successful');
+        return true;
+      } else {
+        console.log('Biometric authentication failed:', error);
+        return false;
+      }
+    } catch (error) {
+      console.log('Biometric authentication error:', error);
+      return false;
+    }
+  };
+
+  const handleBiometricToggle = async value => {
+    if (value && !isBiometricAvailable) {
+      Alert.alert(
+        'Biometric Not Available',
+        'Your device does not support biometric authentication. Please set it up in your device settings.',
+        [{ text: 'OK' }],
+      );
+      return;
+    }
+
+    // If enabling biometric, authenticate first
+    if (value) {
+      setLoading(true);
+      const isAuthenticated = await authenticateBiometric(
+        `Enable ${biometricType || 'Biometric'} for secure access`,
+      );
+      setLoading(false);
+
+      if (!isAuthenticated) {
+        Alert.alert(
+          'Authentication Failed',
+          `Please authenticate with ${
+            biometricType || 'biometric'
+          } to enable this feature.`,
+          [{ text: 'OK' }],
+        );
+        return;
+      }
+    }
+
+    // Update state optimistically
+    setIsBiometricEnabled(value);
+
+    // Call API to update preference
+    try {
+      const response = await updateBiometricPreference(
+        { biometricEnabled: value },
+        token,
+      );
+
+      if (response.success) {
+        // Refetch user data to get updated state
+        await refetchUser();
+
+        Alert.alert(
+          value ? 'Biometric Enabled' : 'Biometric Disabled',
+          value
+            ? `You can now use ${
+                biometricType || 'biometric'
+              } to access your vault securely.`
+            : 'Biometric login has been disabled.',
+          [{ text: 'OK' }],
+        );
+      } else {
+        // Revert if API call fails
+        setIsBiometricEnabled(!value);
+        Alert.alert(
+          'Error',
+          response.message || 'Failed to update biometric preference',
+        );
+      }
+    } catch (error) {
+      // Revert on error
+      setIsBiometricEnabled(!value);
+      console.log('Biometric update error:', error);
+      Alert.alert(
+        'Error',
+        error.response?.data?.message ||
+          'Failed to update biometric preference',
+      );
+    }
+  };
+
+  const handleContinue = async () => {
+    // If biometric is enabled, authenticate before proceeding
+    if (isBiometricEnabled) {
+      setLoading(true);
+      const isAuthenticated = await authenticateBiometric(
+        `Authenticate to continue`,
+      );
+      setLoading(false);
+
+      if (!isAuthenticated) {
+        Alert.alert(
+          'Authentication Required',
+          `Please authenticate with ${
+            biometricType || 'biometric'
+          } to continue.`,
+          [{ text: 'OK' }],
+        );
+        return;
+      }
+    }
+
+    // Navigate to Roadmap (Estate Readiness)
+    navigation?.navigate('Roadmap');
+  };
+
+  // Get the biometric icon name
+  const getBiometricIcon = () => {
+    if (biometricType?.toLowerCase().includes('face')) {
+      return 'scan-outline';
+    }
+    return 'finger-print';
+  };
+
+  // Get the biometric display name
+  const getBiometricDisplayName = () => {
+    if (biometricType) {
+      return biometricType;
+    }
+    if (Platform.OS === 'ios') {
+      return 'Face ID';
+    }
+    return 'Fingerprint';
+  };
 
   return (
     <View style={styles.container}>
@@ -28,7 +235,6 @@ export default function SecureVault({ navigation }) {
       <SafeAreaView style={styles.safeArea}>
         <View style={styles.contentContainer}>
           <View style={styles.illustrationWrapper}>
-            {/* <View style={styles.outerRingGraphic}> */}
             <View style={styles.innerFingerprintDisc}>
               <Image
                 source={require('../../../../assets/png/scanning.png')}
@@ -36,32 +242,30 @@ export default function SecureVault({ navigation }) {
                 resizeMode="contain"
               />
             </View>
-            {/* </View> */}
           </View>
 
           <AppText
-            text={
-              'Use Face ID or Touch ID to access your legacy vault instantly — no password required every time.'
-            }
+            text={`Use ${getBiometricDisplayName()} to access your legacy vault instantly — no password required every time.`}
             align="center"
-            style={{ marginBottom: Spacing.large }}
+            style={styles.descriptionText}
           />
+
           <View style={styles.toggleCard}>
             <View style={styles.cardLeftSection}>
               <View style={styles.cardIconCircle}>
                 <Ionicons
-                  name="finger-print"
+                  name={getBiometricIcon()}
                   size={Responsive.width(26)}
                   color={COLORS.GOLD}
                 />
               </View>
               <View style={styles.cardTextWrapper}>
                 <Title
-                  text={'Enable Biometric login'}
+                  text={`Enable ${getBiometricDisplayName()}`}
                   style={styles.cardTitle}
                 />
                 <Subtitle
-                  text={'Face ID or Fingerprint'}
+                  text={isBiometricAvailable ? 'Ready to use' : 'Not available'}
                   style={styles.cardSubtitle}
                 />
               </View>
@@ -69,19 +273,41 @@ export default function SecureVault({ navigation }) {
 
             <Switch
               value={isBiometricEnabled}
-              onValueChange={setIsBiometricEnabled}
+              onValueChange={handleBiometricToggle}
               trackColor={{ false: '#3E3E3E', true: '#C59353' }}
               thumbColor={isBiometricEnabled ? '#FFFFFF' : '#F4F3F4'}
               ios_backgroundColor="#3E3E3E"
+              disabled={!isBiometricAvailable || loading}
             />
           </View>
+
+          {!isBiometricAvailable && (
+            <AppText
+              text="Biometric not available. You can continue without it."
+              size="small"
+              color={COLORS.GRAY}
+              align="center"
+              style={{ marginTop: Spacing.medium }}
+            />
+          )}
         </View>
 
         <View style={styles.bottomWrapper}>
           <Button
-            onPress={() => navigation?.navigate('Roadmap')}
-            title="Enable Face ID"
+            onPress={handleContinue}
+            title="Continue"
+            loading={loading}
+            disabled={loading}
           />
+          {!isBiometricAvailable && (
+            <Button
+              onPress={() => navigation?.navigate('Roadmap')}
+              title="Skip for Now"
+              style={styles.skipButton}
+              textStyle={styles.skipButtonText}
+              variant="outline"
+            />
+          )}
         </View>
       </SafeAreaView>
     </View>
@@ -109,20 +335,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: Responsive.height(32),
   },
-  centerGlowOffset: {
-    top: '50%',
-    left: '50%',
-  },
-  outerRingGraphic: {
-    width: Responsive.width(130),
-    height: Responsive.width(130),
-    borderRadius: Responsive.width(65),
-    borderWidth: 2,
-    borderColor: '#C59353',
-    borderStyle: 'dashed',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
   innerFingerprintDisc: {
     width: Responsive.width(100),
     height: Responsive.width(100),
@@ -130,7 +342,10 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-
+  descriptionText: {
+    marginBottom: Spacing.large,
+    textAlign: 'center',
+  },
   toggleCard: {
     width: '100%',
     backgroundColor: COLORS.WHITE,
@@ -168,5 +383,14 @@ const styles = StyleSheet.create({
   bottomWrapper: {
     paddingHorizontal: Spacing.medium,
     marginBottom: Responsive.height(40),
+  },
+  skipButton: {
+    backgroundColor: 'transparent',
+    borderWidth: 1,
+    borderColor: COLORS.GOLD,
+    marginTop: Spacing.medium,
+  },
+  skipButtonText: {
+    color: COLORS.GOLD,
   },
 });

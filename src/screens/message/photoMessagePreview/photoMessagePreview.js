@@ -23,23 +23,14 @@ import {
 } from '../../../components/constants/styles';
 import { FONT } from '../../../components/constants/font';
 import HeaderBack from '../../../components/common/headerBack/headerBack';
-import Stepper from '../../../components/messages/stepper/stepper';
 import { Button } from '../../../components/common/button/button';
 import GradientBackground from '../../../components/common/gradientBackground/gradientBackground';
 
 export default function PhotoMessagePreview({ navigation, route }) {
-  const [people, setPeople] = useState('');
-  const [date, setDate] = useState('');
-  const [location, setLocation] = useState('');
-  const [story, setStory] = useState('');
-
-  // Fallback to placeholder image asset if parameter pass is empty
   const photoUri = route?.params?.photoUri || null;
-
   const handleContinue = () => {
     navigation.navigate('AddMessageDetails', {
-      photoUri,
-      metaData: { people, date, location, story },
+      photoFiles: [photoUri],
       messageType: 'photo',
     });
   };
@@ -67,7 +58,10 @@ export default function PhotoMessagePreview({ navigation, route }) {
           {/* Render Selected Image Preview Window */}
           <View style={styles.imageContainerFrame}>
             {photoUri ? (
-              <Image source={{ uri: photoUri }} style={styles.previewImage} />
+              <Image
+                source={{ uri: photoUri?.uri }}
+                style={styles.previewImage}
+              />
             ) : (
               <Image
                 source={{

@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
-import { StyleSheet, View, TextInput } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import LinearGradient from 'react-native-linear-gradient';
 import AppText from '../../../components/typography/appText/appText';
 import { COLORS } from '../../../components/constants/color';
 import {
@@ -12,34 +11,18 @@ import {
 } from '../../../components/constants/styles';
 import { FONT } from '../../../components/constants/font';
 import HeaderBack from '../../../components/common/headerBack/headerBack';
-import Stepper from '../../../components/messages/stepper/stepper';
 import VoiceMessageBubble from '../../../components/messages/voiceMessageBubble/voiceMessageBubble';
 import { Button } from '../../../components/common/button/button';
 import GradientBackground from '../../../components/common/gradientBackground/gradientBackground';
 
 export default function VoiceMessagePreview({ navigation, route }) {
-  const [noteText, setNoteText] = useState('');
   const [isPlaying, setIsPlaying] = useState(false);
 
-  const audioUri = route?.params?.audioUri || '';
+  const { audioFilePath, duration, timestamp, date } = route?.params || {};
 
   const handlePlayPause = () => {
     setIsPlaying(!isPlaying);
-    // Bind to your Sound.startPlayer implementation here if playing back
   };
-
-  const handleRedo = () => {
-    navigation.goBack();
-  };
-
-  const handleNextPipeline = () => {
-    navigation.navigate('AssignRecipient', {
-      audioUri: audioUri,
-      note: noteText,
-    });
-  };
-
-  // Renders a stylized vector waveform block mirroring the screenshot asset
 
   return (
     <SafeAreaView style={styles.container}>
@@ -47,7 +30,6 @@ export default function VoiceMessagePreview({ navigation, route }) {
       <GradientBackground />
 
       <SafeAreaView style={styles.safeArea}>
-        <Stepper />
         <View style={styles.sectionTitleRow}>
           <View style={styles.pinkStatusDot} />
           <AppText
@@ -59,45 +41,28 @@ export default function VoiceMessagePreview({ navigation, route }) {
         </View>
 
         <VoiceMessageBubble
+          path={audioFilePath}
           isPlaying={isPlaying}
           handlePlayPause={handlePlayPause}
+          duration={duration}
+          timestamp={timestamp}
         />
-        <View style={styles.textEditorContainer}>
-          <AppText
-            text="Add a title or a note to go with your Voice Message"
-            size="medium"
-            color={COLORS.WHITE}
-          />
 
-          <View style={styles.inputBorderWrapper}>
-            <TextInput
-              style={styles.richTextAreaInput}
-              placeholder="Write your message here....."
-              placeholderTextColor="rgba(255, 255, 255, 0.4)"
-              multiline
-              textAlignVertical="top"
-              value={noteText}
-              onChangeText={setNoteText}
-              keyboardAppearance="dark"
-            />
-          </View>
-        </View>
-
-        {/* ── Persistent Multi-Step Footer Control Actions ── */}
         <View style={styles.footerActionRow}>
           <Button
             style={{ flex: 1 }}
-            title="Redo"
+            title="Retake"
             leftIcon="refresh"
             variant={'other'}
             flexDirection="row"
             iconColor={COLORS.GOLD}
-            onPress={() => navigation.navigate('AssignRecipients')}
+            onPress={() => navigation.goBack()}
           />
           <Button
             onPress={() => {
               navigation.navigate('AddMessageDetails', {
                 messageType: 'voice',
+                audioFilePath,
               });
             }}
             flexDirection="row"
@@ -207,5 +172,8 @@ const styles = StyleSheet.create({
     marginBottom: Responsive.height(36),
     marginTop: Spacing.medium,
     gap: Spacing.medium,
+    position: 'absolute',
+    bottom: 0,
+    alignSelf: 'center',
   },
 });

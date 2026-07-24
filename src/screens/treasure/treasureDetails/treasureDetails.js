@@ -1,5 +1,12 @@
 import React from 'react';
-import { StyleSheet, Text, View, ScrollView, Image } from 'react-native';
+import {
+  StyleSheet,
+  Text,
+  View,
+  ScrollView,
+  Image,
+  ActivityIndicator,
+} from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import GradientBackground from '../../../components/common/gradientBackground/gradientBackground';
 import HeaderWithSubtitle from '../../../components/common/headerWithSubtitle/headerWithSubtitle';
@@ -14,10 +21,36 @@ import ManageAssetSection from '../../../components/treasures/manageAsset/manage
 import VideoCard from '../../../components/common/videoCard/videoCard';
 import CollectionContentsSection from '../../../components/treasures/collectionsContent/collectionsContent';
 import ConfirmationModal from '../../../components/common/confirmationModal/confirmationModal';
+import { useTreasure } from '../../../hooks/useTreasures/useTreasures';
+import { COLORS } from '../../../components/constants/color';
+import { formatDate } from '../../../utils/config';
 
 export default function TreasureDetails({ navigation, route }) {
-  const { type } = route?.params;
+  const { type, id: treasureId } = route?.params;
+  const { data, isLoading } = useTreasure(treasureId);
   const [modalVisible, setModalVisible] = React.useState(false);
+
+  const treasureData = data?.data?.treasure || {};
+  console.log('treasureData', treasureData);
+
+  if (isLoading) {
+    return (
+      <SafeAreaView style={styles.container}>
+        <GradientBackground />
+        <HeaderWithSubtitle
+          navigation={navigation}
+          title={'My Treasure'}
+          subtitle={'Your Preserved Vault'}
+        />
+        <View
+          style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}
+        >
+          <ActivityIndicator size={40} color={COLORS.GOLD} />
+        </View>
+      </SafeAreaView>
+    );
+  }
+
   return (
     <SafeAreaView style={styles.container}>
       <GradientBackground />
@@ -29,13 +62,16 @@ export default function TreasureDetails({ navigation, route }) {
 
       <ScrollView contentContainerStyle={styles.scrollContent}>
         <View style={styles.headerTitleRow}>
-          <Text style={styles.screenTitle}>House Deed & Final Will</Text>
+          <Text style={styles.screenTitle}>{treasureData?.title}</Text>
         </View>
         <View style={styles.metaRow}>
           <View style={styles.badge}>
             <AppText text={'Used in 2 Legacies'} style={styles.badgeText} />
           </View>
-          <AppText text={'Sep 14, 2026'} style={styles.dateText} />
+          <AppText
+            text={formatDate(treasureData?.createdAt)}
+            style={styles.dateText}
+          />
         </View>
         {type === 'document' && <DocumentCard />}
         {type === 'video' && <VideoCard />}
@@ -55,14 +91,12 @@ export default function TreasureDetails({ navigation, route }) {
         <View style={styles.section}>
           <Title text={'Description'} />
           <AppText
-            text={
-              'Certified scan of the summer house deed and latest will copy.'
-            }
+            text={treasureData?.description || ''}
             style={styles.sectionBody}
           />
         </View>
 
-        <LabelSection />
+        <LabelSection label={treasureData?.label} />
         <UsageAndTrackingSection />
         <AssetTimelineSection />
         <DeliveryCardSection />
@@ -71,7 +105,10 @@ export default function TreasureDetails({ navigation, route }) {
             onAddTreasure={() => navigation.navigate('AddToCollections')}
           />
         )}
-        <ManageAssetSection onArchieve={() => setModalVisible(true)} />
+        <ManageAssetSection
+          treasureId={treasureId}
+          onArchieve={() => setModalVisible(true)}
+        />
       </ScrollView>
 
       <ConfirmationModal

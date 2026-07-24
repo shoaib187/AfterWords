@@ -19,6 +19,10 @@ const TreasureStack = () => {
         component={screens.AddMessageDetails}
       />
       <Stack.Screen name="Review" component={screens.ReviewSummary} />
+      <Stack.Screen
+        name="VideoMessagePreview"
+        component={screens.VideoMessagePreview}
+      />
       <Stack.Screen name="TreasureSaved" component={screens.TreasureSaved} />
       <Stack.Screen
         name="VideoMessageRecorder"

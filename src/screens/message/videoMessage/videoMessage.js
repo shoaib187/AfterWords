@@ -1,502 +1,648 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import {
   StyleSheet,
   View,
   TouchableOpacity,
-  Animated,
-  TextInput,
-  Image,
-  ScrollView,
+  Alert,
+  Platform,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import {
+  Camera,
+  useCameraDevices,
+  useVideoOutput,
+} from 'react-native-vision-camera';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import AppText from '../../../components/typography/appText/appText';
+import { COLORS } from '../../../components/constants/color';
+import GradientBackground from '../../../components/common/gradientBackground/gradientBackground';
+import HeaderBack from '../../../components/common/headerBack/headerBack';
 import {
-  FontSize,
   Radius,
   Responsive,
   Spacing,
 } from '../../../components/constants/styles';
-import { COLORS } from '../../../components/constants/color';
-import { FONT } from '../../../components/constants/font';
-import HeaderBack from '../../../components/common/headerBack/headerBack';
-import GradientBackground from '../../../components/common/gradientBackground/gradientBackground';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { checkCameraPermission } from '../../../utils/cameraPermission/cameraPermission';
 
-export default function VideoMessageRecorder({ navigation }) {
+const VIDEO_RECORDER_DATA = {
+  header: {
+    recordingText: 'Record or Upload a video',
+    recordedText: 'Video recorded!',
+  },
+  camera: {
+    timerText: '00:00',
+    label: 'Camera preview',
+    icon: 'videocam-outline',
+  },
+  buttons: {
+    retake: 'Retake',
+    redo: 'Redo',
+    continue: 'Continue',
+    next: 'Next',
+    record: 'Record',
+  },
+};
+
+// Reusable Header Component
+const HeaderIndicator = ({ isRecorded }) => {
+  return (
+    <View style={styles.headerRow}>
+      <View style={[styles.redDot, isRecorded && styles.greenDot]} />
+      <AppText
+        text={
+          isRecorded
+            ? VIDEO_RECORDER_DATA.header.recordedText
+            : VIDEO_RECORDER_DATA.header.recordingText
+        }
+        size="medium"
+        color={COLORS.WHITE}
+        style={styles.headerText}
+      />
+    </View>
+  );
+};
+
+// Reusable Record Button Component
+const RecordButton = ({ isRecording, onPress }) => {
+  return (
+    <View style={styles.recordControlWrapper}>
+      <TouchableOpacity
+        style={styles.recordOuterCircle}
+        onPress={onPress}
+        activeOpacity={0.8}
+      >
+        <View
+          style={[styles.recordInnerCircle, isRecording && styles.recordSquare]}
+        />
+      </TouchableOpacity>
+    </View>
+  );
+};
+
+// Reusable Action Button Component
+const ActionButton = ({
+  type,
+  text,
+  icon,
+  onPress,
+  iconPosition = 'left',
+  disabled = false,
+}) => {
+  const isGold = type === 'gold';
+  const isOutlined = type === 'outlined';
+
+  return (
+    <TouchableOpacity
+      style={[
+        styles.actionButton,
+        isGold && styles.goldButton,
+        isOutlined && styles.outlinedButton,
+        disabled && styles.disabledButton,
+      ]}
+      onPress={onPress}
+      activeOpacity={isGold ? 0.85 : 0.7}
+      disabled={disabled}
+    >
+      {icon && iconPosition === 'left' && (
+        <Ionicons
+          name={icon}
+          size={Responsive.width(16)}
+          color={isGold ? COLORS.BLACK : COLORS.WHITE}
+          style={styles.buttonIcon}
+        />
+      )}
+      <AppText
+        text={text}
+        size="medium"
+        color={isGold ? COLORS.BLACK : COLORS.WHITE}
+        style={[
+          styles.actionButtonText,
+          isGold && styles.goldButtonText,
+          isOutlined && styles.outlinedButtonText,
+          disabled && styles.disabledButtonText,
+        ]}
+      />
+      {icon && iconPosition === 'right' && (
+        <Ionicons
+          name={icon}
+          size={Responsive.width(16)}
+          color={isGold ? COLORS.BLACK : COLORS.WHITE}
+        />
+      )}
+    </TouchableOpacity>
+  );
+};
+
+// Reusable Bottom Actions Bar Component
+const BottomActions = ({
+  hasRecorded,
+  isRecording,
+  onRetake,
+  onRedo,
+  onContinue,
+  onRecord,
+}) => {
+  // Show record button when not recording and no video recorded
+  if (!isRecording && !hasRecorded) {
+    return (
+      <View style={styles.bottomBar}>
+        <ActionButton
+          type="gold"
+          text={VIDEO_RECORDER_DATA.buttons.record}
+          icon="videocam"
+          onPress={onRecord}
+        />
+      </View>
+    );
+  }
+
+  // Show recording indicator when recording
+  if (isRecording) {
+    return (
+      <View style={styles.bottomBar}>
+        <ActionButton
+          type="outlined"
+          text="Recording..."
+          icon="radio-button-on"
+          disabled={true}
+        />
+        <ActionButton
+          type="gold"
+          text="Stop"
+          icon="stop-circle"
+          onPress={onRecord}
+        />
+      </View>
+    );
+  }
+
+  // Show retake and continue when video is recorded
+  if (hasRecorded) {
+    return (
+      <View style={styles.bottomBar}>
+        <ActionButton
+          type="outlined"
+          text={VIDEO_RECORDER_DATA.buttons.redo}
+          icon="refresh-outline"
+          onPress={onRedo}
+        />
+        <ActionButton
+          type="gold"
+          text={VIDEO_RECORDER_DATA.buttons.continue}
+          icon="arrow-forward"
+          iconPosition="right"
+          onPress={onContinue}
+        />
+      </View>
+    );
+  }
+
+  return null;
+};
+
+export default function VideoMessageRecorder({ navigation, route }) {
+  const [hasRecorded, setHasRecorded] = useState(false);
   const [isRecording, setIsRecording] = useState(false);
-  // Toggle to switch between live recording mode and the recorded preview state seen in Screenshot 2026-06-08 at 5.02.31 PM.png
-  const [isRecorded, setIsRecorded] = useState(true);
-  const [noteText, setNoteText] = useState('');
-  const recordButtonScale = useRef(new Animated.Value(1)).current;
+  const [videoUri, setVideoUri] = useState(null);
+  const [cameraPermission, setCameraPermission] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
-  const handleRecordTrigger = () => {
-    Animated.sequence([
-      Animated.spring(recordButtonScale, {
-        toValue: 0.9,
-        useNativeDriver: true,
-        friction: 4,
-        tension: 40,
-      }),
-      Animated.spring(recordButtonScale, {
-        toValue: 1,
-        useNativeDriver: true,
-        friction: 4,
-        tension: 40,
-      }),
-    ]).start();
+  const recorderRef = useRef(null);
+  const devices = useCameraDevices();
+
+  const backDevice = devices.find(device => device.position === 'back');
+  const frontDevice = devices.find(device => device.position === 'front');
+  const device = backDevice || frontDevice || devices[0];
+
+  const videoOutput = useVideoOutput({ enableAudio: true });
+
+  useEffect(() => {
+    checkAndRequestPermission();
+  }, []);
+
+  useEffect(() => {
+    if (device) {
+      setIsLoading(false);
+    }
+  }, [device]);
+
+  const checkAndRequestPermission = async () => {
+    try {
+      const hasPermission = await checkCameraPermission();
+      console.log('hasPermission', hasPermission);
+      setCameraPermission(hasPermission);
+    } catch (error) {
+      console.error('Error checking permission:', error);
+      setCameraPermission(false);
+    }
+  };
+
+  const handleRecordToggle = async () => {
+    if (!cameraPermission) {
+      Alert.alert('Permission Denied', 'Please grant camera permission.');
+      return;
+    }
+
+    if (!device) {
+      Alert.alert('Error', 'No camera device available');
+      return;
+    }
+
+    if (!videoOutput) {
+      Alert.alert('Error', 'Video output not ready yet');
+      return;
+    }
 
     if (isRecording) {
-      setIsRecording(false);
-      setIsRecorded(true); // Automatically jump to preview state when recording stops
+      try {
+        console.log('Stopping recording...');
+        const recorder = recorderRef.current;
+        if (recorder) {
+          await recorder.stopRecording();
+        }
+      } catch (error) {
+        console.error('Error stopping:', error);
+        setIsRecording(false);
+      }
     } else {
-      setIsRecording(true);
+      try {
+        console.log('Starting recording...');
+        const recorder = await videoOutput.createRecorder({});
+        recorderRef.current = recorder;
+
+        setIsRecording(true);
+
+        await recorder.startRecording(
+          path => {
+            console.log('Recording finished:', path);
+            setVideoUri(path);
+            setHasRecorded(true);
+            setIsRecording(false);
+          },
+          error => {
+            console.error('Recording error:', error);
+            setIsRecording(false);
+            Alert.alert('Error', 'Failed to record: ' + error.message);
+          },
+        );
+      } catch (error) {
+        console.error('Error starting recording:', error);
+        setIsRecording(false);
+        Alert.alert('Error', 'Failed to start recording: ' + error.message);
+      }
     }
   };
 
   const handleRedo = () => {
-    setIsRecorded(false);
+    setHasRecorded(false);
     setIsRecording(false);
+    setVideoUri(null);
+    recorderRef.current = null;
   };
 
-  const handleNext = () => {
-    navigation.navigate('AddMessageDetails');
+  const handleContinue = () => {
+    console.log('Continue pressed with video:', videoUri);
+
+    // Format the video path for the next screen
+    const formattedPath =
+      Platform.OS === 'android' ? `file://${videoUri}` : videoUri;
+
+    // Navigate to the next screen with the video path
+    if (navigation) {
+      navigation.navigate('VideoMessagePreview', {
+        videoPath: formattedPath,
+        videoUri: videoUri,
+      });
+    } else {
+      // If navigation is not available, just show the path
+      Alert.alert('Video Path', `Video saved at: ${formattedPath}`);
+    }
   };
+
+  const handleRecord = () => {
+    if (!hasRecorded && !isRecording) {
+      handleRecordToggle();
+    }
+  };
+
+  // Loading state
+  if (isLoading) {
+    return (
+      <SafeAreaView style={styles.container}>
+        <View style={styles.loadingContainer}>
+          <AppText
+            text="Initializing camera..."
+            size="medium"
+            color={COLORS.WHITE}
+            align="center"
+          />
+          <View style={styles.loadingSpinner} />
+        </View>
+      </SafeAreaView>
+    );
+  }
+
+  if (!device) {
+    return (
+      <SafeAreaView style={styles.container}>
+        <View style={styles.content}>
+          <AppText
+            text="No camera device found"
+            size="medium"
+            color={COLORS.WHITE}
+            align="center"
+          />
+          <TouchableOpacity
+            style={styles.retryButton}
+            onPress={() => setIsLoading(true)}
+          >
+            <AppText text="Retry" size="medium" color={COLORS.BLACK} />
+          </TouchableOpacity>
+        </View>
+      </SafeAreaView>
+    );
+  }
+
+  if (!cameraPermission) {
+    return (
+      <SafeAreaView style={styles.container}>
+        <View style={styles.permissionContainer}>
+          <Ionicons
+            name="camera-outline"
+            size={Responsive.width(60)}
+            color={COLORS.GOLD}
+          />
+          <AppText
+            text="Camera Permission Required"
+            size="large"
+            color={COLORS.WHITE}
+            align="center"
+            style={styles.permissionTitle}
+          />
+          <AppText
+            text="This app needs access to your camera to record video messages."
+            size="medium"
+            color="#888888"
+            align="center"
+            style={styles.permissionDescription}
+          />
+          <TouchableOpacity
+            style={styles.goldButton}
+            onPress={checkAndRequestPermission}
+          >
+            <AppText
+              text="Grant Permission"
+              size="medium"
+              color={COLORS.BLACK}
+            />
+          </TouchableOpacity>
+        </View>
+      </SafeAreaView>
+    );
+  }
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
+      <HeaderBack title={'Video Recorder'} />
       <GradientBackground />
+      <View style={styles.content}>
+        <HeaderIndicator isRecorded={hasRecorded} />
 
-      <HeaderBack title={'Video Message'} />
-
-      <SafeAreaView style={styles.safeArea} edges={['bottom']}>
-        <ScrollView
-          contentContainerStyle={styles.scrollContainer}
-          showsVerticalScrollIndicator={false}
-        >
-          {/* ── Stepper Wizard Track ── */}
-          <View style={styles.stepperContainer}>
-            <View style={styles.stepperLineTrack} />
-            <View style={styles.stepperRow}>
-              <View style={[styles.stepBadge, styles.stepBadgeCompleted]}>
-                <AppText
-                  text="1  Pick format"
-                  style={styles.stepTextCompleted}
-                />
-              </View>
-              <View style={[styles.stepBadge, styles.stepBadgeActive]}>
-                <AppText text="2  Create" style={styles.stepTextActive} />
-              </View>
-              <View style={[styles.stepBadge, styles.stepBadgePending]}>
-                <AppText text="3  Assign" style={styles.stepTextPending} />
-              </View>
-            </View>
-          </View>
-
-          {/* ── Dynamic Action Row Context ── */}
-          <View style={styles.actionPromptRow}>
-            <View style={styles.pinkStatusDot} />
-            <AppText
-              text={isRecorded ? 'Recorded video' : 'Record or Upload a video'}
-              style={styles.actionPromptText}
-            />
-          </View>
-
-          {/* ── Render Conditional Viewport Layer ── */}
-          {!isRecorded ? (
-            /* ── Live Camera Recording Workspace Viewport ── */
-            <View style={styles.cameraFrameWrapper}>
-              <View style={styles.cameraInnerViewport}>
-                <View style={styles.viewportBottomLayoutRow}>
-                  <AppText text="00:00" style={styles.timestampText} />
-                  <View style={styles.previewIndicatorWrapper}>
-                    <Ionicons
-                      name="videocam"
-                      size={16}
-                      color="#FFFFFF"
-                      style={styles.camIconOffset}
-                    />
-                    <AppText
-                      text="Camera preview"
-                      style={styles.cameraPreviewText}
-                    />
-                  </View>
-                </View>
-              </View>
-            </View>
-          ) : (
-            /* ── Video Recorded Preview Setup Viewport ── */
-            <View style={styles.previewContentContainer}>
-              <View style={styles.videoPreviewWrapper}>
-                {/* Fallback dark container; use your local source URI string inside Image */}
-                <Image
-                  source={{
-                    uri: 'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?q=80&w=600',
-                  }}
-                  style={styles.videoPreviewImage}
-                  resizeMode="cover"
-                />
-                <View style={styles.videoOverlayBlurShield} />
-
-                {/* Central Play Back Trigger Button */}
-                <TouchableOpacity
-                  style={styles.playCenterButton}
-                  activeOpacity={0.85}
-                >
-                  <Ionicons name="play-circle" size={68} color="#FFFFFF" />
-                </TouchableOpacity>
-              </View>
-
-              {/* Title Form Context Section */}
-              <AppText
-                text="Add a title or a note to go with your video"
-                style={styles.noteLabelTitleSerif}
-              />
-
-              <View style={styles.noteInputContainer}>
-                <TextInput
-                  style={styles.noteInputField}
-                  placeholder="Write your message here....."
-                  placeholderTextColor="rgba(255, 255, 255, 0.4)"
-                  multiline
-                  value={noteText}
-                  onChangeText={setNoteText}
-                  keyboardAppearance="dark"
-                />
-              </View>
-            </View>
-          )}
-        </ScrollView>
-
-        {/* ── Bottom Action Control Center Layer ── */}
-        {!isRecorded ? (
-          /* Live Shutter Row Control Box */
-          <View style={styles.captureControlSection}>
-            <Animated.View
-              style={{ transform: [{ scale: recordButtonScale }] }}
-            >
-              <TouchableOpacity
-                onPress={handleRecordTrigger}
-                activeOpacity={0.9}
-                style={styles.outerShutterRing}
-              >
-                <View
-                  style={[
-                    styles.innerShutterCore,
-                    isRecording && styles.innerShutterCoreActive,
-                  ]}
-                />
-              </TouchableOpacity>
-            </Animated.View>
+        <View style={styles.cameraBox}>
+          <Camera
+            style={styles.cameraView}
+            device={device}
+            isActive={true}
+            outputs={[videoOutput]}
+          />
+          <View style={styles.cameraOverlayBottom}>
             <AppText
               text={
-                isRecording ? 'Tap to stop recording' : 'Tap to start recording'
+                isRecording ? '● REC' : VIDEO_RECORDER_DATA.camera.timerText
               }
-              style={styles.shutterLabelHint}
+              size="medium"
+              color={isRecording ? '#FF0000' : '#E55B6E'}
+              style={styles.recordingTimer}
             />
-          </View>
-        ) : (
-          /* Redo & Next Action Footer Controls Row */
-          <View style={styles.previewActionFooterRow}>
-            <TouchableOpacity
-              style={styles.redoButtonOutline}
-              activeOpacity={0.7}
-              onPress={handleRedo}
-            >
+            <View style={styles.cameraLabelGroup}>
               <Ionicons
-                name="refresh-outline"
-                size={16}
-                color="#FFFFFF"
-                style={styles.redoIconGutter}
+                name="videocam-outline"
+                size={Responsive.width(20)}
+                color={COLORS.WHITE}
               />
-              <AppText text="Redo" style={styles.redoButtonText} />
-            </TouchableOpacity>
+              <AppText
+                text="Camera preview"
+                size="small"
+                color="#A0A0A0"
+                style={styles.cameraLabelText}
+              />
+            </View>
+          </View>
+          {isRecording && (
+            <View style={styles.recordingIndicator}>
+              <View style={styles.recordingDot} />
+            </View>
+          )}
+        </View>
 
-            <TouchableOpacity
-              style={styles.nextButtonSolid}
-              activeOpacity={0.85}
-              onPress={handleNext}
-            >
-              <AppText text="Next" style={styles.nextButtonText} />
-              <Ionicons
-                name="arrow-forward"
-                size={16}
-                color="#111111"
-                style={styles.nextIconGutter}
-              />
-            </TouchableOpacity>
-          </View>
-        )}
-      </SafeAreaView>
-    </View>
+        <RecordButton isRecording={isRecording} onPress={handleRecordToggle} />
+
+        <BottomActions
+          hasRecorded={hasRecorded}
+          isRecording={isRecording}
+          onRetake={handleRedo}
+          onRedo={handleRedo}
+          onContinue={handleContinue}
+          onRecord={handleRecord}
+        />
+      </View>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#000000',
-  },
-  headerGlowBackground: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    height: Responsive.height(220),
-  },
-  safeArea: {
-    flex: 1,
-  },
-  scrollContainer: {
-    paddingBottom: Responsive.height(24),
-  },
-  stepperContainer: {
-    paddingHorizontal: Spacing.medium || 16,
-    marginTop: Responsive.height(16),
-    marginBottom: Responsive.height(32),
-    justifyContent: 'center',
-    position: 'relative',
-  },
-  stepperLineTrack: {
-    position: 'absolute',
-    left: Spacing.large || 16,
-    right: Spacing.large || 16,
-    height: 1,
-    backgroundColor: 'rgba(197, 147, 83, 0.3)',
-    alignSelf: 'center',
-    zIndex: 1,
-  },
-  stepperRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    zIndex: 2,
-  },
-  stepBadge: {
-    paddingVertical: 6,
-    paddingHorizontal: 12,
-    borderRadius: Radius.full || 20,
-    borderWidth: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  stepBadgeCompleted: {
-    backgroundColor: '#F5EAD9',
-    borderColor: '#C59353',
-  },
-  stepTextCompleted: {
-    fontSize: FontSize.small,
-    color: '#443322',
-  },
-  stepBadgeActive: {
-    backgroundColor: '#D5A760',
-    borderColor: '#C59353',
-  },
-  stepTextActive: {
-    fontSize: FontSize.small,
-    color: COLORS.BLACK,
-  },
-  stepBadgePending: {
     backgroundColor: COLORS.BLACK,
-    borderColor: '#443322',
   },
-  stepTextPending: {
-    fontSize: FontSize.small,
-    color: COLORS.GOLD,
+  content: {
+    flex: 1,
+    paddingHorizontal: Spacing.large,
+    paddingTop: Spacing.medium,
+    paddingBottom: Spacing.xLarge,
+    justifyContent: 'space-between',
   },
-  actionPromptRow: {
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: Spacing.large,
+  },
+  loadingSpinner: {
+    width: Responsive.width(40),
+    height: Responsive.width(40),
+    borderRadius: Responsive.width(20),
+    borderWidth: 3,
+    borderColor: COLORS.GOLD,
+    borderTopColor: 'transparent',
+    marginTop: Spacing.medium,
+  },
+  permissionContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: Spacing.large,
+  },
+  permissionTitle: {
+    marginTop: Spacing.large,
+    marginBottom: Spacing.small,
+  },
+  permissionDescription: {
+    marginBottom: Spacing.xLarge,
+    lineHeight: Responsive.height(22),
+  },
+  headerRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: Spacing.medium,
     marginBottom: Spacing.medium,
   },
-  pinkStatusDot: {
-    width: 7,
-    height: 7,
-    borderRadius: 3.5,
-    backgroundColor: '#E57373',
-    marginRight: 10,
-    shadowColor: '#E57373',
-    shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0.8,
-    shadowRadius: 4,
+  redDot: {
+    width: Responsive.width(8),
+    height: Responsive.width(8),
+    borderRadius: Responsive.width(4),
+    backgroundColor: '#E55B6E',
+    marginRight: Spacing.tiny,
   },
-  actionPromptText: {
-    color: COLORS.WHITE || '#FFFFFF',
-    fontSize: FontSize.small || 13,
-    fontFamily: FONT.TTForseSemiBold,
+  greenDot: {
+    backgroundColor: '#4CAF50',
   },
-  cameraFrameWrapper: {
-    marginHorizontal: Spacing.medium,
-    borderRadius: Radius.xLarge || 24,
-    borderWidth: 1,
-    borderColor: 'rgba(197, 147, 83, 0.45)',
-    backgroundColor: '#0A0A0A',
-    height: Responsive.height(380),
-    marginBottom: Responsive.height(28),
-    overflow: 'hidden',
+  headerText: {
+    fontWeight: 'bold',
   },
-  cameraInnerViewport: {
-    flex: 1,
-    padding: Spacing.large || 16,
-    justifyContent: 'flex-end',
-  },
-  viewportBottomLayoutRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  timestampText: {
-    color: '#FFFFFF',
-    fontSize: FontSize.medium || 14,
-    fontFamily: FONT.TTForseRegular,
-    opacity: 0.8,
-  },
-  previewIndicatorWrapper: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    opacity: 0.75,
-  },
-  camIconOffset: {
-    marginRight: 6,
-  },
-  cameraPreviewText: {
-    color: '#FFFFFF',
-    fontSize: FontSize.tiny || 11,
-    fontFamily: FONT.TTForseRegular,
-  },
-  // Preview Elements Added for Screen Matching
-  previewContentContainer: {
-    paddingHorizontal: Spacing.medium,
-  },
-  videoPreviewWrapper: {
+  cameraBox: {
+    height: Responsive.height(420),
     width: '100%',
-    height: Responsive.height(240),
-    borderRadius: Radius.xLarge || 24,
-    borderWidth: 1,
-    borderColor: 'rgba(197, 147, 83, 0.45)',
-    backgroundColor: '#111111',
+    backgroundColor: '#030303',
+    borderRadius: Radius.xLarge,
+    borderWidth: 1.5,
+    borderColor: '#3B301B',
     overflow: 'hidden',
     position: 'relative',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginBottom: Responsive.height(24),
   },
-  videoPreviewImage: {
-    width: '100%',
-    height: '100%',
-  },
-  videoOverlayBlurShield: {
-    ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(0, 0, 0, 0.15)',
-  },
-  playCenterButton: {
-    position: 'absolute',
-    justifyContent: 'center',
-    alignItems: 'center',
-    zIndex: 5,
-  },
-  noteLabelTitleSerif: {
-    fontSize: FontSize.medium || 16,
-    color: '#FFFFFF',
-    fontFamily: 'Georgia',
-    fontStyle: 'italic',
-    marginBottom: Spacing.medium || 12,
-  },
-  noteInputContainer: {
-    width: '100%',
-    height: Responsive.height(210),
-    borderRadius: Radius.xLarge || 20,
-    borderWidth: 1,
-    borderColor: 'rgba(197, 147, 83, 0.45)',
-    backgroundColor: 'transparent',
-    padding: Spacing.medium || 14,
-    marginBottom: Responsive.height(16),
-  },
-  noteInputField: {
+  cameraView: {
     flex: 1,
-    color: '#FFFFFF',
-    fontSize: FontSize.medium || 14,
-    fontFamily: FONT.TTForseRegular,
-    textAlignVertical: 'top',
-    padding: 0,
+    width: '100%',
   },
-  captureControlSection: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: Responsive.height(12),
-  },
-  outerShutterRing: {
-    width: Responsive.width(72),
-    height: Responsive.width(72),
-    borderRadius: Responsive.width(36),
-    borderWidth: 3,
-    borderColor: 'rgba(255, 255, 255, 0.15)',
+  cameraOverlayBottom: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-end',
+    padding: Spacing.large,
     backgroundColor: 'transparent',
+  },
+  recordingTimer: {
+    fontWeight: '500',
+  },
+  cameraLabelGroup: {
     alignItems: 'center',
+  },
+  cameraLabelText: {
+    marginTop: Spacing.tiny,
+  },
+  recordingIndicator: {
+    position: 'absolute',
+    top: Spacing.medium,
+    right: Spacing.medium,
+    backgroundColor: 'rgba(0,0,0,0.5)',
+    borderRadius: Radius.small,
+    padding: Spacing.tiny,
+  },
+  recordingDot: {
+    width: Responsive.width(10),
+    height: Responsive.width(10),
+    borderRadius: Responsive.width(5),
+    backgroundColor: '#FF0000',
+    animation: 'pulse 1s infinite',
+  },
+  recordControlWrapper: {
+    alignItems: 'center',
+    marginVertical: Spacing.small,
+  },
+  recordOuterCircle: {
+    width: Responsive.width(68),
+    height: Responsive.width(68),
+    borderRadius: Responsive.width(34),
+    borderWidth: 2,
+    borderColor: '#E55B6E',
+    backgroundColor: COLORS.BLACK,
     justifyContent: 'center',
-    marginBottom: Spacing.medium || 12,
+    alignItems: 'center',
   },
-  innerShutterCore: {
-    width: Responsive.width(52),
-    height: Responsive.width(52),
-    borderRadius: Responsive.width(26),
-    backgroundColor: '#E57373',
+  recordInnerCircle: {
+    width: Responsive.width(44),
+    height: Responsive.width(44),
+    borderRadius: Responsive.width(22),
+    backgroundColor: '#E55B6E',
   },
-  innerShutterCoreActive: {
-    borderRadius: Radius.medium || 8,
-    width: Responsive.width(36),
-    height: Responsive.width(36),
+  recordSquare: {
+    width: Responsive.width(22),
+    height: Responsive.width(22),
+    borderRadius: Radius.tiny,
   },
-  shutterLabelHint: {
-    color: '#888888',
-    fontSize: FontSize.small || 12,
-    fontFamily: FONT.TTForseRegular,
-  },
-  // Redo & Next Persistent Buttons Layout Action Group Bar
-  previewActionFooterRow: {
+  bottomBar: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingHorizontal: Spacing.medium,
-    paddingVertical: Responsive.height(12),
-    backgroundColor: '#000000',
+    paddingTop: Spacing.medium,
   },
-  redoButtonOutline: {
+  actionButton: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: Responsive.height(12),
-    paddingHorizontal: Responsive.width(28),
-    borderRadius: Radius.full || 30,
+    height: Responsive.height(48),
+    paddingHorizontal: Spacing.xLarge,
+    borderRadius: Radius.xLarge,
+    minWidth: Responsive.width(120),
+  },
+  outlinedButton: {
     borderWidth: 1,
-    borderColor: 'rgba(197, 147, 83, 0.5)',
-    backgroundColor: 'transparent',
+    borderColor: '#333333',
+    backgroundColor: COLORS.BLACK,
   },
-  redoIconGutter: {
-    marginRight: 6,
-  },
-  redoButtonText: {
-    color: '#FFFFFF',
-    fontSize: FontSize.medium || 14,
-    fontFamily: FONT.TTForseSemiBold,
+  outlinedButtonText: {
     fontWeight: '600',
   },
-  nextButtonSolid: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: Responsive.height(14),
-    paddingHorizontal: Responsive.width(38),
-    borderRadius: Radius.full || 30,
-    backgroundColor: '#C59353',
+  goldButton: {
+    backgroundColor: COLORS.GOLD,
+    gap: Responsive.width(6),
+    paddingHorizontal: Spacing.xLarge,
+    paddingVertical: Spacing.medium,
+    borderRadius: Radius.xLarge,
+    alignSelf: 'center',
+    minWidth: Responsive.width(150),
   },
-  nextIconGutter: {
-    marginLeft: 6,
+  goldButtonText: {
+    fontWeight: 'bold',
   },
-  nextButtonText: {
-    color: '#111111',
-    fontSize: FontSize.medium || 14,
-    fontFamily: FONT.TTForseBold,
-    fontWeight: '700',
+  buttonIcon: {
+    marginRight: Responsive.width(6),
+  },
+  disabledButton: {
+    opacity: 0.5,
+  },
+  disabledButtonText: {
+    opacity: 0.5,
+  },
+  retryButton: {
+    backgroundColor: COLORS.GOLD,
+    paddingHorizontal: Spacing.xLarge,
+    paddingVertical: Spacing.medium,
+    borderRadius: Radius.xLarge,
+    alignSelf: 'center',
+    marginTop: Spacing.medium,
   },
 });

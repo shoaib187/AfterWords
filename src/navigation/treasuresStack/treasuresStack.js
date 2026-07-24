@@ -21,6 +21,7 @@ const TreasuresStack = () => {
         name="TreasureDetails"
         component={screens.TreasureDetails}
       />
+      <Stack.Screen name="EditTreasure" component={screens.EditTreasure} />
       <Stack.Screen
         name="VaultItemDetail"
         component={screens.VaultItemDetail}

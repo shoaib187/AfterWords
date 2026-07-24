@@ -16,7 +16,8 @@ import { Button } from '../../../components/common/button/button';
 import GradientBackground from '../../../components/common/gradientBackground/gradientBackground';
 
 export default function TreasureSaved({ navigation, route }) {
-  const { isFromLegacy } = route?.params || {};
+  const { isFromLegacy, treasureId } = route?.params || {};
+  const id = treasureId?.data?.treasure?._id;
   return (
     <SafeAreaView style={styles.container}>
       <GradientBackground />
@@ -68,7 +69,7 @@ export default function TreasureSaved({ navigation, route }) {
                 variant="other"
               />
               <Button
-                onPress={() => navigation.navigate('AssignRecipients')}
+                onPress={() => navigation.navigate('AssignRecipients', { id })}
                 title="Create Legacy"
               />
             </>

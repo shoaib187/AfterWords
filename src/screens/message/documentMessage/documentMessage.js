@@ -61,7 +61,6 @@ export default function DocumentMessage({ navigation }) {
       <HeaderBack title={'Document'} />
       <ScrollView>
         <View style={styles.safeAreaContainer}>
-          <Stepper />
           <View style={styles.sectionTitleRow}>
             <View style={styles.purpleStatusDot} />
             <AppText
@@ -72,7 +71,6 @@ export default function DocumentMessage({ navigation }) {
             />
           </View>
 
-          {/* Main Document Browser Interactive Hub Dropzone */}
           <View style={styles.uploadHubContainer}>
             <TouchableOpacity
               style={styles.fileBrowserBox}

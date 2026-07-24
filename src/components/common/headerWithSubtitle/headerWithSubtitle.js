@@ -6,15 +6,16 @@ import { COLORS } from '../../constants/color';
 import { Responsive, Spacing } from '../../constants/styles';
 import AppText from '../../typography/appText/appText';
 import Title from '../../typography/title/title';
+import { useNavigation } from '@react-navigation/native';
 
 const HeaderWithSubtitle = ({
   title,
   subtitle,
-  navigation,
   onBackPress,
   onRightPress,
   showRightBtn,
 }) => {
+  const navigation = useNavigation();
   return (
     <View style={styles.topNavigationHeader}>
       <TouchableOpacity

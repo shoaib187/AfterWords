@@ -238,6 +238,9 @@ const getTabBarVisibility = route => {
     'AddRecoveryContact',
     'AssignRecipient',
     'NewRecepient',
+    'EditTreasure',
+    'ReleaseRules',
+    'ReviewLegacy',
   ];
 
   if (hiddenScreens.includes(routeName)) {
