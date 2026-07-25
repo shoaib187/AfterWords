@@ -32,7 +32,7 @@ export default function Login({ navigation }) {
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-  const { saveToken } = useAuth();
+  const { login: authLogin, setIsAuthenticated } = useAuth();
   const { showToast } = useToast();
 
   const validateForm = () => {
@@ -64,10 +64,11 @@ export default function Login({ navigation }) {
         password: password,
       };
       const response = await login(payload);
-      // console.log('res', response);
+      console.log('res', response);
       // return;
       if (response?.data?.user) {
-        saveToken(response?.data?.token);
+        authLogin(response.data.token);
+        setIsAuthenticated(true);
         navigation.dispatch(
           CommonActions.reset({
             index: 0,

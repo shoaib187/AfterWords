@@ -15,10 +15,13 @@ import { useToast } from '../../../configs/toastContext/toastContext';
 export default function AddMessageDetails({ navigation, route }) {
   const { messageType } = route?.params || {};
   const audioFilePath = route?.params?.audioFilePath || null;
-  const videoFilePath = route?.params?.videoFilePath || null;
+  const videoFilePath = route?.params?.videoPath;
+
   const photoFiles = route?.params?.photoFiles || [];
   const documentFile = route?.params?.documentFile || null;
   const { showToast } = useToast();
+
+  console.log('object', videoFilePath);
 
   // Form state
   const [title, setTitle] = useState('');

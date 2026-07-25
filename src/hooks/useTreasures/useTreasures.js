@@ -45,6 +45,9 @@ export const useCreateTreasure = () => {
         queryKey: ['dashboard-stats'],
       });
     },
+    onError: error => {
+      throw error;
+    },
   });
 };
 
@@ -82,6 +85,9 @@ export const useDeleteTreasure = () => {
       queryClient.removeQueries({
         queryKey: ['treasure', variables.id],
       });
+    },
+    onError: error => {
+      throw error;
     },
   });
 };

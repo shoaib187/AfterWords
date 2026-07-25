@@ -1,4 +1,10 @@
-import { ActivityIndicator, Pressable, StyleSheet, View } from 'react-native';
+import {
+  ActivityIndicator,
+  Alert,
+  Pressable,
+  StyleSheet,
+  View,
+} from 'react-native';
 import React, { Activity } from 'react';
 import LinearGradient from 'react-native-linear-gradient';
 import MCOIcon from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -22,11 +28,21 @@ const getTypeIconInfo = type =>
 
 export default function RecentItemCard({ item, onPress }) {
   const { icon, color } = getTypeIconInfo(item?.type);
-
   const { mutate: deleteTreasure, isPending } = useDeleteTreasure();
 
   const handleDelete = () => {
-    deleteTreasure({ id: item?._id });
+    deleteTreasure(
+      { id: item?._id },
+      {
+        onSuccess: () => {},
+        onError: error => {
+          Alert.alert(
+            'Error',
+            'This treasure is part of a Legacy Gift and cannot be deleted',
+          );
+        },
+      },
+    );
   };
 
   return (

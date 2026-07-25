@@ -327,6 +327,16 @@ export default function ReviewSummary({ navigation, route }) {
           },
           onError: error => {
             setIsSubmitting(false);
+            Alert.alert(
+              'Error',
+              error.message || 'Failed to create treasure. Please try again.',
+            );
+            if (messageType === 'video') {
+              Alert.alert(
+                'Video Upload Error',
+                'There was an issue uploading your video. Please ensure the file is not too large and try again.',
+              );
+            }
           },
         },
       );

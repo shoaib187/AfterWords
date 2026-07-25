@@ -32,7 +32,7 @@ export default function Register({ navigation }) {
   const [phone, setPhone] = useState('');
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-  const { saveToken } = useAuth();
+  const { login: authLogin } = useAuth();
   const { showToast } = useToast();
   const validateForm = () => {
     return email && password && phone;
@@ -49,13 +49,13 @@ export default function Register({ navigation }) {
       const payload = {
         firstName: firstName.trim(),
         lastName: lastName.trim(),
-        email: email.trim().toLowerCase(),
+        email: email?.trim()?.toLowerCase(),
         password: password,
-        phone: phone.trim(),
+        phone: phone?.trim(),
       };
 
       const response = await register(payload);
-      // console.log('res', response);
+      console.log('res', response);
 
       if (response) {
         const loginPayload = {
@@ -65,10 +65,10 @@ export default function Register({ navigation }) {
         const res = await login(loginPayload);
         console.log('res', res);
         if (res?.data?.token) {
-          saveToken(res.data.token);
+          await authLogin(res?.data?.token);
+          navigation.navigate('Secure');
         }
       }
-      navigation.replace('Secure');
     } catch (error) {
       showToast(error.message || 'Something went wrong');
     } finally {

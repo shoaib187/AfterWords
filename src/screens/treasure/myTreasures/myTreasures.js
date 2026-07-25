@@ -16,45 +16,12 @@ import RecentItemCard from '../../../components/treasures/recentItemCard/recentI
 import HeaderWithSubtitle from '../../../components/common/headerWithSubtitle/headerWithSubtitle';
 import { useTreasures } from '../../../hooks/useTreasures/useTreasures';
 
-const recentItems = [
-  {
-    id: 1,
-    type: 'document',
-    title: 'House Deed & Final Will',
-    date: 'Sep 22, 2026',
-    usages: 'Used in 2 Legacies',
-  },
-  {
-    id: 2,
-    type: 'video',
-    title: 'Birthday Message',
-    date: 'Sep 18, 2026',
-    usages: 'Used in 1 Legacy',
-  },
-  {
-    id: 3,
-    type: 'collection',
-    title: 'Family Memories',
-    date: 'Sep 10, 2026',
-    usages: '8 Items',
-  },
-  {
-    id: 4,
-    type: 'photo',
-    title: 'Wedding Album',
-    date: 'Aug 30, 2026',
-    usages: 'Used in 3 Legacies',
-  },
-];
-
 export default function MyTreasures({ navigation }) {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedTab, setSelectedTab] = useState('videos');
   const { data, isLoading } = useTreasures();
-  console.log('data is', data);
 
   const treasures = data?.data?.treasures || [];
-  console.log('recentItems is', treasures);
 
   const stats = {
     treasures: 127,

@@ -27,7 +27,7 @@ export default function ReleaseRules({ navigation, route }) {
   const { recipientIds, treasureId, recipients } = route?.params || {};
   const { mutate: createLegacy, isPending } = useCreateLegacyGift();
 
-  const [selectedRule, setSelectedRule] = useState('estate');
+  const [selectedRule, setSelectedRule] = useState('estate_activation');
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [scheduledDate, setScheduledDate] = useState(new Date());
   const [formattedDate, setFormattedDate] = useState('');
@@ -62,8 +62,37 @@ export default function ReleaseRules({ navigation, route }) {
     return `${year}-${month}-${day}`;
   };
 
+  // Get tomorrow's date for minimum date
+  const getTomorrowDate = () => {
+    const tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    tomorrow.setHours(0, 0, 0, 0);
+    return tomorrow;
+  };
+
+  // Check if date is today or in the past
+  const isDateTodayOrPast = date => {
+    if (!date) return true;
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const selectedDate = new Date(date);
+    selectedDate.setHours(0, 0, 0, 0);
+    return selectedDate <= today;
+  };
+
   const handleDateConfirm = selectedDate => {
     setShowDatePicker(false);
+
+    // Validate that the selected date is not today or in the past
+    if (isDateTodayOrPast(selectedDate)) {
+      Alert.alert(
+        'Invalid Date',
+        'Please select a future date. Today and past dates are not allowed.',
+        [{ text: 'OK', onPress: () => setShowDatePicker(true) }],
+      );
+      return;
+    }
+
     if (selectedDate) {
       setScheduledDate(selectedDate);
       setFormattedDate(formatDateForDisplay(selectedDate));
@@ -86,7 +115,8 @@ export default function ReleaseRules({ navigation, route }) {
     (selectedRule === 'estate_activation' ||
       (selectedRule === 'scheduled' &&
         formattedDate &&
-        formattedDate !== 'mm/dd/yyyy'));
+        formattedDate !== 'mm/dd/yyyy' &&
+        !isDateTodayOrPast(scheduledDate)));
 
   const handleCreateLegacy = () => {
     // Validate required fields
@@ -100,11 +130,22 @@ export default function ReleaseRules({ navigation, route }) {
       return;
     }
 
+    // Validate scheduled date if scheduled rule is selected
+    if (selectedRule === 'scheduled') {
+      if (!scheduledDate || isDateTodayOrPast(scheduledDate)) {
+        Alert.alert(
+          'Error',
+          'Please select a valid future date (tomorrow or later)',
+        );
+        return;
+      }
+    }
+
     // Prepare payload according to API expectations
     const payload = {
       treasureId: treasureId,
       recipientIds: recipientIds,
-      releaseType: selectedRule, // 'estate' or 'scheduled'
+      releaseType: selectedRule, // 'estate_activation' or 'scheduled'
       releaseDate:
         selectedRule === 'scheduled' ? formatDateForAPI(scheduledDate) : null,
       recipients,
@@ -144,10 +185,10 @@ export default function ReleaseRules({ navigation, route }) {
           {/* OPTION 1: UPON ESTATE ACTIVATION */}
           <TouchableOpacity
             activeOpacity={0.9}
-            onPress={() => handleSelectRule('estate')}
+            onPress={() => handleSelectRule('estate_activation')}
             style={styles.touchableCardWrapper}
           >
-            {selectedRule === 'estate' ? (
+            {selectedRule === 'estate_activation' ? (
               <LinearGradient
                 colors={['#EAD9B5', '#C49753']}
                 start={{ x: 0, y: 0 }}
@@ -308,7 +349,7 @@ export default function ReleaseRules({ navigation, route }) {
         mode="date"
         onConfirm={handleDateConfirm}
         onCancel={handleDateCancel}
-        minimumDate={new Date()}
+        minimumDate={getTomorrowDate()}
         title="Select Release Date"
         confirmText="Confirm"
         cancelText="Cancel"

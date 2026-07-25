@@ -7,51 +7,125 @@ import React, {
   useMemo,
 } from 'react';
 import * as Keychain from 'react-native-keychain';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const AuthContext = createContext(null);
 
+// Method 1: Store Token in Keychain
+const storeToken = async token => {
+  try {
+    if (!token) {
+      console.error('No token provided');
+      return false;
+    }
+    await Keychain.setGenericPassword('user_session', token, {
+      service: 'auth_token',
+      securityLevel: Keychain.SECURITY_LEVEL.SECURE_SOFTWARE,
+    });
+    return true;
+  } catch (error) {
+    console.error('Error storing token:', error);
+    return false;
+  }
+};
+
+// Method 2: Store isAuthenticated in AsyncStorage
+const storeIsAuthenticated = async value => {
+  try {
+    await AsyncStorage.setItem('isAuthenticated', String(value));
+    return true;
+  } catch (error) {
+    console.error('Error storing auth status:', error);
+    return false;
+  }
+};
+
+// Method 3: Get Token from Keychain
+const getToken = async () => {
+  try {
+    const credentials = await Keychain.getGenericPassword({
+      service: 'auth_token',
+    });
+    return credentials ? credentials.password : null;
+  } catch (error) {
+    console.error('Error getting token:', error);
+    return null;
+  }
+};
+
+// Method 4: Get isAuthenticated from AsyncStorage
+const getIsAuthenticated = async () => {
+  try {
+    const value = await AsyncStorage.getItem('isAuthenticated');
+    return value === 'true';
+  } catch (error) {
+    console.error('Error getting auth status:', error);
+    return false;
+  }
+};
+
+// Method 5: Clear Token only (keep isAuthenticated)
+const clearToken = async () => {
+  try {
+    await Keychain.resetGenericPassword({
+      service: 'auth_token',
+    });
+    return true;
+  } catch (error) {
+    console.error('Error clearing token:', error);
+    return false;
+  }
+};
+
+// Method 6: Clear everything (logout)
+const clearAllAuth = async () => {
+  try {
+    await Keychain.resetGenericPassword({
+      service: 'auth_token',
+    });
+    await AsyncStorage.removeItem('isAuthenticated');
+    return true;
+  } catch (error) {
+    console.error('Error clearing auth:', error);
+    return false;
+  }
+};
+
 export const AuthProvider = ({ children }) => {
   const [token, setToken] = useState(null);
-  const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isAuthenticated, setIsAuthenticatedState] = useState(false);
 
   useEffect(() => {
     const loadAuthData = async () => {
       try {
-        const credentials = await Keychain.getGenericPassword({
-          service: 'auth_token',
-        });
+        // Check both token and isAuthenticated
+        const [storedToken, authStatus] = await Promise.all([
+          getToken(),
+          getIsAuthenticated(),
+        ]);
 
-        if (credentials) {
-          const storedToken = credentials.password;
+        console.log('🔑 Token found:', !!storedToken);
+        console.log('📝 Auth status:', authStatus);
+
+        if (storedToken && authStatus) {
           setToken(storedToken);
-
-          const userCredentials = await Keychain.getGenericPassword({
-            service: 'user_data',
-          });
-
-          if (userCredentials) {
-            try {
-              const userData = JSON.parse(userCredentials.password);
-              setUser(userData);
-            } catch (parseError) {
-              console.error('Error parsing user data:', parseError);
-              setUser(null);
-            }
-          }
-
-          setIsAuthenticated(true);
+          setIsAuthenticatedState(true);
         } else {
+          // If inconsistent, clean up
+          if (storedToken) {
+            await clearToken();
+          }
+          if (authStatus) {
+            await storeIsAuthenticated(false);
+          }
           setToken(null);
-          setUser(null);
-          setIsAuthenticated(false);
+          setIsAuthenticatedState(false);
         }
       } catch (error) {
-        console.error('Keychain Error:', error);
+        console.error('Error loading auth data:', error);
         setToken(null);
-        setUser(null);
-        setIsAuthenticated(false);
+        setIsAuthenticatedState(false);
       } finally {
         setLoading(false);
       }
@@ -60,27 +134,21 @@ export const AuthProvider = ({ children }) => {
     loadAuthData();
   }, []);
 
-  const login = useCallback(async (authToken, userData) => {
+  // Login method - stores both token and isAuthenticated
+  const login = useCallback(async authToken => {
     try {
-      await Keychain.setGenericPassword('user_session', authToken, {
-        service: 'auth_token',
-        securityLevel: Keychain.SECURITY_LEVEL.SECURE_SOFTWARE,
-      });
-
-      if (userData) {
-        await Keychain.setGenericPassword(
-          'user_session',
-          JSON.stringify(userData),
-          {
-            service: 'user_data',
-            securityLevel: Keychain.SECURITY_LEVEL.SECURE_SOFTWARE,
-          },
-        );
-        setUser(userData);
+      if (!authToken) {
+        console.error('No token provided');
+        return false;
       }
 
+      // Store token in Keychain
+      const tokenStored = await storeToken(authToken);
+      if (!tokenStored) {
+        console.error('Failed to store token');
+        return false;
+      }
       setToken(authToken);
-      setIsAuthenticated(true);
 
       return true;
     } catch (error) {
@@ -89,54 +157,45 @@ export const AuthProvider = ({ children }) => {
     }
   }, []);
 
-  const updateUser = useCallback(async userData => {
+  // Logout method - clears everything
+  const logout = useCallback(async () => {
     try {
-      if (userData) {
-        await Keychain.setGenericPassword(
-          'user_session',
-          JSON.stringify(userData),
-          {
-            service: 'user_data',
-            securityLevel: Keychain.SECURITY_LEVEL.SECURE_SOFTWARE,
-          },
-        );
-        setUser(userData);
-      }
+      await clearAllAuth();
+      setToken(null);
+      setIsAuthenticatedState(false);
+      return true;
     } catch (error) {
-      console.error('Update User Error:', error);
+      console.error('Logout Error:', error);
+      return false;
     }
   }, []);
 
-  const logout = useCallback(async () => {
+  // Set isAuthenticated separately
+  const setIsAuthenticated = useCallback(async value => {
     try {
-      await Keychain.resetGenericPassword({
-        service: 'auth_token',
-      });
-
-      await Keychain.resetGenericPassword({
-        service: 'user_data',
-      });
-
-      setToken(null);
-      setUser(null);
-      setIsAuthenticated(false);
+      const stored = await storeIsAuthenticated(value);
+      if (stored) {
+        setIsAuthenticatedState(value);
+        return true;
+      }
+      return false;
     } catch (error) {
-      console.error('Logout Error:', error);
+      console.error('Error setting auth status:', error);
+      return false;
     }
   }, []);
 
   const value = useMemo(
     () => ({
       token,
-      user,
       loading,
       isAuthenticated,
       setIsAuthenticated,
       login,
-      updateUser,
       logout,
+      setToken,
     }),
-    [token, user, loading, isAuthenticated, login, updateUser, logout],
+    [token, loading, isAuthenticated, login, logout, setIsAuthenticated],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

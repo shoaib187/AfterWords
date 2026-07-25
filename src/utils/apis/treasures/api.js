@@ -26,8 +26,6 @@ export const createTreasure = async (formData, token) => {
       {
         headers: {
           Authorization: `Bearer ${token}`,
-          // Don't set 'Content-Type': 'multipart/form-data' manually —
-          // let axios/RN set it with the correct boundary automatically.
         },
         timeout: 120000, // 2 minutes
       },

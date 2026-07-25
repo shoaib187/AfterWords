@@ -23,6 +23,7 @@ import {
 } from '../../../components/constants/styles';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { checkCameraPermission } from '../../../utils/cameraPermission/cameraPermission';
+import { requestAudioPermission } from '../../../utils/audioPermissions/audioPermissions';
 
 const VIDEO_RECORDER_DATA = {
   header: {
@@ -134,49 +135,7 @@ const ActionButton = ({
 };
 
 // Reusable Bottom Actions Bar Component
-const BottomActions = ({
-  hasRecorded,
-  isRecording,
-  onRetake,
-  onRedo,
-  onContinue,
-  onRecord,
-}) => {
-  // Show record button when not recording and no video recorded
-  if (!isRecording && !hasRecorded) {
-    return (
-      <View style={styles.bottomBar}>
-        <ActionButton
-          type="gold"
-          text={VIDEO_RECORDER_DATA.buttons.record}
-          icon="videocam"
-          onPress={onRecord}
-        />
-      </View>
-    );
-  }
-
-  // Show recording indicator when recording
-  if (isRecording) {
-    return (
-      <View style={styles.bottomBar}>
-        <ActionButton
-          type="outlined"
-          text="Recording..."
-          icon="radio-button-on"
-          disabled={true}
-        />
-        <ActionButton
-          type="gold"
-          text="Stop"
-          icon="stop-circle"
-          onPress={onRecord}
-        />
-      </View>
-    );
-  }
-
-  // Show retake and continue when video is recorded
+const BottomActions = ({ hasRecorded, onRedo, onContinue }) => {
   if (hasRecorded) {
     return (
       <View style={styles.bottomBar}>
@@ -229,6 +188,7 @@ export default function VideoMessageRecorder({ navigation, route }) {
   const checkAndRequestPermission = async () => {
     try {
       const hasPermission = await checkCameraPermission();
+      const audioPermission = requestAudioPermission();
       console.log('hasPermission', hasPermission);
       setCameraPermission(hasPermission);
     } catch (error) {
@@ -309,9 +269,10 @@ export default function VideoMessageRecorder({ navigation, route }) {
 
     // Navigate to the next screen with the video path
     if (navigation) {
-      navigation.navigate('VideoMessagePreview', {
+      navigation.navigate('AddMessageDetails', {
         videoPath: formattedPath,
         videoUri: videoUri,
+        messageType: 'video',
       });
     } else {
       // If navigation is not available, just show the path
@@ -605,7 +566,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     height: Responsive.height(48),
     paddingHorizontal: Spacing.xLarge,
-    borderRadius: Radius.xLarge,
+    borderRadius: Radius.circle,
     minWidth: Responsive.width(120),
   },
   outlinedButton: {
@@ -621,7 +582,7 @@ const styles = StyleSheet.create({
     gap: Responsive.width(6),
     paddingHorizontal: Spacing.xLarge,
     paddingVertical: Spacing.medium,
-    borderRadius: Radius.xLarge,
+    borderRadius: Radius.circle,
     alignSelf: 'center',
     minWidth: Responsive.width(150),
   },

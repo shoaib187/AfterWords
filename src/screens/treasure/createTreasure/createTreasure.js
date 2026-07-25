@@ -136,13 +136,6 @@ export default function CreateTreasure({ navigation }) {
               activeOpacity={0.8}
               style={styles.gridCard}
               onPress={() => {
-                if (option.id === 'video') {
-                  Alert.alert(
-                    'Feature Coming Soon',
-                    `The ${option.title} feature is not yet available. Please check back later.`,
-                  );
-                  return;
-                }
                 navigation.navigate(option?.route);
               }}
             >
